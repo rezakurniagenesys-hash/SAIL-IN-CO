@@ -31,7 +31,7 @@ class LoginScreen extends StatelessWidget {
                   AppInputField(
                     title: 'Username',
                     height: 40,
-                    hintText: 'Input username',
+                    hintText: 'Masukkan username',
                     borderSideColor: AppColors.neutral400,
                     controller: TextEditingController(),
                     onChanged: (value) {
@@ -39,9 +39,9 @@ class LoginScreen extends StatelessWidget {
                     },
                   ),
                   AppInputField(
-                    title: 'Password',
+                    title: 'Kata Sandi',
                     height: 40,
-                    hintText: 'Input password',
+                    hintText: 'Masukkan kata sandi',
                     borderSideColor: AppColors.neutral400,
                     controller: TextEditingController(),
                     onChanged: (value) {
