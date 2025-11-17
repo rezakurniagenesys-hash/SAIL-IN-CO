@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
+import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/customer/customer_screen.dart';
 import 'package:sail_in_co/ui/screens/home/home_screen.dart';
 import 'package:sail_in_co/ui/screens/transactions/sales_transaction_screen.dart';
@@ -63,6 +65,22 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  String _getLabelForIndex(int index) {
+    final l = AppLocalizations.of(context);
+    switch (index) {
+      case 0:
+        return l?.dashboard_home ?? 'Home';
+      case 1:
+        return l?.dashboard_customers ?? 'Customers';
+      case 2:
+        return l?.dashboard_transportation ?? 'Transportation';
+      case 3:
+        return l?.dashboard_history ?? 'History';
+      default:
+        return '';
+    }
   }
 
   @override
@@ -127,10 +145,18 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         curve: Curves.easeOutCubic,
         padding: EdgeInsets.only(bottom: isActive ? 8 : 0),
         child: AnimatedScale(
-          scale: isActive ? 1.25 : 1.0,
+          scale: isActive ? 1.1 : 1.0,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOutBack,
-          child: SvgPicture.asset(iconPath, height: 28, colorFilter: ColorFilter.mode(isActive ? const Color(0xFF61B8FF) : Colors.white, BlendMode.srcIn)),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Column(
+              children: [
+                SvgPicture.asset(iconPath, height: 26, colorFilter: ColorFilter.mode(isActive ? const Color(0xFF61B8FF) : Colors.white, BlendMode.srcIn)),
+                Text(_getLabelForIndex(index), style: AppTextStyles.caption2Medium.copyWith(color: isActive ? const Color(0xFF61B8FF) : Colors.white)),
+              ],
+            ),
+          ),
         ),
       ),
     );

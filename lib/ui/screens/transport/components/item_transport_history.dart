@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/transport/add_transport/add_transport_screen.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_dialog.dart';
@@ -12,6 +13,7 @@ class ItemTransportHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -44,7 +46,7 @@ class ItemTransportHistory extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () {
-                        AppDialog.show(context: context, title: 'View Transport Management', content: const AddTransportScreen());
+                        AppDialog.show(context: context, title: l.transportation_viewTransportation, content: const AddTransportScreen());
                       },
                       child: Container(
                         width: 48,
@@ -61,11 +63,11 @@ class ItemTransportHistory extends StatelessWidget {
                       onTap: () {
                         AppDialog.show(
                           context: context,
-                          title: 'Edit Transport Management',
+                          title: l.transportation_editTransportation,
                           content: const AddTransportScreen(),
                           actionButton: AppButton(
                             isFullWidth: true,
-                            label: 'Update',
+                            label: l.transportation_update,
                             height: 42,
                             type: AppButtonType.primary,
                             onPressed: () => Navigator.pop(context),

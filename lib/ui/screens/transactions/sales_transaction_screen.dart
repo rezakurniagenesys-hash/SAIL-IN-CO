@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/add_inventory.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/item_inventory_quick_sales.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
@@ -12,9 +13,10 @@ class SalesTransactionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBarCustom(title: 'Sales Transactions', onRefresh: () {}),
+      appBar: AppBarCustom(title: l.transaction_salesTransaction, onRefresh: () {}),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -29,11 +31,11 @@ class SalesTransactionScreen extends StatelessWidget {
                       spacing: 12,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        infoItem('Date', '06-11-2025'),
-                        infoItem('Warehouse', 'W.123123.12312'),
-                        inputItem('Address', 'Type something...'),
-                        inputItem('ID Number', 'Type something...'),
-                        infoItem('Payment Type', 'Cash'),
+                        infoItem(l.transaction_date, '06-11-2025'),
+                        infoItem(l.transaction_warehouse, 'W.123123.12312'),
+                        inputItem(l.transaction_address, 'Type something...'),
+                        inputItem(l.transaction_idNumber, 'Type something...'),
+                        infoItem(l.transaction_paymentType, 'Cash'),
                       ],
                     ),
                   ),
@@ -43,11 +45,11 @@ class SalesTransactionScreen extends StatelessWidget {
                       spacing: 12,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        infoItem('Sales ID', 'S.0213.123123 - Nathanael'),
-                        inputItem('Customer Name', 'Type something...'),
-                        inputItem('Area', 'Type something...'),
-                        inputItem('Phone Number', 'Type something...'),
-                        inputItem('Remarks', 'Type something...'),
+                        infoItem(l.transaction_salesId, 'S.0213.123123 - Nathanael'),
+                        inputItem(l.transaction_customerName, 'Type something...'),
+                        inputItem(l.transaction_area, 'Type something...'),
+                        inputItem(l.transaction_phoneNumber, 'Type something...'),
+                        inputItem(l.transaction_remarks, 'Type something...'),
                       ],
                     ),
                   ),
@@ -57,18 +59,18 @@ class SalesTransactionScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Detail Inventory', style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
+                  Text(l.transaction_inventoryDetail, style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
                   AppButton(
-                    label: 'Add',
+                    label: l.transaction_addProduct,
                     icon: Icons.add,
                     onPressed: () {
                       AppDialog.show(
                         context: context,
-                        title: 'Add Product',
+                        title: l.transaction_addProduct,
                         content: AddInventory(),
                         actionButton: AppButton(
                           isFullWidth: true,
-                          label: 'Insert',
+                          label: l.transaction_insert,
                           height: 42,
                           type: AppButtonType.primary,
                           onPressed: () => Navigator.pop(context),
@@ -83,7 +85,7 @@ class SalesTransactionScreen extends StatelessWidget {
               const SizedBox(height: 12 * 3),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [AppButton(label: 'Payment', onPressed: () {})],
+                children: [AppButton(label: l.transaction_payment, onPressed: () {})],
               ),
               const SizedBox(height: 12 * 5),
             ],

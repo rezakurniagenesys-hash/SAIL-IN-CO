@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_detail_screen.dart';
 
 class ItemCustomer extends StatelessWidget {
@@ -10,6 +11,7 @@ class ItemCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const CustomerDetailScreen()));
@@ -47,7 +49,7 @@ class ItemCustomer extends StatelessWidget {
                             decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
                           ),
                           SizedBox(width: 4),
-                          Text('Not Visited', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary)),
+                          Text(l!.customer_notVisit, style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary)),
                         ],
                       ),
                     ],

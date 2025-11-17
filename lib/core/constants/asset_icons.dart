@@ -23,4 +23,8 @@ class AssetIcons {
   static const String riEditFill = '$pathSvg/ri_edit-fill.svg';
   static const String typcnHome = '$pathSvg/typcn_home.svg';
   static const String circlePicture = '$pathSvg/circle-picture.svg';
+  static const String kmIcon = '$pathSvg/Km.svg';
+  static const String letsIconsUserScanFill = '$pathSvg/lets-icons_user-scan-fill.svg';
+  static const String supportTeam = '$pathSvg/support-team.svg';
+  static const String clarityLanguageSolid = '$pathSvg/clarity_language-solid.svg';
 }

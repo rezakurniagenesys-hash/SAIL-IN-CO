@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/add_inventory.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/item_inventory_quick_sales.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/sumary_row.dart';
@@ -14,6 +15,7 @@ class QuickSales extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +36,7 @@ class QuickSales extends StatelessWidget {
                     decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
                   ),
                   const SizedBox(width: 4),
-                  Text('Not Visited', style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.textPrimary)),
+                  Text(l!.order_notVisit, style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.textPrimary)),
                 ],
               ),
             ],
@@ -48,11 +50,11 @@ class QuickSales extends StatelessWidget {
                   spacing: 12,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    infoItem('Customer ID', 'C0001'),
-                    infoItem('Jenis Pembayaran', 'Credit'),
-                    infoItem('Sales ID', 'Jl. Merpati No. 45, Jakarta'),
-                    infoItem('Alamat', 'Jl. Jeruk Sidoarjo Gedangan'),
-                    infoItem('KTP', '01231231312412'),
+                    infoItem(l.order_customerId, 'C0001'),
+                    infoItem(l.order_paymentType, 'Credit'),
+                    infoItem(l.order_salesId, 'Jl. Merpati No. 45, Jakarta'),
+                    infoItem(l.order_address, 'Jl. Jeruk Sidoarjo Gedangan'),
+                    infoItem(l.order_ktp, '01231231312412'),
                   ],
                 ),
               ),
@@ -61,10 +63,10 @@ class QuickSales extends StatelessWidget {
                   spacing: 12,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    infoItem('Warehouse ID', 'W.123123.12312'),
-                    infoItem('Kota', 'Surabaya'),
-                    infoItem('Area', 'Ketintang'),
-                    infoItem('Nomor HP', '085xxxxxxxx'),
+                    infoItem(l.order_warehouseId, 'W.123123.12312'),
+                    infoItem(l.order_city, 'Surabaya'),
+                    infoItem(l.order_area, 'Ketintang'),
+                    infoItem(l.order_phoneNumber, '085xxxxxxxx'),
                   ],
                 ),
               ),
@@ -74,18 +76,18 @@ class QuickSales extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Detail Inventory', style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
+              Text(l.order_inventoryDetail, style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
               AppButton(
-                label: 'Add Product',
+                label: l.order_addProduct,
                 icon: Icons.add,
                 onPressed: () {
                   AppDialog.show(
                     context: context,
-                    title: 'Add Product',
+                    title: l.order_addProduct,
                     content: AddInventory(),
                     actionButton: AppButton(
                       isFullWidth: true,
-                      label: 'Insert',
+                      label: l.order_insert,
                       height: 42,
                       type: AppButtonType.primary,
                       onPressed: () => Navigator.pop(context),
@@ -98,13 +100,13 @@ class QuickSales extends StatelessWidget {
           const SizedBox(height: 12),
           ...List.generate(4, (index) => Padding(padding: const EdgeInsets.only(bottom: 12), child: ItemInventoryQuickSales(isDescriptionVisible: true))),
           const SizedBox(height: 12 * 3),
-          SummaryRow(data: const {'Disc': 'Rp 38,000.00', 'Subtotal': 'Rp 0.00', 'Grand Total': 'Rp 38,000.00'}),
+          SummaryRow(data: {l.order_discount: 'Rp 38,000.00', l.order_subtotal: 'Rp 0.00', l.order_grandTotalPayment: 'Rp 38,000.00'}),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               AppButton(
-                label: 'Payment',
+                label: l.order_payment,
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(paymentType: PaymentType.quickSalesPayment)));
                 },

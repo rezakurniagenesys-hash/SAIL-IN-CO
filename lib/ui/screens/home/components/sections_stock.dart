@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/history_stock/history_stock_screen.dart';
 
 class SectionsStockDashboard extends StatelessWidget {
@@ -10,6 +11,7 @@ class SectionsStockDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: GestureDetector(
@@ -29,7 +31,7 @@ class SectionsStockDashboard extends StatelessWidget {
             spacing: 8,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Stock', style: AppTextStyles.heading6Bold),
+              Text(l?.home_stock ?? '', style: AppTextStyles.heading6Bold),
               _ItemStock(title: '1. Rokok A', value: '1235 pcs'),
               _ItemStock(title: '2. Rokok B', value: '4353 pcs'),
               _ItemStock(title: '3. Rokok C', value: '8765 pcs'),
@@ -39,7 +41,7 @@ class SectionsStockDashboard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Lihat Detail',
+                    l?.home_seeDetail ?? '',
                     style: AppTextStyles.body4Medium.copyWith(color: AppColors.neutral400, fontWeight: FontWeight.w500),
                   ),
                   Icon(Icons.arrow_forward, color: AppColors.neutral400, size: 14),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/adjustment/components/add_adjustment.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
@@ -18,9 +19,10 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
   String selectedInventory = '';
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBarCustom(title: 'Adjustment', onRefresh: () {}),
+      appBar: AppBarCustom(title: l!.customerDetail_adjustment, onRefresh: () {}),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -43,7 +45,7 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
                         decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
                       ),
                       const SizedBox(width: 4),
-                      Text('Not Visited', style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.textPrimary)),
+                      Text(l.order_notVisit, style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.textPrimary)),
                     ],
                   ),
                 ],
@@ -57,11 +59,11 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
                       spacing: 12,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        infoItem('Customer ID', 'C0001'),
-                        infoItem('Jenis Pembayaran', 'Credit'),
-                        infoItem('Sales ID', 'Jl. Merpati No. 45, Jakarta'),
-                        infoItem('Alamat', 'Jl. Jeruk Sidoarjo Gedangan'),
-                        infoItem('KTP', '01231231312412'),
+                        infoItem(l.order_customerId, 'C0001'),
+                        infoItem(l.order_paymentType, 'Credit'),
+                        infoItem(l.order_salesId, 'Jl. Merpati No. 45, Jakarta'),
+                        infoItem(l.order_address, 'Jl. Jeruk Sidoarjo Gedangan'),
+                        infoItem(l.order_ktp, '01231231312412'),
                       ],
                     ),
                   ),
@@ -70,10 +72,10 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
                       spacing: 12,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        infoItem('Warehouse ID', 'W.123123.12312'),
-                        infoItem('Kota', 'Surabaya'),
-                        infoItem('Area', 'Ketintang'),
-                        infoItem('Nomor HP', '085xxxxxxxx'),
+                        infoItem(l.order_warehouseId, 'W.123123.12312'),
+                        infoItem(l.order_city, 'Surabaya'),
+                        infoItem(l.order_area, 'Ketintang'),
+                        infoItem(l.order_phoneNumber, '085xxxxxxxx'),
                       ],
                     ),
                   ),
@@ -84,16 +86,16 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   AppButton(
-                    label: 'Add',
+                    label: l.order_addProduct,
                     icon: Icons.add,
                     onPressed: () {
                       AppDialog.show(
                         context: context,
-                        title: 'Add Product Adjustment',
+                        title: l.order_addProduct,
                         content: AddAdjustment(),
                         actionButton: AppButton(
                           isFullWidth: true,
-                          label: 'Insert',
+                          label: l.order_insert,
                           height: 42,
                           type: AppButtonType.primary,
                           onPressed: () => Navigator.pop(context),
@@ -104,17 +106,17 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              Text('Search Inventory', style: AppTextStyles.body2Medium.copyWith(fontSize: 14, fontWeight: FontWeight.normal)),
+              Text(l.order_searchInventory, style: AppTextStyles.body2Medium.copyWith(fontSize: 14, fontWeight: FontWeight.normal)),
               const SizedBox(height: 6),
               AppDropdownSearch(
-                label: "Search Inventory",
-                hintText: "Select Inventory",
+                label: l.order_searchInventory,
+                hintText: l.order_selectInventory,
                 value: selectedInventory,
                 items: const ['Inventory A', 'Inventory B', 'Inventory C', 'Inventory D'],
                 onChanged: (value) => setState(() => selectedInventory = value ?? ''),
               ),
               const SizedBox(height: 12),
-              Text('Detail Inventory', style: AppTextStyles.body2Medium.copyWith(fontSize: 14, fontWeight: FontWeight.normal)),
+              Text(l.order_inventoryDetail, style: AppTextStyles.body2Medium.copyWith(fontSize: 14, fontWeight: FontWeight.normal)),
               const SizedBox(height: 6),
               for (var i = 0; i < 4; i++)
                 Container(
@@ -143,12 +145,12 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           AppButton(
-                            label: 'Edit Stock',
+                            label: l.order_edit,
                             type: AppButtonType.warning,
                             onPressed: () {
                               AppDialog.show(
                                 context: context,
-                                title: 'Edit Product Adjustment',
+                                title: l.order_edit,
                                 content: AddAdjustment(),
                                 actionButton: AppButton(
                                   isFullWidth: true,

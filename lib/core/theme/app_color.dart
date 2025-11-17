@@ -9,11 +9,15 @@ class AppColors {
   static const Color sky600 = Color(0xFF0284C7);
   static const Color sky700 = Color(0xFF0369A1);
   static const Color sky400 = Color(0xFF38BDF8);
+  static const Color sky200 = Color(0xFFBAE6FD);
+  static const Color sky100 = Color(0xFFE0F2FE);
   static const Color sky50 = Color(0xFFF0F9FF);
   static const Color neutral100 = Color(0xFFF5F5F5);
   static const Color neutral200 = Color(0xFFE5E5E5);
   static const Color neutral300 = Color(0xFFD4D4D4);
+  static const Color neutral600 = Color(0xFFA2A2A2);
   static const Color neutral400 = Color(0xFFA3A3A3);
+  static const Color neutral500 = Color(0xFF7B7B7B);
   static const Color neutral950 = Color(0xFF0A0A0A);
 
   // ⚪ NEUTRAL COLORS
@@ -54,4 +58,16 @@ class AppColors {
   // 🧾 BORDER & DIVIDER
   static const Color border = Color(0xFFE0E0E0);
   static const Color divider = Color(0xFFEEEEEE);
+
+  static const LinearGradient secondaryGradient = LinearGradient(
+    colors: [Color(0xFF78C4D9), Color(0xFF0E6276)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color(0xFF38BDF8), Color(0xFF082F49)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }

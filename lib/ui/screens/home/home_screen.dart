@@ -1,13 +1,21 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
+import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/connection_provider.dart';
-import 'package:sail_in_co/ui/screens/customer/customer_screen.dart';
+import 'package:sail_in_co/services/locale_service.dart';
 import 'package:sail_in_co/ui/screens/finished_task/finished_task_screen.dart';
 import 'package:sail_in_co/ui/screens/home/components/header_home.dart';
-import 'package:sail_in_co/ui/screens/home/components/sections_cash.dart';
+import 'package:sail_in_co/ui/screens/home/components/sections_achievements.dart';
 import 'package:sail_in_co/ui/screens/home/components/sections_stock.dart';
+import 'package:sail_in_co/ui/screens/home/components/sync_data_dialog_content.dart';
+import 'package:sail_in_co/ui/widgets/app_button.dart';
+import 'package:sail_in_co/ui/widgets/app_custom_loading_spinner.dart';
+import 'package:sail_in_co/ui/widgets/app_dialog.dart';
 import 'package:sail_in_co/ui/widgets/app_semi_doughnut_chart.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,53 +26,114 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double totalTask = 50;
-  double finishedTask = 20;
+  double totalTask = 20;
+
+  @override
+  initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      // showSyncDataDialog();
+    });
+  }
 
   Future<void> _handleRefresh() async {
-    // 1️⃣ Reset chart ke 0 (animasi turun)
     setState(() {
       totalTask = 0;
-      finishedTask = 0;
+      showSyncDataDialog();
     });
 
-    // 2️⃣ Tunggu sejenak (simulasi fetch data)
     await Future.delayed(const Duration(seconds: 2));
 
-    // 3️⃣ Naikkan kembali ke nilai sebenarnya
     setState(() {
-      totalTask = 50;
-      finishedTask = 20;
+      totalTask = 20;
     });
+  }
 
-    // 4️⃣ Notifikasi singkat
+  void showSyncDataDialog() {
+    final l = AppLocalizations.of(context);
+    AppDialog.show(
+      context: context,
+      isBack: false,
+      title: l!.homeDialog_syncTitle,
+      content: const SyncDataDialogContent(),
+      actionButton: AppButton(
+        isFullWidth: true,
+        label: l.homeDialog_syncButton,
+        height: 42,
+        type: AppButtonType.primary,
+        onPressed: () {
+          Navigator.pop(context);
+          showLoading();
+        },
+      ),
+    );
+  }
+
+  void showLoading() {
+    final l = AppLocalizations.of(context);
+    AppDialog.show(
+      context: context,
+      isBack: false,
+      title: l!.homeDialog_syncTitle,
+      content: Column(
+        spacing: 16,
+        children: [
+          AppCustomLoadingSpinner(),
+          Text(l.homeDialog_syncNote, style: AppTextStyles.body3Regular, textAlign: TextAlign.center),
+        ],
+      ),
+    );
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = context.watch<ConnectionProvider>().isConnected;
-
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        flexibleSpace: SafeArea(child: HeaderHome(isOnline: isConnected)),
+        flexibleSpace: SafeArea(
+          child: Consumer<ConnectionProvider>(
+            builder: (context, connectionProvider, child) {
+              return HeaderHome(isOnline: connectionProvider.isConnected);
+            },
+          ),
+        ),
         backgroundColor: AppColors.sky950,
         toolbarHeight: 87,
         automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
-          if (!isConnected)
-            Container(
-              width: double.infinity,
-              color: Colors.red.shade600,
-              padding: const EdgeInsets.all(8),
-              child: const Text(
-                'Tidak ada koneksi internet',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
+          Consumer<ConnectionProvider>(
+            builder: (context, connectionProvider, child) {
+              if (!connectionProvider.isConnected) {
+                return Container(
+                  width: double.infinity,
+                  color: Colors.red.shade600,
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    l!.home_noInternet,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+          // SwitchListTile(
+          //   title: Text(AppLocalizations.of(context)!.language),
+          //   value: localeService.isEnglish,
+          //   onChanged: (value) {
+          //     localeService.switchLanguage(value ? 'en' : 'id');
+          //   },
+          // ),
           Expanded(
             child: LiquidPullToRefresh(
               onRefresh: _handleRefresh,
@@ -80,34 +149,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerScreen()));
-                              },
-                              child: AppSemiDoughnutChart(value: totalTask, label: 'Customer', number: totalTask.toStringAsFixed(0), title: 'Total Task'),
-                            ),
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => FinishedTaskScreen()));
-                              },
-                              child: AppSemiDoughnutChart(
-                                value: finishedTask,
-                                label: 'Customer',
-                                number: finishedTask.toStringAsFixed(0),
-                                title: 'Finished Task',
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FinishedTaskScreen()));
+                        },
+                        child: AppSemiDoughnutChart(
+                          value: totalTask,
+                          label: l?.home_tasks ?? '',
+                          number: totalTask.toStringAsFixed(0),
+                          valueLeft: 2,
+                          valueRight: 5,
+                        ),
                       ),
                     ),
                     SectionsStockDashboard(),
-                    SectionsCashDashboard(),
+                    SectionsAchievementsDashboard(),
+                    Container(color: AppColors.white, width: double.infinity, height: 200),
                   ],
                 ),
               ),

@@ -1,13 +1,12 @@
 import 'dart:io';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/helpers/image_picker_helper.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/adjustment/adjustment_screen.dart';
+import 'package:sail_in_co/ui/screens/customer_detail/customer_edit/customer_edit_screen.dart';
+import 'package:sail_in_co/ui/screens/customer_detail/widgets/customer_upload_foto.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/draggable_scrollable_sheet_detail_customer.dart';
 import 'package:sail_in_co/ui/screens/order/order_screen.dart';
 import 'package:sail_in_co/ui/screens/return/return_screen.dart';
@@ -36,9 +35,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.sky700,
-      appBar: AppBarCustom(title: 'Detail Customer', onRefresh: () {}),
+      appBar: AppBarCustom(title: l!.customerDetail_title, onRefresh: () {}),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -60,7 +60,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                           decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
                         ),
                         const SizedBox(width: 4),
-                        Text('Not Visited', style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.white)),
+                        Text(l.customerDetail_statusNotVisited, style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.white)),
                       ],
                     ),
                   ],
@@ -74,11 +74,12 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                         spacing: 12,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          infoItem('Customer ID', 'C0001'),
-                          infoItem('Jenis Pembayaran', 'Credit'),
-                          infoItem('Sales ID', 'Jl. Merpati No. 45, Jakarta'),
-                          infoItem('Alamat', 'Jl. Jeruk Sidoarjo Gedangan'),
-                          infoItem('KTP', '01231231312412'),
+                          infoItem(l.customerDetail_customerCode, 'C0001'),
+                          infoItem(l.customerDetail_paymentType, 'Credit'),
+                          infoItem(l.customerDetail_salesCode, 'Jl. Merpati No. 45, Jakarta'),
+                          infoItem(l.customerDetail_address, 'Jl. Jeruk Sidoarjo Gedangan'),
+                          infoItem(l.customerDetail_ktp, '01231231312412'),
+                          infoItem(l.customerDetail_creditLimit, 'Rp 2,000,000.00'),
                         ],
                       ),
                     ),
@@ -87,104 +88,51 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                         spacing: 12,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          infoItem('Warehouse ID', 'W.123123.12312'),
-                          infoItem('Kota', 'Surabaya'),
-                          infoItem('Area', 'Ketintang'),
-                          infoItem('Nomor HP', '085xxxxxxxx'),
+                          infoItem(l.customerDetail_warehouseCode, 'W.123123.12312'),
+                          infoItem(l.customerDetail_customerType, 'Grosir'),
+                          infoItem(l.customerDetail_area, 'Ketintang'),
+                          infoItem(l.customerDetail_city, 'Surabaya'),
+                          infoItem(l.customerDetail_phoneNumber, '085xxxxxxxx'),
                         ],
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
-                AppButton(
-                  label: 'Upload Foto',
-                  type: AppButtonType.sky50,
-                  height: 42,
-                  isFullWidth: true,
-                  onPressed: () async {
-                    final picked = await pickImage();
-                    if (picked) {
-                      AppDialog.show(
-                        context: context,
-                        title: 'Upload Foto',
-                        paddingContent: 0,
-                        content: Column(
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  height: 430,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.sky400,
-                                    image: image != null ? DecorationImage(image: FileImage(image!), fit: BoxFit.cover) : null,
-                                  ),
-                                  child: image == null ? Icon(Icons.image, size: 64, color: AppColors.sky400) : null,
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-                                    child: BackdropFilter(
-                                      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                                      child: Container(
-                                        height: 78,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.3), // sedikit transparan agar blur kelihatan
-                                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              SvgPicture.asset(AssetIcons.ggPin, width: 24, height: 24, color: Colors.white),
-                                              const SizedBox(width: 8),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text('Current Location', style: AppTextStyles.label3Medium.copyWith(color: Colors.white)),
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      'Jl. Pucang Anom Timur III No.12, Kertajaya, Kec. Gubeng, Surabaya, Jawa Timur 60282',
-                                                      style: AppTextStyles.body4Medium.copyWith(color: Colors.white),
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 70,
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [SvgPicture.asset(AssetIcons.circlePicture, width: 48, height: 48, color: AppColors.neutral950)],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
+                Row(
+                  spacing: 12,
+                  children: [
+                    Expanded(
+                      child: AppButton(
+                        label: l.customerDetail_editData,
+                        type: AppButtonType.sky50,
+                        height: 42,
+                        isFullWidth: true,
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerEditScreen()));
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: AppButton(
+                        label: l.customerDetail_uploadPhoto,
+                        type: AppButtonType.sky50,
+                        height: 42,
+                        isFullWidth: true,
+                        onPressed: () async {
+                          final picked = await pickImage();
+                          if (picked) {
+                            AppDialog.show(
+                              context: context,
+                              title: 'Upload Foto',
+                              paddingContent: 0,
+                              content: CustomerUploadFoto(image: image),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 12),
                 Row(
@@ -192,7 +140,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                   children: [
                     Expanded(
                       child: AppButton(
-                        label: 'Order',
+                        label: l.customerDetail_order,
                         type: AppButtonType.sky50,
                         height: 42,
                         isFullWidth: true,
@@ -203,7 +151,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                     ),
                     Expanded(
                       child: AppButton(
-                        label: 'Adjustment',
+                        label: l.customerDetail_adjustment,
                         type: AppButtonType.sky50,
                         height: 42,
                         isFullWidth: true,
@@ -214,7 +162,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                     ),
                     Expanded(
                       child: AppButton(
-                        label: 'Return',
+                        label: l.customerDetail_return,
                         type: AppButtonType.sky50,
                         height: 42,
                         isFullWidth: true,

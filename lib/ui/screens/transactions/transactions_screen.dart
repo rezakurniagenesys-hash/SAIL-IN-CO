@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/customer/components/item_customer.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
 import 'package:sail_in_co/ui/widgets/app_date_picker.dart';
@@ -25,9 +26,10 @@ class _TransactionScreenState extends State<TransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBarCustom(title: 'Transaction History', onRefresh: () {}),
+      appBar: AppBarCustom(title: l.transaction_transactionHistory, onRefresh: () {}, showBack: false),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -38,8 +40,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
               children: [
                 Expanded(
                   child: AppInputField(
-                    label: 'Search',
-                    hintText: 'Search',
+                    label: l.transaction_search,
+                    hintText: l.transaction_search,
                     controller: _searchController,
                     onChanged: (value) {
                       // handle search logic here
@@ -60,7 +62,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             ),
             Row(
               children: [
-                Text('Customer Filter', style: AppTextStyles.body2Medium),
+                Text(l.transaction_customerFilter, style: AppTextStyles.body2Medium),
                 const SizedBox(width: 12),
                 Expanded(
                   child: AppDropdownField(
@@ -76,8 +78,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
               ],
             ),
             AppHorizontalMenuTab(
-              tabs: const ['All', 'Sales', 'Order', 'Adjustment', 'Return'],
-              initialValue: 'All',
+              tabs: [l.transaction_all, l.transaction_sales, l.transaction_order, l.transaction_adjustment, l.transaction_return],
+              initialValue: l.transaction_all,
               onChanged: (value) {
                 print('Selected tab: $value');
               },

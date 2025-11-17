@@ -10,6 +10,7 @@ class AppDialog {
     Widget? actionButton,
     bool dismissible = false,
     double paddingContent = 16.0,
+    bool isBack = true,
   }) {
     final heightScreen = MediaQuery.of(context).size.height;
 
@@ -43,12 +44,16 @@ class AppDialog {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                         child: Row(
                           children: [
-                            IconButton(
-                              icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.white),
-                              onPressed: () => Navigator.pop(context),
-                            ),
+                            if (isBack)
+                              IconButton(
+                                icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.white),
+                                onPressed: () => Navigator.pop(context),
+                              ),
                             Expanded(
-                              child: Text(title, style: AppTextStyles.body1Medium.copyWith(fontSize: 16, color: AppColors.white)),
+                              child: Padding(
+                                padding: EdgeInsets.all(isBack ? 0 : 8.0),
+                                child: Text(title, style: AppTextStyles.body1Medium.copyWith(fontSize: 16, color: AppColors.white)),
+                              ),
                             ),
                           ],
                         ),

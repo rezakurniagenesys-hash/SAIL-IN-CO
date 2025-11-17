@@ -92,6 +92,16 @@ class AppTextStyles {
     letterSpacing: 0.15,
     color: AppColors.textPrimary,
   );
+  // heading3Medium
+  static const heading3Medium = TextStyle(
+    fontWeight: FontWeight.w500,
+    fontStyle: FontStyle.normal,
+    fontSize: 20,
+    height: 1.3,
+    letterSpacing: 0.15,
+    color: AppColors.textPrimary,
+  );
+
   //Heading5Bold
   static const heading5Bold = TextStyle(
     fontWeight: FontWeight.w700,
@@ -120,6 +130,16 @@ class AppTextStyles {
     letterSpacing: 0.4,
     color: AppColors.textPrimary,
   );
+
+  static const label2Bold = TextStyle(
+    fontWeight: FontWeight.w700,
+    fontStyle: FontStyle.normal,
+    fontSize: 14,
+    height: 1.3,
+    letterSpacing: 0.4,
+    color: AppColors.textPrimary,
+  );
+
   static const label3Medium = TextStyle(
     fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,
@@ -136,5 +156,23 @@ class AppTextStyles {
     height: 1.3,
     letterSpacing: 0.4,
     color: AppColors.textSecondary,
+  );
+
+  static const caption2Regular = TextStyle(
+    fontWeight: FontWeight.w500,
+    fontStyle: FontStyle.normal,
+    fontSize: 11,
+    height: 1.3,
+    letterSpacing: 0.4,
+    color: AppColors.textSecondary,
+  );
+
+  static const caption2Medium = TextStyle(
+    fontWeight: FontWeight.w500,
+    fontStyle: FontStyle.normal,
+    fontSize: 11,
+    height: 1.3,
+    letterSpacing: 0.4,
+    color: AppColors.textPrimary,
   );
 }

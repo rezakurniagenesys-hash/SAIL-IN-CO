@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/order/components/quick_sales.dart';
 import 'package:sail_in_co/ui/screens/order/components/sales_order.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
@@ -35,6 +36,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBarCustom(title: _titles[_tabController.index], onRefresh: () {}),
@@ -51,9 +53,9 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
               unselectedLabelColor: AppColors.neutral400,
               dividerColor: Colors.transparent,
               labelStyle: AppTextStyles.label2SemiBold,
-              tabs: const [
-                Tab(text: "Quick Sales"),
-                Tab(text: "Sales Order"),
+              tabs: [
+                Tab(text: l!.order_quickSales),
+                Tab(text: l.order_salesOrder),
               ],
             ),
             const SizedBox(height: 12),

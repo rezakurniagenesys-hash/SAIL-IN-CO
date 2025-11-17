@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/widgets/app_dropdown_field.dart';
 import 'package:sail_in_co/ui/widgets/app_input_field.dart';
 
@@ -9,14 +10,15 @@ class AddTransportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppDropdownField(borderSideColor: AppColors.neutral400, label: 'Tipe', value: null, items: ['Service', 'BBM'], onChanged: (value) {}),
+        AppDropdownField(borderSideColor: AppColors.neutral400, label: l.transportation_type, value: null, items: ['Service', 'BBM'], onChanged: (value) {}),
         const SizedBox(height: 12),
         AppInputField(
-          label: 'Nomor Kendaraan',
-          hintText: 'Nomor Kendaraan',
+          label: l.transportation_vehicleNumber,
+          hintText: l.transportation_vehicleNumber,
           borderSideColor: AppColors.neutral400,
           controller: TextEditingController(),
           onChanged: (value) {
@@ -26,8 +28,8 @@ class AddTransportScreen extends StatelessWidget {
 
         const SizedBox(height: 12),
         AppInputField(
-          label: 'Date',
-          hintText: 'Date',
+          label: l.transportation_date,
+          hintText: l.transportation_date,
           type: AppInputType.date,
           borderSideColor: AppColors.neutral400,
           controller: TextEditingController(),
@@ -37,8 +39,8 @@ class AddTransportScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         AppInputField(
-          label: 'Price',
-          hintText: 'Price',
+          label: l.transportation_price,
+          hintText: l.transportation_price,
           type: AppInputType.number,
           borderSideColor: AppColors.neutral400,
           controller: TextEditingController(),
@@ -49,8 +51,8 @@ class AddTransportScreen extends StatelessWidget {
 
         const SizedBox(height: 12),
         AppInputField(
-          label: 'Notes',
-          hintText: 'Notes',
+          label: l.transportation_notes,
+          hintText: l.transportation_notes,
           type: AppInputType.textarea,
           borderSideColor: AppColors.neutral400,
           controller: TextEditingController(),
@@ -89,7 +91,7 @@ class AddTransportScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 color: AppColors.white,
-                child: Text('Foto', style: AppTextStyles.body3Medium.copyWith(color: AppColors.neutral300)),
+                child: Text(l.transportation_photo, style: AppTextStyles.body3Medium.copyWith(color: AppColors.neutral300)),
               ),
             ),
           ],
@@ -98,8 +100,8 @@ class AddTransportScreen extends StatelessWidget {
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text('Total', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          children: [
+            Text(l.transportation_total, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             Text('Rp 10.000,00', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),

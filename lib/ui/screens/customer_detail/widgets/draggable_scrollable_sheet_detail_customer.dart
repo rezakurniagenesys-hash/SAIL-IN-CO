@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/activity_history_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/outstanding_order_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/stock_history_screen.dart';
@@ -11,9 +12,10 @@ class DraggableScrollableSheetDetailCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return AppDraggableScrollableSheet(
-      initialChildSize: 0.53,
-      minChildSize: 0.53,
+      initialChildSize: 0.40,
+      minChildSize: 0.40,
       builder: (context, scrollController) {
         return DefaultTabController(
           length: 3,
@@ -29,10 +31,10 @@ class DraggableScrollableSheetDetailCustomer extends StatelessWidget {
                   unselectedLabelColor: AppColors.neutral400,
                   dividerColor: Colors.transparent,
                   labelStyle: AppTextStyles.label2SemiBold,
-                  tabs: const [
-                    Tab(text: "Activity History"),
-                    Tab(text: "Outstanding Order"),
-                    Tab(text: "Stock"),
+                  tabs: [
+                    Tab(text: l!.customerDetail_activityHistory),
+                    Tab(text: l.customerDetail_outstandingOrder),
+                    Tab(text: l.customerDetail_stock),
                   ],
                 ),
                 const SizedBox(height: 12),

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 
@@ -62,10 +63,21 @@ class AppButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[Icon(icon, size: 18, color: textColor), const SizedBox(width: 6)],
-            Text(
-              label,
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
-            ),
+            if (icon == null && isFullWidth == true) ...[
+              Expanded(
+                child: AutoSizeText(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
+                ),
+              ),
+            ] else ...[
+              Text(
+                label,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
+              ),
+            ],
           ],
         ),
       ),
