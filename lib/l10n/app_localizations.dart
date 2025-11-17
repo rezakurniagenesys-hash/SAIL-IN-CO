@@ -1102,6 +1102,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Changes'**
   String get setting_saveChanges;
+
+  /// No description provided for @payment_quickSalesPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Sales Payment'**
+  String get payment_quickSalesPayment;
+
+  /// No description provided for @payment_totalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount'**
+  String get payment_totalAmount;
+
+  /// No description provided for @payment_remainingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining Payment'**
+  String get payment_remainingPayment;
+
+  /// No description provided for @payment_returnId.
+  ///
+  /// In en, this message translates to:
+  /// **'Return ID'**
+  String get payment_returnId;
+
+  /// No description provided for @payment_returnValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Return Value'**
+  String get payment_returnValue;
+
+  /// No description provided for @payment_paymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Method'**
+  String get payment_paymentMethod;
+
+  /// No description provided for @payment_pendingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Payment'**
+  String get payment_pendingPayment;
+
+  /// No description provided for @payment_confirmPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment'**
+  String get payment_confirmPayment;
+
+  /// No description provided for @payment_salesOrderPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Order Payment'**
+  String get payment_salesOrderPayment;
+
+  /// No description provided for @payment_returnPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Return Payment'**
+  String get payment_returnPayment;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

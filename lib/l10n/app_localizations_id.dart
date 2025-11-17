@@ -513,4 +513,34 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get setting_saveChanges => 'Simpan Perubahan';
+
+  @override
+  String get payment_quickSalesPayment => 'Pembayaran Penjualan Cepat';
+
+  @override
+  String get payment_totalAmount => 'Jumlah Total';
+
+  @override
+  String get payment_remainingPayment => 'Sisa Pembayaran';
+
+  @override
+  String get payment_returnId => 'ID Retur';
+
+  @override
+  String get payment_returnValue => 'Nilai Retur';
+
+  @override
+  String get payment_paymentMethod => 'Metode Pembayaran';
+
+  @override
+  String get payment_pendingPayment => 'Pembayaran Tertunda';
+
+  @override
+  String get payment_confirmPayment => 'Konfirmasi Pembayaran';
+
+  @override
+  String get payment_salesOrderPayment => 'Pembayaran Sales Order';
+
+  @override
+  String get payment_returnPayment => 'Pembayaran Retur';
 }

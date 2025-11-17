@@ -513,4 +513,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setting_saveChanges => 'Save Changes';
+
+  @override
+  String get payment_quickSalesPayment => 'Quick Sales Payment';
+
+  @override
+  String get payment_totalAmount => 'Total Amount';
+
+  @override
+  String get payment_remainingPayment => 'Remaining Payment';
+
+  @override
+  String get payment_returnId => 'Return ID';
+
+  @override
+  String get payment_returnValue => 'Return Value';
+
+  @override
+  String get payment_paymentMethod => 'Payment Method';
+
+  @override
+  String get payment_pendingPayment => 'Pending Payment';
+
+  @override
+  String get payment_confirmPayment => 'Confirm Payment';
+
+  @override
+  String get payment_salesOrderPayment => 'Sales Order Payment';
+
+  @override
+  String get payment_returnPayment => 'Return Payment';
 }

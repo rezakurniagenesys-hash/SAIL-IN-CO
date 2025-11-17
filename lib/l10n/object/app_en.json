@@ -203,5 +203,18 @@
         "phoneNumber": "Phone Number",
         "newPassword": "New Password",
         "saveChanges": "Save Changes"
+    },
+
+    "payment": {
+        "quickSalesPayment": "Quick Sales Payment",
+        "totalAmount": "Total Amount",
+        "remainingPayment": "Remaining Payment",
+        "returnId": "Return ID",
+        "returnValue": "Return Value",
+        "paymentMethod": "Payment Method",
+        "pendingPayment": "Pending Payment",
+        "confirmPayment": "Confirm Payment",
+        "salesOrderPayment": "Sales Order Payment",
+        "returnPayment": "Return Payment"
     }
 }

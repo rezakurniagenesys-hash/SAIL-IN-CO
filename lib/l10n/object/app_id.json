@@ -202,5 +202,19 @@
         "phoneNumber": "Nomor HP",
         "newPassword": "Kata Sandi Baru",
         "saveChanges": "Simpan Perubahan"
+    },
+
+
+    "payment": {
+        "quickSalesPayment": "Pembayaran Penjualan Cepat",
+        "totalAmount": "Jumlah Total",
+        "remainingPayment": "Sisa Pembayaran",
+        "returnId": "ID Retur",
+        "returnValue": "Nilai Retur",
+        "paymentMethod": "Metode Pembayaran",
+        "pendingPayment": "Pembayaran Tertunda",
+        "confirmPayment": "Konfirmasi Pembayaran",
+        "salesOrderPayment": "Pembayaran Sales Order",
+        "returnPayment": "Pembayaran Retur"
     }
 }

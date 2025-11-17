@@ -176,5 +176,15 @@
   "setting_address": "Address",
   "setting_phoneNumber": "Phone Number",
   "setting_newPassword": "New Password",
-  "setting_saveChanges": "Save Changes"
+  "setting_saveChanges": "Save Changes",
+  "payment_quickSalesPayment": "Quick Sales Payment",
+  "payment_totalAmount": "Total Amount",
+  "payment_remainingPayment": "Remaining Payment",
+  "payment_returnId": "Return ID",
+  "payment_returnValue": "Return Value",
+  "payment_paymentMethod": "Payment Method",
+  "payment_pendingPayment": "Pending Payment",
+  "payment_confirmPayment": "Confirm Payment",
+  "payment_salesOrderPayment": "Sales Order Payment",
+  "payment_returnPayment": "Return Payment"
 }

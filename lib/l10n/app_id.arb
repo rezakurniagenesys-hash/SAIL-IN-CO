@@ -176,5 +176,15 @@
   "setting_address": "Alamat",
   "setting_phoneNumber": "Nomor HP",
   "setting_newPassword": "Kata Sandi Baru",
-  "setting_saveChanges": "Simpan Perubahan"
+  "setting_saveChanges": "Simpan Perubahan",
+  "payment_quickSalesPayment": "Pembayaran Penjualan Cepat",
+  "payment_totalAmount": "Jumlah Total",
+  "payment_remainingPayment": "Sisa Pembayaran",
+  "payment_returnId": "ID Retur",
+  "payment_returnValue": "Nilai Retur",
+  "payment_paymentMethod": "Metode Pembayaran",
+  "payment_pendingPayment": "Pembayaran Tertunda",
+  "payment_confirmPayment": "Konfirmasi Pembayaran",
+  "payment_salesOrderPayment": "Pembayaran Sales Order",
+  "payment_returnPayment": "Pembayaran Retur"
 }

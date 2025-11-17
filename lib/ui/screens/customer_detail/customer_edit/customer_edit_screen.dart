@@ -25,10 +25,10 @@ class CustomerEditScreen extends StatelessWidget {
                 spacing: 14,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  inputItem(l.customerDetail_customerName, 'Type something...'),
-                  inputItem(l.customerDetail_labelAddress, 'Type something...'),
-                  inputItem(l.customerDetail_labelArea, 'Type something...'),
-                  inputItem(l.customerDetail_labelPhoneNumber, 'Type something...'),
+                  inputItem(l.customerDetail_customerName, l.customerDetail_customerName),
+                  inputItem(l.customerDetail_labelAddress, l.customerDetail_labelAddress),
+                  inputItem(l.customerDetail_labelArea, l.customerDetail_labelArea),
+                  inputItem(l.customerDetail_labelPhoneNumber, l.customerDetail_labelPhoneNumber),
                   AppDropdownField(
                     borderSideColor: AppColors.neutral400,
                     label: l.customerDetail_labelCustomerType,
