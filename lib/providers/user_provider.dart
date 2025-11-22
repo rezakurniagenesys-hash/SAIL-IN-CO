@@ -8,16 +8,16 @@ class UserProvider extends ChangeNotifier {
   UserModel? user;
   bool loading = false;
 
-  Future<void> fetchProfile() async {
-    loading = true;
-    notifyListeners();
-    try {
-      user = await _repo.getProfile();
-    } catch (e) {
-      debugPrint("Error: $e");
-    } finally {
-      loading = false;
-      notifyListeners();
-    }
-  }
+  // Future<void> fetchProfile() async {
+  //   loading = true;
+  //   notifyListeners();
+  //   try {
+  //     user = await _repo.getProfile();
+  //   } catch (e) {
+  //     debugPrint("Error: $e");
+  //   } finally {
+  //     loading = false;
+  //     notifyListeners();
+  //   }
+  // }
 }

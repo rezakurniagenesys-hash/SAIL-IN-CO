@@ -13,6 +13,9 @@ class AppButton extends StatelessWidget {
   final IconData? icon;
   final bool isFullWidth;
 
+  /// ➕ Tambahan
+  final bool isLoading;
+
   const AppButton({
     super.key,
     required this.label,
@@ -22,6 +25,7 @@ class AppButton extends StatelessWidget {
     this.height = 36,
     this.icon,
     this.isFullWidth = false,
+    this.isLoading = false, // default false
   });
 
   @override
@@ -51,7 +55,7 @@ class AppButton extends StatelessWidget {
       width: isFullWidth ? double.infinity : width,
       height: height,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading ? null : onPressed, // ⛔ Disabled saat loading
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: textColor,
@@ -62,21 +66,33 @@ class AppButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[Icon(icon, size: 18, color: textColor), const SizedBox(width: 6)],
-            if (icon == null && isFullWidth == true) ...[
-              Expanded(
-                child: AutoSizeText(
+            /// ⏳ Loader menggantikan isi
+            if (isLoading)
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
+                ),
+              )
+            else ...[
+              if (icon != null) ...[Icon(icon, size: 18, color: textColor), const SizedBox(width: 6)],
+
+              if (icon == null && isFullWidth)
+                Expanded(
+                  child: AutoSizeText(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
+                  ),
+                )
+              else
+                Text(
                   label,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
                 ),
-              ),
-            ] else ...[
-              Text(
-                label,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
-              ),
             ],
           ],
         ),

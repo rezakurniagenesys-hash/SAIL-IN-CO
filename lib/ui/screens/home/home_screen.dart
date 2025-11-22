@@ -7,12 +7,15 @@ import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/connection_provider.dart';
+import 'package:sail_in_co/providers/home_provider.dart';
+import 'package:sail_in_co/services/auth_service.dart';
 import 'package:sail_in_co/services/locale_service.dart';
 import 'package:sail_in_co/ui/screens/finished_task/finished_task_screen.dart';
 import 'package:sail_in_co/ui/screens/home/components/header_home.dart';
 import 'package:sail_in_co/ui/screens/home/components/sections_achievements.dart';
 import 'package:sail_in_co/ui/screens/home/components/sections_stock.dart';
 import 'package:sail_in_co/ui/screens/home/components/sync_data_dialog_content.dart';
+import 'package:sail_in_co/ui/screens/login/login_screen.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_custom_loading_spinner.dart';
 import 'package:sail_in_co/ui/widgets/app_dialog.dart';
@@ -31,6 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   initState() {
     super.initState();
+    Future.microtask(() {
+      context.read<HomeProvider>().init();
+    });
+
     Future.delayed(const Duration(milliseconds: 1000), () {
       // showSyncDataDialog();
     });
@@ -134,6 +141,25 @@ class _HomeScreenState extends State<HomeScreen> {
           //     localeService.switchLanguage(value ? 'en' : 'id');
           //   },
           // ),
+          // Button logout
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                child: AppButton(
+                  label: 'Logout',
+                  height: 36,
+                  type: AppButtonType.primary,
+                  onPressed: () async {
+                    // Logout
+                    AuthService.clear();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                  },
+                ),
+              ),
+            ],
+          ),
           Expanded(
             child: LiquidPullToRefresh(
               onRefresh: _handleRefresh,
