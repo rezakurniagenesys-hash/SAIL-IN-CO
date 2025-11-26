@@ -3,6 +3,7 @@ import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/development/bottommenu/development_bottom_menu.dart';
 import 'package:sail_in_co/development/button/development_button_screen.dart';
 import 'package:sail_in_co/development/icons/development_icons_screen.dart';
+import 'package:sail_in_co/development/scan/development_scan.dart';
 
 class DevelopmentScreen extends StatelessWidget {
   const DevelopmentScreen({super.key});
@@ -29,6 +30,14 @@ class DevelopmentScreen extends StatelessWidget {
         icon: Icons.developer_mode,
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => DevelopmentBottomMenu()));
+        },
+      ),
+      // Scan
+      _DevMenuItem(
+        title: 'Scan',
+        icon: Icons.qr_code_scanner,
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => DevelopmentScan()));
         },
       ),
     ];

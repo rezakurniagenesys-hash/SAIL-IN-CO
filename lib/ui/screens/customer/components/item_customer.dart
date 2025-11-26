@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/data/models/customer/customer_item.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_detail_screen.dart';
 
 class ItemCustomer extends StatelessWidget {
-  const ItemCustomer({super.key, this.date = '', this.statusPayment = ''});
+  const ItemCustomer({super.key, this.date = '', this.statusPayment = '', this.customer});
+  final CustomerItem? customer;
   final String date;
   final String statusPayment;
 
@@ -40,23 +42,34 @@ class ItemCustomer extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Toko Bu Siti', style: AppTextStyles.body2Medium),
+                      Expanded(
+                        child: Text(customer?.nmAcc6 ?? '-', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.body2Medium),
+                      ),
                       Row(
                         children: [
                           Container(
                             height: 5,
                             width: 5,
-                            decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
+                            decoration: BoxDecoration(color: customer?.statusVisit == 1 ? AppColors.success : AppColors.error, shape: BoxShape.circle),
                           ),
                           SizedBox(width: 4),
-                          Text(l!.customer_notVisit, style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary)),
+                          Text(
+                            customer?.statusVisit == 1 ? l!.customer_visit : l!.customer_notVisit,
+                            style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary),
+                          ),
                         ],
                       ),
                     ],
                   ),
-                  Text('Jl. Merdeka No. 123, Jakarta', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+                  // Text(customer?.address ?? '-', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    customer?.address ?? '-',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary),
+                  ),
                   if (statusPayment.isNotEmpty) Text(statusPayment, style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
-                  Text('08xxxxxxxxxx', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+                  Text(customer?.phone ?? '-', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [

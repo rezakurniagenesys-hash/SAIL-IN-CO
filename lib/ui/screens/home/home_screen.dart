@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/development/development_screen.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/connection_provider.dart';
 import 'package:sail_in_co/providers/home_provider.dart';
@@ -115,6 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
         toolbarHeight: 87,
         automaticallyImplyLeading: false,
       ),
+      // button pojok kanan\
       body: Column(
         children: [
           Consumer<ConnectionProvider>(
@@ -147,15 +149,49 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Container(
                 margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                child: AppButton(
-                  label: 'Logout',
-                  height: 36,
-                  type: AppButtonType.primary,
-                  onPressed: () async {
-                    // Logout
-                    AuthService.clear();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-                  },
+                child: Row(
+                  children: [
+                    AppButton(
+                      label: 'Logout',
+                      height: 36,
+                      type: AppButtonType.primary,
+                      onPressed: () async {
+                        // Logout
+                        AppDialog.show(
+                          context: context,
+                          title: 'Logout',
+                          content: Text(
+                            'Are you sure you want to logout? You will need to login again to access the app.',
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.body3Regular,
+                          ),
+                          actionButton: AppButton(
+                            isFullWidth: true,
+                            label: 'Logout',
+                            height: 42,
+                            type: AppButtonType.danger,
+                            onPressed: () async {
+                              await AuthService.clear();
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context); // close dialog
+                              }
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    // Development Tool
+                    SizedBox(width: 8),
+                    AppButton(
+                      label: 'Dev',
+                      height: 36,
+                      type: AppButtonType.sky50,
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => DevelopmentScreen()));
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],

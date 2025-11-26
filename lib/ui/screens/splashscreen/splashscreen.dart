@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
-import 'package:sail_in_co/providers/auth_provider.dart';
+import 'package:sail_in_co/providers/auth/auth_provider.dart';
 import 'package:sail_in_co/ui/screens/dashboard/dashboard.dart';
 import 'package:sail_in_co/ui/screens/login/login_screen.dart';
 
