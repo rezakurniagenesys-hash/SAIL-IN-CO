@@ -12,7 +12,9 @@ CustomerSearchRequest _$CustomerSearchRequestFromJson(
   page: (json['page'] as num?)?.toInt(),
   limit: (json['limit'] as num?)?.toInt(),
   customerId: json['customer_id'] as String?,
+  salesId: json['sales_id'] as String?,
   search: json['search'] as String?,
+  date: json['date'] as String?,
   status: (json['status'] as num?)?.toInt(),
 );
 
@@ -22,6 +24,8 @@ Map<String, dynamic> _$CustomerSearchRequestToJson(
   'page': ?instance.page,
   'limit': ?instance.limit,
   'customer_id': ?instance.customerId,
+  'sales_id': ?instance.salesId,
   'search': ?instance.search,
+  'date': ?instance.date,
   'status': ?instance.status,
 };

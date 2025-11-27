@@ -13,7 +13,11 @@ class ApiConstants {
   static const String refreshTokenUrl = "/auth/api/refreshToken";
 
   // =======================================================
-  // Customer Management
+  // Customer 
   // =======================================================
-  static const String customerSearch = "/api/callsheets/customer/search";
+  static const String customerSearch = "/sales/api/callsheets/customer/search";
+  static const String customerDetail = "/sales/api/callsheets/customer/{id}";
+
+  // Dashboard
+  static const String summaryChart = "/sales/api/callsheets/summary";
 }

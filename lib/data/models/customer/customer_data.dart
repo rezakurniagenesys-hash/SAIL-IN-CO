@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:sail_in_co/data/models/filters/filters.dart';
 import 'package:sail_in_co/data/models/pagination/pagination.dart';
 import 'customer_item.dart';
 
@@ -11,17 +12,11 @@ class CustomerData {
 
   final Pagination? pagination;
 
-  final Map<String, dynamic>? filters;
+  final Filters? filters;
 
-  CustomerData({
-    this.customerData,
-    this.pagination,
-    this.filters,
-  });
+  CustomerData({this.customerData, this.pagination, this.filters});
 
-  factory CustomerData.fromJson(Map<String, dynamic> json) =>
-      _$CustomerDataFromJson(json);
+  factory CustomerData.fromJson(Map<String, dynamic> json) => _$CustomerDataFromJson(json);
 
-  Map<String, dynamic> toJson() =>
-      _$CustomerDataToJson(this);
+  Map<String, dynamic> toJson() => _$CustomerDataToJson(this);
 }

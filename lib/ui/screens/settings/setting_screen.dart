@@ -1,13 +1,20 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/development/development_screen.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
+import 'package:sail_in_co/services/auth_service.dart';
 import 'package:sail_in_co/services/locale_service.dart';
+import 'package:sail_in_co/ui/screens/login/login_screen.dart';
 import 'package:sail_in_co/ui/screens/profile/profile_screen.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
+import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_dialog.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -92,7 +99,48 @@ class SettingScreen extends StatelessWidget {
                   // Handle about tap
                 },
               ),
+              if (kDebugMode) ...[
+                Divider(color: AppColors.border),
+                ListTile(
+                  leading: const Icon(Icons.developer_mode, color: AppColors.sky950),
+                  title: Text('Developer Options', style: AppTextStyles.label2SemiBold),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => DevelopmentScreen()));
+                  },
+                ),
+              ],
+
               Divider(color: AppColors.border),
+              // Logout button
+              ListTile(
+                leading: const Icon(Icons.logout, color: AppColors.error),
+                title: Text('Logout', style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.error)),
+                onTap: () {
+                  // Handle logout tap
+                  AppDialog.show(
+                    context: context,
+                    title: 'Logout',
+                    content: Text(
+                      'Are you sure you want to logout? You will need to login again to access the app.',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.body3Regular,
+                    ),
+                    actionButton: AppButton(
+                      isFullWidth: true,
+                      label: 'Logout',
+                      height: 42,
+                      type: AppButtonType.danger,
+                      onPressed: () async {
+                        await AuthService.clear();
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context); // close dialog
+                        }
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+                      },
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

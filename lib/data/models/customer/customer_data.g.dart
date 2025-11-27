@@ -13,7 +13,9 @@ CustomerData _$CustomerDataFromJson(Map<String, dynamic> json) => CustomerData(
   pagination: json['pagination'] == null
       ? null
       : Pagination.fromJson(json['pagination'] as Map<String, dynamic>),
-  filters: json['filters'] as Map<String, dynamic>?,
+  filters: json['filters'] == null
+      ? null
+      : Filters.fromJson(json['filters'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$CustomerDataToJson(CustomerData instance) =>

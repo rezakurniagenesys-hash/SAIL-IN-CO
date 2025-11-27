@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '../data/models/user_model.dart';
-import '../data/repositories/user_repository.dart';
 
 class UserProvider extends ChangeNotifier {
-  final _repo = UserRepository();
+  // final _repo = UserRepository();
 
   UserModel? user;
   bool loading = false;

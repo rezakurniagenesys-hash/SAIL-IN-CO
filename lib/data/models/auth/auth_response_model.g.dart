@@ -37,6 +37,7 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
 };
 
 UserInfo _$UserInfoFromJson(Map<String, dynamic> json) => UserInfo(
+  json['email'] as String?,
   exp: (json['exp'] as num?)?.toInt(),
   iss: json['iss'] as String?,
   sub: json['sub'] as String?,
@@ -51,6 +52,7 @@ Map<String, dynamic> _$UserInfoToJson(UserInfo instance) => <String, dynamic>{
   'exp': instance.exp,
   'iss': instance.iss,
   'sub': instance.sub,
+  'email': instance.email,
   'username': instance.username,
   'user_id': instance.userId,
   'source_id': instance.sourceId,

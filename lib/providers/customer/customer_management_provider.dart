@@ -1,10 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_item.dart';
 import 'package:sail_in_co/data/models/customer/customer_search_request.dart';
 import 'package:sail_in_co/data/repositories/customer_repository.dart';
+import 'package:sail_in_co/services/auth_service.dart';
 
 class CustomerManagementProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
+
+  // Date filter - default to today
+  final now = DateTime.now();
+
+  // Helper to format date to string YYYY-MM-DD
+  // String _formatDate(DateTime date) {
+  //   return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  // }
 
   /// Data list
   List<CustomerItem> customers = [];
@@ -23,8 +35,12 @@ class CustomerManagementProvider extends ChangeNotifier {
   String? customerId;
   int? status;
 
+  /// User Info
+  UserInfo? userInfo;
+
   /// INITIAL LOAD ------------------------------------
   Future<void> getCustomers({bool loadMore = false}) async {
+    userInfo = await AuthService.getUserInfo();
     // LOAD MORE
     if (loadMore) {
       if (isLoadMore) return;
@@ -41,8 +57,15 @@ class CustomerManagementProvider extends ChangeNotifier {
       customers.clear();
       notifyListeners();
     }
-
-    final request = CustomerSearchRequest(page: page, limit: limit, search: searchText, customerId: customerId, status: status);
+    final request = CustomerSearchRequest(
+      page: page,
+      limit: limit,
+      search: searchText,
+      customerId: customerId,
+      status: status,
+      // date: _formatDate(now),
+      // salesId: userInfo?.username ?? '',
+    );
 
     final response = await _repo.getCustomerManagement(request);
 

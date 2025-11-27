@@ -12,9 +12,12 @@ class AppButton extends StatelessWidget {
   final double height;
   final IconData? icon;
   final bool isFullWidth;
-
-  /// ➕ Tambahan
   final bool isLoading;
+
+  /// ➕ NEW: Border control
+  final bool hasBorder;
+  final Color? borderColor;
+  final double borderWidth;
 
   const AppButton({
     super.key,
@@ -25,7 +28,12 @@ class AppButton extends StatelessWidget {
     this.height = 36,
     this.icon,
     this.isFullWidth = false,
-    this.isLoading = false, // default false
+    this.isLoading = false,
+
+    /// default tanpa border
+    this.hasBorder = false,
+    this.borderColor,
+    this.borderWidth = 1.2,
   });
 
   @override
@@ -48,6 +56,7 @@ class AppButton extends StatelessWidget {
         break;
       case AppButtonType.sky50:
         backgroundColor = AppColors.sky50;
+        textColor = AppColors.textPrimary;
         break;
     }
 
@@ -55,18 +64,21 @@ class AppButton extends StatelessWidget {
       width: isFullWidth ? double.infinity : width,
       height: height,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed, // ⛔ Disabled saat loading
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: textColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 0,
+
+          /// 🔥 Border config (aktif jika hasBorder == true)
+          side: hasBorder ? BorderSide(color: borderColor ?? Colors.white, width: borderWidth) : BorderSide.none,
+
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            /// ⏳ Loader menggantikan isi
             if (isLoading)
               SizedBox(
                 width: 20,
@@ -85,13 +97,13 @@ class AppButton extends StatelessWidget {
                     label,
                     textAlign: TextAlign.center,
                     maxLines: 2,
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor),
                   ),
                 )
               else
                 Text(
                   label,
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor),
                 ),
             ],
           ],

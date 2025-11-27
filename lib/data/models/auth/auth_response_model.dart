@@ -37,6 +37,7 @@ class UserInfo {
   final int? exp;
   final String? iss;
   final String? sub;
+  final String? email;
   final String? username;
 
   @JsonKey(name: "user_id")
@@ -50,7 +51,7 @@ class UserInfo {
   @JsonKey(name: "user_type")
   final String? userType;
 
-  UserInfo({this.exp, this.iss, this.sub, this.username, this.userId, this.sourceId, this.type, this.userType});
+  UserInfo(this.email, {this.exp, this.iss, this.sub, this.username, this.userId, this.sourceId, this.type, this.userType});
 
   factory UserInfo.fromJson(Map<String, dynamic> json) => _$UserInfoFromJson(json);
 

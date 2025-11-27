@@ -15,10 +15,7 @@ class ApiClient {
         baseUrl: ApiConstants.baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
       ),
     );
 
@@ -81,13 +78,7 @@ class ApiClient {
   // --------------------------------------------------------------
   Future<ApiResponse> uploadImage(String endpoint, File file, {Map<String, dynamic>? fields}) async {
     try {
-      final formData = FormData.fromMap({
-        if (fields != null) ...fields,
-        'file': await MultipartFile.fromFile(
-          file.path,
-          filename: file.uri.pathSegments.last,
-        )
-      });
+      final formData = FormData.fromMap({if (fields != null) ...fields, 'file': await MultipartFile.fromFile(file.path, filename: file.uri.pathSegments.last)});
 
       final res = await _dio.post(endpoint, data: formData);
 

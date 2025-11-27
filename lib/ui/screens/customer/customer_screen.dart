@@ -27,13 +27,13 @@ class _CustomerScreenState extends State<CustomerScreen> {
   final Debouncer _debouncer = Debouncer(milliseconds: 500);
   @override
   void initState() {
-    Future.microtask(() {
-      context.read<CustomerManagementProvider>().getCustomers();
-    });
-    final provider = context.read<CustomerManagementProvider>();
-    provider.clearData();
-
     super.initState();
+
+    Future.microtask(() {
+      final provider = context.read<CustomerManagementProvider>();
+      provider.clearData();
+      provider.getCustomers();
+    });
   }
 
   @override
