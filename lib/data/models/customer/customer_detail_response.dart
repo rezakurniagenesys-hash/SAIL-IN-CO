@@ -65,6 +65,8 @@ class CustomerModel {
 
   @JsonKey(name: "area_name")
   final String? areaName;
+  @JsonKey(name: "status_visit")
+  final int? statusVisit;
 
   CustomerModel({
     this.noAcc6,
@@ -81,6 +83,7 @@ class CustomerModel {
     this.areaId,
     this.typeCustomer,
     this.areaName,
+    this.statusVisit,
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) =>

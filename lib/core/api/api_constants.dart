@@ -1,12 +1,12 @@
 class ApiConstants {
   // =======================================================
-  // 🔗 BASE URL DAN API VERSION
+  // BASE URL
   // =======================================================
   static const String baseUrl = "https://qc-arthasalesforceapi.salmonacc.com";
   static const String baseLocalUrl = "http://192.168.57.68:3001";
 
   // =======================================================
-  // 🔐 AUTH ENDPOINTS
+  // AUTH ENDPOINTS
   // =======================================================
   static const String loginUrl = "/auth/api/login";
   static const String verifyTokenUrl = "/auth/api/verifyToken";

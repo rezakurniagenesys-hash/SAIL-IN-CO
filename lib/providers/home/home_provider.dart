@@ -12,6 +12,14 @@ class HomeProvider extends ChangeNotifier {
 
   SummaryData? summaryData;
 
+  // Date filter - default to today
+  final now = DateTime.now();
+
+  // Helper to format date to string YYYY-MM-DD
+  String _formatDate(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
+
   void init() {
     loadUserInfo();
     getSummaryChart();
@@ -35,7 +43,8 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await _repo.getSummaryChart(SummaryRequest());
+      final request = SummaryRequest(date: _formatDate(now), salesId: userInfo?.username ?? '');
+      final res = await _repo.getSummaryChart(request);
       summaryData = res.data;
       print("Summary chart data loaded: ${summaryData?.toJson()}");
     } catch (e) {

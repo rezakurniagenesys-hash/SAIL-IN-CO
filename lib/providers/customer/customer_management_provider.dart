@@ -14,9 +14,9 @@ class CustomerManagementProvider extends ChangeNotifier {
   final now = DateTime.now();
 
   // Helper to format date to string YYYY-MM-DD
-  // String _formatDate(DateTime date) {
-  //   return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-  // }
+  String _formatDate(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
 
   /// Data list
   List<CustomerItem> customers = [];
@@ -38,8 +38,7 @@ class CustomerManagementProvider extends ChangeNotifier {
   /// User Info
   UserInfo? userInfo;
 
-  /// INITIAL LOAD ------------------------------------
-  Future<void> getCustomers({bool loadMore = false}) async {
+  Future<void> getCustomers({bool loadMore = false, bool initial = false}) async {
     userInfo = await AuthService.getUserInfo();
     // LOAD MORE
     if (loadMore) {
@@ -48,6 +47,74 @@ class CustomerManagementProvider extends ChangeNotifier {
 
       isLoadMore = true;
       page++;
+      notifyListeners();
+    } else if (initial) {
+      searchText = null;
+      customerId = null;
+      status = null;
+      isLoading = true;
+      page = 1;
+      customers.clear();
+      notifyListeners();
+    }
+    // INITIAL LOAD
+    else {
+      searchText = null;
+      customerId = null;
+      isLoading = true;
+      page = 1;
+      status = null;
+      customers.clear();
+      notifyListeners();
+    }
+    final request = CustomerSearchRequest(
+      page: page,
+      limit: limit,
+      search: searchText,
+      customerId: customerId,
+      status: status,
+      date: _formatDate(now),
+      salesId: userInfo?.username ?? '',
+    );
+
+    final response = await _repo.getCustomerManagement(request);
+
+    if (response?.data?.customerData != null) {
+      if (loadMore) {
+        customers.addAll(response!.data!.customerData!);
+      } else {
+        customers = response!.data!.customerData!;
+        totalPages = response.data!.pagination?.totalPages ?? 1;
+      }
+    }
+
+    // END STATE
+    if (loadMore) {
+      isLoadMore = false;
+    } else {
+      isLoading = false;
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> getFinishTask({bool loadMore = false, bool initial = false}) async {
+    userInfo = await AuthService.getUserInfo();
+    // LOAD MORE
+    if (loadMore) {
+      if (isLoadMore) return;
+      if (page >= totalPages) return;
+
+      isLoadMore = true;
+      page++;
+      notifyListeners();
+    } else if (initial) {
+      searchText = null;
+      customerId = null;
+      status = null;
+      isLoading = true;
+      page = 1;
+      customers.clear();
       notifyListeners();
     }
     // INITIAL LOAD
@@ -63,9 +130,10 @@ class CustomerManagementProvider extends ChangeNotifier {
       search: searchText,
       customerId: customerId,
       status: status,
-      // date: _formatDate(now),
-      // salesId: userInfo?.username ?? '',
+      date: _formatDate(now),
+      salesId: userInfo?.username ?? '',
     );
+    print('Finished Task Request: $request');
 
     final response = await _repo.getCustomerManagement(request);
 
@@ -95,7 +163,7 @@ class CustomerManagementProvider extends ChangeNotifier {
     this.status = status;
     page = 1;
 
-    getCustomers();
+    getFinishTask();
   }
 
   void clearData() {

@@ -216,5 +216,18 @@
         "confirmPayment": "Confirm Payment",
         "salesOrderPayment": "Sales Order Payment",
         "returnPayment": "Return Payment"
+    },
+
+    "finishedTask": {
+        "finishedTask": "Finished Task",
+        "customerList": "Customer List",
+        "search": "Search",
+        "all": "All",
+        "notVisited": "Not Visited",
+        "visited": "Visited"
+    },
+
+    "emptyState": {
+        "noData": "No data"
     }
 }

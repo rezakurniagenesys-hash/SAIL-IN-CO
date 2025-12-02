@@ -216,5 +216,18 @@
         "confirmPayment": "Konfirmasi Pembayaran",
         "salesOrderPayment": "Pembayaran Sales Order",
         "returnPayment": "Pembayaran Retur"
+    },
+
+    "finishedTask": {
+        "finishedTask": "Tugas Selesai",
+        "customerList": "Daftar Pelanggan",
+        "search": "Cari",
+        "all": "Semua",
+        "notVisited": "Belum Dikunjungi",
+        "visited": "Dikunjungi"
+    },
+
+    "emptyState": {
+        "noData": "Tidak ada data"
     }
 }

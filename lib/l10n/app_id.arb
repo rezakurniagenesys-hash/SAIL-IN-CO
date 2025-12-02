@@ -186,5 +186,12 @@
   "payment_pendingPayment": "Pembayaran Tertunda",
   "payment_confirmPayment": "Konfirmasi Pembayaran",
   "payment_salesOrderPayment": "Pembayaran Sales Order",
-  "payment_returnPayment": "Pembayaran Retur"
+  "payment_returnPayment": "Pembayaran Retur",
+  "finishedTask_finishedTask": "Tugas Selesai",
+  "finishedTask_customerList": "Daftar Pelanggan",
+  "finishedTask_search": "Cari",
+  "finishedTask_all": "Semua",
+  "finishedTask_notVisited": "Belum Dikunjungi",
+  "finishedTask_visited": "Dikunjungi",
+  "emptyState_noData": "Tidak ada data"
 }

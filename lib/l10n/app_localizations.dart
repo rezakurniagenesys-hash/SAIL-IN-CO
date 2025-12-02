@@ -1162,6 +1162,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Return Payment'**
   String get payment_returnPayment;
+
+  /// No description provided for @finishedTask_finishedTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished Task'**
+  String get finishedTask_finishedTask;
+
+  /// No description provided for @finishedTask_customerList.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer List'**
+  String get finishedTask_customerList;
+
+  /// No description provided for @finishedTask_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get finishedTask_search;
+
+  /// No description provided for @finishedTask_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get finishedTask_all;
+
+  /// No description provided for @finishedTask_notVisited.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Visited'**
+  String get finishedTask_notVisited;
+
+  /// No description provided for @finishedTask_visited.
+  ///
+  /// In en, this message translates to:
+  /// **'Visited'**
+  String get finishedTask_visited;
+
+  /// No description provided for @emptyState_noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get emptyState_noData;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

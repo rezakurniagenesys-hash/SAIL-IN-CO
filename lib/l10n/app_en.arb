@@ -186,5 +186,12 @@
   "payment_pendingPayment": "Pending Payment",
   "payment_confirmPayment": "Confirm Payment",
   "payment_salesOrderPayment": "Sales Order Payment",
-  "payment_returnPayment": "Return Payment"
+  "payment_returnPayment": "Return Payment",
+  "finishedTask_finishedTask": "Finished Task",
+  "finishedTask_customerList": "Customer List",
+  "finishedTask_search": "Search",
+  "finishedTask_all": "All",
+  "finishedTask_notVisited": "Not Visited",
+  "finishedTask_visited": "Visited",
+  "emptyState_noData": "No data"
 }

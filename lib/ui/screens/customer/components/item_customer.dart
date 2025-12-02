@@ -16,7 +16,12 @@ class ItemCustomer extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const CustomerDetailScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CustomerDetailScreen(customerId: customer?.noAcc6 ?? '', scheduleId: customer?.scheduleId ?? ''),
+          ),
+        );
       },
       child: Container(
         padding: EdgeInsets.all(16),

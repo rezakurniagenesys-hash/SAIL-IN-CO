@@ -543,4 +543,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payment_returnPayment => 'Return Payment';
+
+  @override
+  String get finishedTask_finishedTask => 'Finished Task';
+
+  @override
+  String get finishedTask_customerList => 'Customer List';
+
+  @override
+  String get finishedTask_search => 'Search';
+
+  @override
+  String get finishedTask_all => 'All';
+
+  @override
+  String get finishedTask_notVisited => 'Not Visited';
+
+  @override
+  String get finishedTask_visited => 'Visited';
+
+  @override
+  String get emptyState_noData => 'No data';
 }

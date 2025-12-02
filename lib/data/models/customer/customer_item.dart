@@ -15,18 +15,12 @@ class CustomerItem {
 
   @JsonKey(name: "status_visit")
   final int? statusVisit;
+  @JsonKey(name: "schedule_id")
+  final String? scheduleId;
 
-  CustomerItem({
-    this.noAcc6,
-    this.nmAcc6,
-    this.address,
-    this.phone,
-    this.statusVisit,
-  });
+  CustomerItem({this.noAcc6, this.nmAcc6, this.address, this.phone, this.statusVisit, this.scheduleId});
 
-  factory CustomerItem.fromJson(Map<String, dynamic> json) =>
-      _$CustomerItemFromJson(json);
+  factory CustomerItem.fromJson(Map<String, dynamic> json) => _$CustomerItemFromJson(json);
 
-  Map<String, dynamic> toJson() =>
-      _$CustomerItemToJson(this);
+  Map<String, dynamic> toJson() => _$CustomerItemToJson(this);
 }

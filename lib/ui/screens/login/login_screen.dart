@@ -77,75 +77,75 @@ class LoginScreen extends StatelessWidget {
               /// ------------------------------------------
               /// 🔽 BUTTON GANTI ENV DI BAGIAN BAWAH LAYAR
               /// ------------------------------------------
-              Positioned(
-                bottom: 38,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: InkWell(
-                    onTap: () {
-                      AppDialog.show(
-                        context: context,
-                        title: 'Ganti Environment',
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Pilih environment yang diinginkan:', style: AppTextStyles.body3Regular),
-                            const SizedBox(height: 12),
-                            AppButton(
-                              isFullWidth: true,
-                              label: 'LIVE',
-                              type: AppButtonType.primary,
-                              onPressed: () {
-                                // AuthService.setEnvironment(isLive: true);
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(const SnackBar(content: Text('Environment diubah ke LIVE'), behavior: SnackBarBehavior.floating));
-                              },
-                            ),
-                            const SizedBox(height: 8),
-                            AppButton(
-                              isFullWidth: true,
-                              label: 'DEV',
-                              hasBorder: true,
-                              borderColor: AppColors.sky700,
-                              type: AppButtonType.sky50,
-                              onPressed: () {
-                                // AuthService.setEnvironment(isLive: false);
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(const SnackBar(content: Text('Environment diubah ke DEV'), behavior: SnackBarBehavior.floating));
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white30),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.cloud_sync, color: Colors.white, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            // "Environment: ${authProvider.isLive ? "LIVE" : "DEV"}",
-                            "Environment: ",
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   bottom: 38,
+              //   left: 0,
+              //   right: 0,
+              //   child: Center(
+              //     child: InkWell(
+              //       onTap: () {
+              //         AppDialog.show(
+              //           context: context,
+              //           title: 'Ganti Environment',
+              //           content: Column(
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Text('Pilih environment yang diinginkan:', style: AppTextStyles.body3Regular),
+              //               const SizedBox(height: 12),
+              //               AppButton(
+              //                 isFullWidth: true,
+              //                 label: 'LIVE',
+              //                 type: AppButtonType.primary,
+              //                 onPressed: () {
+              //                   // AuthService.setEnvironment(isLive: true);
+              //                   Navigator.pop(context);
+              //                   ScaffoldMessenger.of(
+              //                     context,
+              //                   ).showSnackBar(const SnackBar(content: Text('Environment diubah ke LIVE'), behavior: SnackBarBehavior.floating));
+              //                 },
+              //               ),
+              //               const SizedBox(height: 8),
+              //               AppButton(
+              //                 isFullWidth: true,
+              //                 label: 'DEV',
+              //                 hasBorder: true,
+              //                 borderColor: AppColors.sky700,
+              //                 type: AppButtonType.sky50,
+              //                 onPressed: () {
+              //                   // AuthService.setEnvironment(isLive: false);
+              //                   Navigator.pop(context);
+              //                   ScaffoldMessenger.of(
+              //                     context,
+              //                   ).showSnackBar(const SnackBar(content: Text('Environment diubah ke DEV'), behavior: SnackBarBehavior.floating));
+              //                 },
+              //               ),
+              //             ],
+              //           ),
+              //         );
+              //       },
+              //       child: Container(
+              //         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              //         decoration: BoxDecoration(
+              //           color: Colors.white.withOpacity(0.15),
+              //           borderRadius: BorderRadius.circular(12),
+              //           border: Border.all(color: Colors.white30),
+              //         ),
+              //         child: Row(
+              //           mainAxisSize: MainAxisSize.min,
+              //           children: [
+              //             Icon(Icons.cloud_sync, color: Colors.white, size: 18),
+              //             const SizedBox(width: 8),
+              //             Text(
+              //               // "Environment: ${authProvider.isLive ? "LIVE" : "DEV"}",
+              //               "Environment: ",
+              //               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           );
         },

@@ -1,9 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/helpers/image_picker_helper.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/core/utils/currency_format.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
+import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
 import 'package:sail_in_co/ui/screens/adjustment/adjustment_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_edit/customer_edit_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/customer_upload_foto.dart';
@@ -13,9 +18,12 @@ import 'package:sail_in_co/ui/screens/return/return_screen.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_dialog.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class CustomerDetailScreen extends StatefulWidget {
-  const CustomerDetailScreen({super.key});
+  const CustomerDetailScreen({super.key, required this.customerId, required this.scheduleId});
+  final String customerId;
+  final String scheduleId;
 
   @override
   State<CustomerDetailScreen> createState() => _CustomerDetailScreenState();
@@ -23,6 +31,17 @@ class CustomerDetailScreen extends StatefulWidget {
 
 class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   File? image;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<CustomerDetailProvider>();
+      provider.clear();
+      provider.loadUserInfo();
+      provider.getDetailCustomer(widget.customerId, widget.scheduleId);
+    });
+  }
 
   Future<bool> pickImage() async {
     final picked = await ImagePickerHelper.pickImageDialog(context);
@@ -35,150 +54,184 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
+    final l = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.sky700,
-      appBar: AppBarCustom(title: l!.customerDetail_title, onRefresh: () {}),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 160),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Toko Bu Siti',
-                      style: AppTextStyles.heading4Medium.copyWith(color: AppColors.white, fontWeight: FontWeight.w700),
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          height: 5,
-                          width: 5,
-                          decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(l.customerDetail_statusNotVisited, style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.white)),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
+      appBar: AppBarCustom(
+        title: l.customerDetail_title,
+        onRefresh: () {
+          final provider = context.read<CustomerDetailProvider>();
+          provider.clear();
+          provider.getDetailCustomer(widget.customerId, widget.scheduleId);
+        },
+      ),
+      body: Consumer<CustomerDetailProvider>(
+        builder: (context, provider, child) {
+          final isLoading = provider.isLoading;
+
+          return Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 160),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        spacing: 12,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          infoItem(l.customerDetail_customerCode, 'C0001'),
-                          infoItem(l.customerDetail_paymentType, 'Credit'),
-                          infoItem(l.customerDetail_salesCode, 'Jl. Merpati No. 45, Jakarta'),
-                          infoItem(l.customerDetail_address, 'Jl. Jeruk Sidoarjo Gedangan'),
-                          infoItem(l.customerDetail_ktp, '01231231312412'),
-                          infoItem(l.customerDetail_creditLimit, 'Rp 2,000,000.00'),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        spacing: 12,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          infoItem(l.customerDetail_warehouseCode, 'W.123123.12312'),
-                          infoItem(l.customerDetail_customerType, 'Grosir'),
-                          infoItem(l.customerDetail_area, 'Ketintang'),
-                          infoItem(l.customerDetail_city, 'Surabaya'),
-                          infoItem(l.customerDetail_phoneNumber, '085xxxxxxxx'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  spacing: 12,
-                  children: [
-                    Expanded(
-                      child: AppButton(
-                        label: l.customerDetail_editData,
-                        type: AppButtonType.sky50,
-                        height: 42,
-                        isFullWidth: true,
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerEditScreen()));
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: AppButton(
-                        label: l.customerDetail_uploadPhoto,
-                        type: AppButtonType.sky50,
-                        height: 42,
-                        isFullWidth: true,
-                        onPressed: () async {
-                          final picked = await pickImage();
-                          if (picked) {
-                            AppDialog.show(
-                              context: context,
-                              title: 'Upload Foto',
-                              paddingContent: 0,
-                              content: CustomerUploadFoto(image: image),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12),
-                Row(
-                  spacing: 12,
-                  children: [
-                    Expanded(
-                      child: AppButton(
-                        label: l.customerDetail_order,
-                        type: AppButtonType.sky50,
-                        height: 42,
-                        isFullWidth: true,
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen()));
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: AppButton(
-                        label: l.customerDetail_adjustment,
-                        type: AppButtonType.sky50,
-                        height: 42,
-                        isFullWidth: true,
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => AdjustmentScreen()));
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: AppButton(
-                        label: l.customerDetail_return,
-                        type: AppButtonType.sky50,
-                        height: 42,
-                        isFullWidth: true,
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ReturnScreen()));
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+                    isLoading
+                        ? shimmerHeader()
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                provider.customerDetailData?.customer?.name ?? '-',
+                                style: AppTextStyles.heading4Medium.copyWith(color: AppColors.white, fontWeight: FontWeight.w700),
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    height: 5,
+                                    width: 5,
+                                    decoration: BoxDecoration(
+                                      color: provider.customerDetailData?.customer?.statusVisit == 1 ? AppColors.success : AppColors.error,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    provider.customerDetailData?.customer?.statusVisit == 1
+                                        ? l.customerDetail_statusVisited
+                                        : l.customerDetail_statusNotVisited,
+                                    style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.white),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
 
-          DraggableScrollableSheetDetailCustomer(),
-        ],
+                    const SizedBox(height: 20),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: isLoading
+                              ? shimmerColumn()
+                              : Column(
+                                  spacing: 12,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    infoItem(l.customerDetail_customerCode, provider.customerDetailData?.customer?.noAcc6 ?? '-'),
+                                    infoItem(
+                                      l.customerDetail_paymentType,
+                                      (provider.customerDetailData?.customer?.defaultPayment == null)
+                                          ? '-'
+                                          : provider.customerDetailData?.customer?.defaultPayment.toString() ?? '-',
+                                    ),
+                                    infoItem(l.customerDetail_salesCode, provider.userInfo?.userId ?? '-'),
+                                    infoItem(l.customerDetail_address, provider.customerDetailData?.customer?.address ?? '-'),
+                                    infoItem(l.customerDetail_ktp, provider.customerDetailData?.customer?.nik ?? '-'),
+                                    infoItem(l.customerDetail_creditLimit, CurrencyFormat.toRupiah(provider.customerDetailData?.customer?.creditLimit ?? 0)),
+                                  ],
+                                ),
+                        ),
+                        Expanded(
+                          child: isLoading
+                              ? shimmerColumn()
+                              : Column(
+                                  spacing: 12,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    infoItem(l.customerDetail_warehouseCode, provider.userInfo?.userId ?? '-'),
+                                    infoItem(l.customerDetail_customerType, provider.customerDetailData?.customer?.typeCustomer ?? '-'),
+                                    infoItem(l.customerDetail_area, provider.customerDetailData?.customer?.areaName ?? '-'),
+                                    infoItem(l.customerDetail_city, provider.customerDetailData?.customer?.city ?? '-'),
+                                    infoItem(l.customerDetail_phoneNumber, provider.customerDetailData?.customer?.phone ?? '-'),
+                                  ],
+                                ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+                    if (provider.isLoading == false)
+                      Row(
+                        spacing: 12,
+                        children: [
+                          Expanded(
+                            child: AppButton(
+                              label: l.customerDetail_editData,
+                              type: AppButtonType.sky50,
+                              height: 42,
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerEditScreen()));
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: AppButton(
+                              label: l.customerDetail_uploadPhoto,
+                              type: AppButtonType.sky50,
+                              height: 42,
+                              onPressed: () async {
+                                final picked = await pickImage();
+                                if (picked && mounted) {
+                                  AppDialog.show(
+                                    context: context,
+                                    title: 'Upload Foto',
+                                    paddingContent: 0,
+                                    content: CustomerUploadFoto(image: image),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    const SizedBox(height: 12),
+                    if (provider.isLoading == false)
+                      Row(
+                        spacing: 12,
+                        children: [
+                          Expanded(
+                            child: AppButton(
+                              label: l.customerDetail_order,
+                              type: AppButtonType.sky50,
+                              height: 42,
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => OrderScreen()));
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: AppButton(
+                              label: l.customerDetail_adjustment,
+                              type: AppButtonType.sky50,
+                              height: 42,
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => AdjustmentScreen()));
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: AppButton(
+                              label: l.customerDetail_return,
+                              type: AppButtonType.sky50,
+                              height: 42,
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => ReturnScreen()));
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+
+              DraggableScrollableSheetDetailCustomer(),
+            ],
+          );
+        },
       ),
     );
   }
@@ -190,6 +243,59 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         Text(label, style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.white)),
         Text(value, style: AppTextStyles.body3Regular.copyWith(color: AppColors.white)),
       ],
+    );
+  }
+
+  Widget shimmerColumn() {
+    return Shimmer(
+      duration: const Duration(milliseconds: 1500),
+      interval: const Duration(milliseconds: 300),
+      colorOpacity: 0.0,
+      enabled: true,
+      direction: ShimmerDirection.fromLeftToRight(),
+      child: Column(spacing: 12, crossAxisAlignment: CrossAxisAlignment.start, children: List.generate(6, (_) => shimmerItem())),
+    );
+  }
+
+  Widget shimmerItem() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 14,
+          width: 120,
+          decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(4)),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          height: 14,
+          width: 160,
+          decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(4)),
+        ),
+      ],
+    );
+  }
+
+  Widget shimmerHeader() {
+    return Shimmer(
+      duration: const Duration(milliseconds: 1500),
+      colorOpacity: 0.3,
+      direction: ShimmerDirection.fromLeftToRight(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            height: 20,
+            width: 140,
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(6)),
+          ),
+          Container(
+            height: 20,
+            width: 90,
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(6)),
+          ),
+        ],
+      ),
     );
   }
 }

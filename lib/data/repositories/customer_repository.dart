@@ -19,9 +19,9 @@ class CustomerRepository {
   }
 
   // Customer Detail
-  Future<CustomerDetailResponse?> getCustomerDetail(String customerId) async {
+  Future<CustomerDetailResponse?> getCustomerDetail(String customerId, String scheduleId) async {
     try {
-      final response = await _api.get(ApiConstants.baseUrl + ApiConstants.customerDetail.replaceFirst("{id}", customerId));
+      final response = await _api.get("${ApiConstants.baseUrl}${ApiConstants.customerDetail.replaceFirst("{id}", customerId)}?schedule_id=$scheduleId");
 
       return CustomerDetailResponse.fromJson(response.data);
     } catch (e) {

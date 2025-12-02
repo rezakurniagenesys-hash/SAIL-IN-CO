@@ -543,4 +543,25 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get payment_returnPayment => 'Pembayaran Retur';
+
+  @override
+  String get finishedTask_finishedTask => 'Tugas Selesai';
+
+  @override
+  String get finishedTask_customerList => 'Daftar Pelanggan';
+
+  @override
+  String get finishedTask_search => 'Cari';
+
+  @override
+  String get finishedTask_all => 'Semua';
+
+  @override
+  String get finishedTask_notVisited => 'Belum Dikunjungi';
+
+  @override
+  String get finishedTask_visited => 'Dikunjungi';
+
+  @override
+  String get emptyState_noData => 'Tidak ada data';
 }

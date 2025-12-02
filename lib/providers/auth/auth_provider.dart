@@ -21,8 +21,10 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => loading;
 
   void setDebugLogin() {
-    usernameController.text = "superadmin";
-    passwordController.text = "123321";
+    usernameController.text = "SA00001";
+    passwordController.text = "SA00001";
+    // usernameController.text = "superadmin";
+    // passwordController.text = "123321";
   }
 
   Future<bool> login() async {

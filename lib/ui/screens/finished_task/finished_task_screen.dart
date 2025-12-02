@@ -7,6 +7,7 @@ import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/debouncer.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/customer/customer_management_provider.dart';
 import 'package:sail_in_co/ui/screens/customer/components/item_customer.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
@@ -34,7 +35,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
 
     /// Load pertama
     Future.microtask(() {
-      context.read<CustomerManagementProvider>().getCustomers();
+      context.read<CustomerManagementProvider>().getFinishTask(initial: true);
     });
 
     tabController.addListener(() {
@@ -66,16 +67,18 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBarCustom(
-          title: 'Finished Task',
+          title: l?.finishedTask_finishedTask ?? '',
           onRefresh: () {
             final provider = context.read<CustomerManagementProvider>();
             provider.clearData();
-            provider.getCustomers();
+            provider.getFinishTask(initial: true);
+            tabController.index = 0;
           },
         ),
         body: Padding(
@@ -84,7 +87,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
             spacing: 8,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Daftar Pelanggan', style: AppTextStyles.body2Medium.copyWith(fontSize: 16)),
+              Text(l?.finishedTask_customerList ?? '', style: AppTextStyles.body2Medium.copyWith(fontSize: 16)),
               Divider(color: AppColors.border),
 
               /// SEARCH + SCAN
@@ -93,7 +96,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
                   Expanded(
                     child: AppInputField(
                       controller: searchCtrl,
-                      hintText: 'Search',
+                      hintText: l?.finishedTask_search ?? '',
                       onChanged: (text) {
                         _debouncer.run(() {
                           final provider = context.read<CustomerManagementProvider>();
@@ -134,10 +137,10 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
                   borderSide: BorderSide(width: 3.0, color: AppColors.sky700),
                   insets: EdgeInsets.zero,
                 ),
-                tabs: const [
-                  Tab(text: "All"),
-                  Tab(text: "Not Visit"),
-                  Tab(text: "Visit"),
+                tabs: [
+                  Tab(text: l?.finishedTask_all ?? ''),
+                  Tab(text: l?.finishedTask_notVisited ?? ''),
+                  Tab(text: l?.finishedTask_visited ?? ''),
                 ],
               ),
 
@@ -157,12 +160,12 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
     return Consumer<CustomerManagementProvider>(
       builder: (context, provider, child) {
         return RefreshIndicator(
-          onRefresh: () async => provider.getCustomers(),
+          onRefresh: () async => provider.getFinishTask(initial: true),
           child: AppInfinityList(
             items: provider.customers,
             isLoading: provider.isLoading,
             isLoadMore: provider.isLoadMore,
-            onLoadMore: () => provider.getCustomers(loadMore: true),
+            onLoadMore: () => provider.getFinishTask(loadMore: true),
             itemBuilder: (context, index) {
               return ItemCustomer(customer: provider.customers[index]);
             },

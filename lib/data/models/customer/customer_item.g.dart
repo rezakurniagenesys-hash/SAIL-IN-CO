@@ -12,6 +12,7 @@ CustomerItem _$CustomerItemFromJson(Map<String, dynamic> json) => CustomerItem(
   address: json['address'] as String?,
   phone: json['phone'] as String?,
   statusVisit: (json['status_visit'] as num?)?.toInt(),
+  scheduleId: json['schedule_id'] as String?,
 );
 
 Map<String, dynamic> _$CustomerItemToJson(CustomerItem instance) =>
@@ -21,4 +22,5 @@ Map<String, dynamic> _$CustomerItemToJson(CustomerItem instance) =>
       'address': instance.address,
       'phone': instance.phone,
       'status_visit': instance.statusVisit,
+      'schedule_id': instance.scheduleId,
     };

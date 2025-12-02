@@ -32,7 +32,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
     Future.microtask(() {
       final provider = context.read<CustomerManagementProvider>();
       provider.clearData();
-      provider.getCustomers();
+      provider.getCustomers(initial: true);
     });
   }
 
@@ -53,7 +53,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
         onRefresh: () {
           final provider = context.read<CustomerManagementProvider>();
           provider.clearData();
-          provider.getCustomers();
+          provider.getCustomers(initial: true);
         },
         showBack: false,
       ),
@@ -105,7 +105,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
     return Consumer<CustomerManagementProvider>(
       builder: (context, provider, child) {
         return RefreshIndicator(
-          onRefresh: () async => provider.getCustomers(),
+          onRefresh: () async => provider.getCustomers(initial: true),
           child: AppInfinityList(
             items: provider.customers,
             isLoading: provider.isLoading,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 
 class AppInfinityList extends StatelessWidget {
   final ScrollController? controller;
@@ -26,11 +27,11 @@ class AppInfinityList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final ScrollController scrollCtrl = controller ?? ScrollController();
 
     scrollCtrl.addListener(() {
-      if (scrollCtrl.position.pixels >=
-          scrollCtrl.position.maxScrollExtent - 200) {
+      if (scrollCtrl.position.pixels >= scrollCtrl.position.maxScrollExtent - 200) {
         onLoadMore();
       }
     });
@@ -39,16 +40,13 @@ class AppInfinityList extends StatelessWidget {
     if (isLoading) {
       return loadingWidget ??
           const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: CircularProgressIndicator(),
-            ),
+            child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
           );
     }
 
     // EMPTY LIST --------------------------------------------
     if (items.isEmpty) {
-      return emptyWidget ?? const Center(child: Text("No data"));
+      return emptyWidget ?? Center(child: Text(l!.emptyState_noData));
     }
 
     // LIST VIEW ---------------------------------------------
