@@ -5,6 +5,7 @@ import 'package:sail_in_co/providers/connection_provider.dart';
 import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
 import 'package:sail_in_co/providers/customer/customer_management_provider.dart';
 import 'package:sail_in_co/providers/home/home_provider.dart';
+import 'package:sail_in_co/providers/stock/stock_provider.dart';
 
 /// Daftar semua provider global
 List<SingleChildWidget> appProviders = [
@@ -13,4 +14,5 @@ List<SingleChildWidget> appProviders = [
   ChangeNotifierProvider(create: (_) => HomeProvider()),
   ChangeNotifierProvider(create: (_) => CustomerManagementProvider()),
   ChangeNotifierProvider(create: (_) => CustomerDetailProvider()),
+  ChangeNotifierProvider(create: (_) => StockProvider()),
 ];

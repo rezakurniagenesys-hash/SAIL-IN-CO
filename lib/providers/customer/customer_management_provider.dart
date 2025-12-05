@@ -14,6 +14,7 @@ class CustomerManagementProvider extends ChangeNotifier {
   final now = DateTime.now();
 
   // Helper to format date to string YYYY-MM-DD
+  // '2025-11-28',
   String _formatDate(DateTime date) {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
@@ -73,7 +74,8 @@ class CustomerManagementProvider extends ChangeNotifier {
       search: searchText,
       customerId: customerId,
       status: status,
-      date: _formatDate(now),
+      // date: _formatDate(now),
+      date: '2025-11-28',
       salesId: userInfo?.username ?? '',
     );
 
@@ -133,7 +135,6 @@ class CustomerManagementProvider extends ChangeNotifier {
       date: _formatDate(now),
       salesId: userInfo?.username ?? '',
     );
-    print('Finished Task Request: $request');
 
     final response = await _repo.getCustomerManagement(request);
 

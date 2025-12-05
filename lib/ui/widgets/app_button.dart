@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 
-enum AppButtonType { primary, warning, danger, sky950, sky50 }
+enum AppButtonType { primary, warning, danger, sky950, sky50, neutral400 }
 
 class AppButton extends StatelessWidget {
   final String label;
@@ -13,8 +13,10 @@ class AppButton extends StatelessWidget {
   final IconData? icon;
   final bool isFullWidth;
   final bool isLoading;
+  final bool isDisabled;
+  final EdgeInsetsGeometry? padding;
 
-  /// ➕ NEW: Border control
+  /// Border control
   final bool hasBorder;
   final Color? borderColor;
   final double borderWidth;
@@ -25,12 +27,13 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.type = AppButtonType.primary,
     this.width,
+    this.padding,
     this.height = 36,
     this.icon,
     this.isFullWidth = false,
     this.isLoading = false,
+    this.isDisabled = false,
 
-    /// default tanpa border
     this.hasBorder = false,
     this.borderColor,
     this.borderWidth = 1.2,
@@ -38,12 +41,15 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool disabled = isDisabled || isLoading;
+
     Color backgroundColor;
     Color textColor = Colors.white;
 
     switch (type) {
       case AppButtonType.primary:
         backgroundColor = AppColors.sky700;
+        textColor = isDisabled ? AppColors.neutral400 : Colors.white;
         break;
       case AppButtonType.warning:
         backgroundColor = AppColors.warning;
@@ -58,20 +64,29 @@ class AppButton extends StatelessWidget {
         backgroundColor = AppColors.sky50;
         textColor = AppColors.textPrimary;
         break;
+      case AppButtonType.neutral400:
+        backgroundColor = AppColors.neutral400;
+        break;
+    }
+
+    /// If disabled → make style muted
+    if (disabled) {
+      backgroundColor = backgroundColor.withOpacity(0.45);
+      // textColor = textColor.withOpacity(0.6);
     }
 
     return SizedBox(
       width: isFullWidth ? double.infinity : width,
       height: height,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: disabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: textColor,
           elevation: 0,
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
 
-          /// 🔥 Border config (aktif jika hasBorder == true)
-          side: hasBorder ? BorderSide(color: borderColor ?? Colors.white, width: borderWidth) : BorderSide.none,
+          side: hasBorder ? BorderSide(color: (borderColor ?? Colors.white).withOpacity(disabled ? 0.4 : 1), width: borderWidth) : BorderSide.none,
 
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
@@ -80,14 +95,7 @@ class AppButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isLoading)
-              SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(type == AppButtonType.sky50 ? AppColors.textPrimary : Colors.white),
-                ),
-              )
+              SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(textColor)))
             else ...[
               if (icon != null) ...[Icon(icon, size: 18, color: textColor), const SizedBox(width: 6)],
 

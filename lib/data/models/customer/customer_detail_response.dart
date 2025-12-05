@@ -8,14 +8,9 @@ class CustomerDetailResponse {
   final String? message;
   final CustomerDetailData? data;
 
-  CustomerDetailResponse({
-    this.status,
-    this.message,
-    this.data,
-  });
+  CustomerDetailResponse({this.status, this.message, this.data});
 
-  factory CustomerDetailResponse.fromJson(Map<String, dynamic> json) =>
-      _$CustomerDetailResponseFromJson(json);
+  factory CustomerDetailResponse.fromJson(Map<String, dynamic> json) => _$CustomerDetailResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$CustomerDetailResponseToJson(this);
 }
@@ -26,8 +21,7 @@ class CustomerDetailData {
 
   CustomerDetailData({this.customer});
 
-  factory CustomerDetailData.fromJson(Map<String, dynamic> json) =>
-      _$CustomerDetailDataFromJson(json);
+  factory CustomerDetailData.fromJson(Map<String, dynamic> json) => _$CustomerDetailDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$CustomerDetailDataToJson(this);
 }
@@ -55,7 +49,7 @@ class CustomerModel {
   final String? creditLimit;
 
   @JsonKey(name: "default_payment")
-  final int? defaultPayment;
+  final String? defaultPayment;
 
   @JsonKey(name: "area_id")
   final String? areaId;
@@ -65,8 +59,26 @@ class CustomerModel {
 
   @JsonKey(name: "area_name")
   final String? areaName;
+
   @JsonKey(name: "status_visit")
   final int? statusVisit;
+
+  @JsonKey(name: "link_path")
+  final String? linkPath;
+
+  final String? latitude;
+  final String? longitude;
+
+  @JsonKey(name: "visit_address")
+  final String? visitAddress;
+
+  @JsonKey(name: "visit_date")
+  final DateTime? visitDate;
+
+  final String? reason;
+
+  @JsonKey(name: "visit_notes")
+  final String? visitNotes;
 
   CustomerModel({
     this.noAcc6,
@@ -84,10 +96,16 @@ class CustomerModel {
     this.typeCustomer,
     this.areaName,
     this.statusVisit,
+    this.linkPath,
+    this.latitude,
+    this.longitude,
+    this.visitAddress,
+    this.visitDate,
+    this.reason,
+    this.visitNotes,
   });
 
-  factory CustomerModel.fromJson(Map<String, dynamic> json) =>
-      _$CustomerModelFromJson(json);
+  factory CustomerModel.fromJson(Map<String, dynamic> json) => _$CustomerModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CustomerModelToJson(this);
 }

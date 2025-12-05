@@ -17,7 +17,11 @@ class ApiConstants {
   // =======================================================
   static const String customerSearch = "/sales/api/callsheets/customer/search";
   static const String customerDetail = "/sales/api/callsheets/customer/{id}";
+  static const String customerUpdatePhoto = "/sales/api/callsheets/customer/{id}/upload";
 
   // Dashboard
   static const String summaryChart = "/sales/api/callsheets/summary";
+
+  // Stock
+  static const String stockUrl = "/sales/api/callsheets/stock";
 }

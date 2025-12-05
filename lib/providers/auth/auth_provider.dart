@@ -71,43 +71,43 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> checkTokenOnStart() async {
     final savedToken = await AuthService.getToken();
-    // final savedRefresh = await AuthService.getRefreshToken();
+    final savedRefresh = await AuthService.getRefreshToken();
 
     if (savedToken == null || savedToken.isEmpty) {
       return false; // no token → go to login
     }
 
-    return true; // assume token valid for now
+    // return true; // assume token valid for now
 
-    // try {
-    //   // 1. VERIFY TOKEN
-    //   final verifyRes = await _repo.verifyToken(savedToken);
+    try {
+      // 1. VERIFY TOKEN
+      final verifyRes = await _repo.verifyToken(savedToken);
 
-    //   if (verifyRes == true) {
-    //     token = savedToken;
-    //     refreshToken = savedRefresh;
-    //     return true; // token valid → go to home
-    //   }
-    // } catch (_) {
-    //   // verify failed → try refresh
-    // }
+      if (verifyRes == true) {
+        token = savedToken;
+        refreshToken = savedRefresh;
+        return true; // token valid → go to home
+      }
+    } catch (_) {
+      // verify failed → try refresh
+    }
 
-    // // 2. REFRESH TOKEN
-    // try {
-    //   final refreshRes = await _repo.refreshToken(savedToken, savedRefresh ?? '');
+    // 2. REFRESH TOKEN
+    try {
+      final refreshRes = await _repo.refreshToken(savedToken, savedRefresh ?? '');
 
-    //   final newToken = refreshRes.data?.token ?? '';
-    //   final newRefresh = refreshRes.data?.refreshToken ?? '';
+      final newToken = refreshRes.data?.token ?? '';
+      final newRefresh = refreshRes.data?.refreshToken ?? '';
 
-    //   token = newToken;
-    //   refreshToken = newRefresh;
+      token = newToken;
+      refreshToken = newRefresh;
 
-    //   await AuthService.saveToken(newToken, newRefresh);
+      await AuthService.saveToken(newToken, newRefresh);
 
-    //   return true; // refresh berhasil → login otomatis
-    // } catch (e) {
-    //   return false; // dua-duanya gagal → go login
-    // }
+      return true; // refresh berhasil → login otomatis
+    } catch (e) {
+      return false; // dua-duanya gagal → go login
+    }
   }
 
   void clear() {

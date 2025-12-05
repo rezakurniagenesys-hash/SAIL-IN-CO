@@ -27,4 +27,7 @@ class AssetIcons {
   static const String letsIconsUserScanFill = '$pathSvg/lets-icons_user-scan-fill.svg';
   static const String supportTeam = '$pathSvg/support-team.svg';
   static const String clarityLanguageSolid = '$pathSvg/clarity_language-solid.svg';
+  static const String permissionCamera = '$pathSvg/permission_camera.svg';
+  static const String permissionLocation = '$pathSvg/permission_location.svg';
+  static const String boxSolid = '$pathSvg/box-solid.svg';
 }

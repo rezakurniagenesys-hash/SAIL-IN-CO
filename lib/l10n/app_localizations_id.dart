@@ -170,6 +170,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get customerDetail_uploadPhoto => 'Upload Foto';
 
   @override
+  String get customerDetail_photoEvidence => 'Bukti Foto';
+
+  @override
   String get customerDetail_order => 'Order';
 
   @override
@@ -545,7 +548,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get payment_returnPayment => 'Pembayaran Retur';
 
   @override
-  String get finishedTask_finishedTask => 'Tugas Selesai';
+  String get finishedTask_finishedTask => 'Tugas Terselesaikan';
 
   @override
   String get finishedTask_customerList => 'Daftar Pelanggan';

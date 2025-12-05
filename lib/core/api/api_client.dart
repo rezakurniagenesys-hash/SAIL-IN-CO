@@ -78,7 +78,7 @@ class ApiClient {
   // --------------------------------------------------------------
   Future<ApiResponse> uploadImage(String endpoint, File file, {Map<String, dynamic>? fields}) async {
     try {
-      final formData = FormData.fromMap({if (fields != null) ...fields, 'file': await MultipartFile.fromFile(file.path, filename: file.uri.pathSegments.last)});
+      final formData = FormData.fromMap({if (fields != null) ...fields, 'image': await MultipartFile.fromFile(file.path, filename: file.uri.pathSegments.last)});
 
       final res = await _dio.post(endpoint, data: formData);
 

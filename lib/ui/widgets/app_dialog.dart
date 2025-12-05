@@ -3,7 +3,7 @@ import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 
 class AppDialog {
-  static Future<void> show({
+  static Future<T?> show<T>({
     required BuildContext context,
     required String title,
     required Widget content,
@@ -14,7 +14,7 @@ class AppDialog {
   }) {
     final heightScreen = MediaQuery.of(context).size.height;
 
-    return showGeneralDialog(
+    return showGeneralDialog<T>(
       context: context,
       barrierDismissible: dismissible,
       barrierLabel: "Dialog",
@@ -33,7 +33,7 @@ class AppDialog {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    //Header
+                    // HEADER
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -47,7 +47,7 @@ class AppDialog {
                             if (isBack)
                               IconButton(
                                 icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.white),
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () => Navigator.pop(context), // return null
                               ),
                             Expanded(
                               child: Padding(
@@ -60,12 +60,12 @@ class AppDialog {
                       ),
                     ),
 
-                    //Scrollable content
+                    // CONTENT
                     Flexible(
                       child: SingleChildScrollView(padding: EdgeInsets.all(paddingContent), child: content),
                     ),
 
-                    // Action button
+                    // ACTION BUTTON
                     if (actionButton != null) Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), child: actionButton),
                   ],
                 ),
@@ -76,15 +76,12 @@ class AppDialog {
       },
 
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOutCubicEmphasized);
+        final curved = CurvedAnimation(parent: animation, curve: Curves.easeInOutCubicEmphasized);
 
         return FadeTransition(
-          opacity: curvedAnimation,
+          opacity: curved,
           child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 0.06), // begin
-              end: Offset.zero,
-            ).animate(curvedAnimation),
+            position: Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero).animate(curved),
             child: child,
           ),
         );

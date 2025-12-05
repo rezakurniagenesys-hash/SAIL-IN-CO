@@ -46,11 +46,20 @@ CustomerModel _$CustomerModelFromJson(Map<String, dynamic> json) =>
       subDistrict: json['sub_district'] as String?,
       nik: json['nik'] as String?,
       creditLimit: json['credit_limit'] as String?,
-      defaultPayment: (json['default_payment'] as num?)?.toInt(),
+      defaultPayment: json['default_payment'] as String?,
       areaId: json['area_id'] as String?,
       typeCustomer: json['type_customer'] as String?,
       areaName: json['area_name'] as String?,
       statusVisit: (json['status_visit'] as num?)?.toInt(),
+      linkPath: json['link_path'] as String?,
+      latitude: json['latitude'] as String?,
+      longitude: json['longitude'] as String?,
+      visitAddress: json['visit_address'] as String?,
+      visitDate: json['visit_date'] == null
+          ? null
+          : DateTime.parse(json['visit_date'] as String),
+      reason: json['reason'] as String?,
+      visitNotes: json['visit_notes'] as String?,
     );
 
 Map<String, dynamic> _$CustomerModelToJson(CustomerModel instance) =>
@@ -70,4 +79,11 @@ Map<String, dynamic> _$CustomerModelToJson(CustomerModel instance) =>
       'type_customer': instance.typeCustomer,
       'area_name': instance.areaName,
       'status_visit': instance.statusVisit,
+      'link_path': instance.linkPath,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'visit_address': instance.visitAddress,
+      'visit_date': instance.visitDate?.toIso8601String(),
+      'reason': instance.reason,
+      'visit_notes': instance.visitNotes,
     };

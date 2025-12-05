@@ -1,28 +1,22 @@
+
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/data/models/customer/customer_item.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
-import 'package:sail_in_co/ui/screens/customer_detail/customer_detail_screen.dart';
 
 class ItemCustomer extends StatelessWidget {
-  const ItemCustomer({super.key, this.date = '', this.statusPayment = '', this.customer});
+  const ItemCustomer({super.key, this.date = '', this.statusPayment = '', this.customer, required this.onTap});
   final CustomerItem? customer;
   final String date;
   final String statusPayment;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CustomerDetailScreen(customerId: customer?.noAcc6 ?? '', scheduleId: customer?.scheduleId ?? ''),
-          ),
-        );
-      },
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.symmetric(vertical: 8),
@@ -48,19 +42,27 @@ class ItemCustomer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Text(customer?.nmAcc6 ?? '-', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.body2Medium),
+                        child: Text(
+                          customer?.nmAcc6 ?? '-',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.body2Medium.copyWith(fontWeight: FontWeight.bold),
+                        ),
                       ),
                       Row(
                         children: [
                           Container(
                             height: 5,
                             width: 5,
-                            decoration: BoxDecoration(color: customer?.statusVisit == 1 ? AppColors.success : AppColors.error, shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                              color: (customer?.statusVisit == 1 || customer?.statusVisit == 2) ? AppColors.success : AppColors.error,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           SizedBox(width: 4),
                           Text(
-                            customer?.statusVisit == 1 ? l!.customer_visit : l!.customer_notVisit,
-                            style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary),
+                            (customer?.statusVisit == 1 || customer?.statusVisit == 2) ? l!.customer_visit : l!.customer_notVisit,
+                            style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),

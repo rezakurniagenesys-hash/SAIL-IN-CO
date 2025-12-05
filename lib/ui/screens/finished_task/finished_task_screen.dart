@@ -10,6 +10,7 @@ import 'package:sail_in_co/core/utils/debouncer.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/customer/customer_management_provider.dart';
 import 'package:sail_in_co/ui/screens/customer/components/item_customer.dart';
+import 'package:sail_in_co/ui/screens/customer_detail/customer_detail_screen.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
 import 'package:sail_in_co/ui/widgets/app_infinite_list.dart';
 import 'package:sail_in_co/ui/widgets/app_input_field.dart';
@@ -76,6 +77,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
           title: l?.finishedTask_finishedTask ?? '',
           onRefresh: () {
             final provider = context.read<CustomerManagementProvider>();
+            searchCtrl.clear();
             provider.clearData();
             provider.getFinishTask(initial: true);
             tabController.index = 0;
@@ -167,7 +169,21 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
             isLoadMore: provider.isLoadMore,
             onLoadMore: () => provider.getFinishTask(loadMore: true),
             itemBuilder: (context, index) {
-              return ItemCustomer(customer: provider.customers[index]);
+              return ItemCustomer(
+                customer: provider.customers[index],
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CustomerDetailScreen(customerId: provider.customers[index].noAcc6 ?? '', scheduleId: provider.customers[index].scheduleId ?? ''),
+                    ),
+                  ).then((_) {
+                    // refresh data when back from detail screen
+                    provider.getFinishTask(initial: true);
+                  });
+                },
+              );
             },
           ),
         );

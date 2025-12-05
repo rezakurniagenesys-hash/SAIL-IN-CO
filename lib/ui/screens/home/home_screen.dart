@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
     Future.microtask(() {
-      context.read<HomeProvider>().init();
+      context.read<HomeProvider>().init(context);
     });
 
     Future.delayed(const Duration(milliseconds: 1000), () {
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Expanded(
                 child: LiquidPullToRefresh(
-                  onRefresh: () async => homeProvider.init(),
+                  onRefresh: () async => homeProvider.init(context),
                   color: AppColors.sky950,
                   backgroundColor: AppColors.white,
                   height: 70,
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        SectionsStockDashboard(),
+                        SectionsStockDashboard(stockItem: homeProvider.stockItem, isLoading: homeProvider.isLoadingStock),
                         SectionsAchievementsDashboard(),
                         Container(color: AppColors.white, width: double.infinity, height: 200),
                       ],

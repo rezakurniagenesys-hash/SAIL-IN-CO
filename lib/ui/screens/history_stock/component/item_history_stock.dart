@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/data/models/stock/stock_response.dart';
 
 class ItemHistoryStock extends StatelessWidget {
-  const ItemHistoryStock({super.key});
+  const ItemHistoryStock({super.key, required this.stockItem});
+  final StockItem? stockItem;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +20,7 @@ class ItemHistoryStock extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(color: AppColors.sky800, borderRadius: BorderRadius.circular(20)),
-            child: const Icon(Icons.person_2_outlined, color: AppColors.white),
+            child: SvgPicture.asset(AssetIcons.boxSolid, width: 24, fit: BoxFit.scaleDown),
           ),
           SizedBox(width: 12),
           Expanded(
@@ -26,19 +30,21 @@ class ItemHistoryStock extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Order Stock', style: AppTextStyles.body2Medium),
-                    Text('Qty', style: AppTextStyles.body2Medium),
+                    Text(stockItem?.inventoryName ?? '', style: AppTextStyles.body2Medium),
+                    Text('${stockItem?.totalStock ?? 0} ${stockItem?.uomName ?? ''}', style: AppTextStyles.body2Medium),
                   ],
                 ),
+                Text('${stockItem?.inventoryId}', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.neutral950)),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text('S.0123123.1231321', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.neutral950)),
-                    Text('25 Box', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.neutral950)),
+                    Container(
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: AppColors.sky950),
+                      child: Icon(Icons.arrow_forward_ios_rounded, color: AppColors.white, size: 16),
+                    ),
                   ],
                 ),
-                Text('Rokok Surya', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.neutral950)),
-                Text('01 Oktober 2025 17:23 WIB', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.neutral950)),
               ],
             ),
           ),

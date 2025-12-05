@@ -3,24 +3,30 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/data/models/stock/stock_response.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/history_stock/history_stock_screen.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class SectionsStockDashboard extends StatelessWidget {
-  const SectionsStockDashboard({super.key});
+  const SectionsStockDashboard({super.key, this.stockItem, this.isLoading});
+  final List<StockItem>? stockItem;
+  final bool? isLoading;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final displayList = stockItem?.take(5).toList() ?? [];
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryStockScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryStockScreen()));
         },
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.background,
             borderRadius: BorderRadius.circular(12),
@@ -32,11 +38,17 @@ class SectionsStockDashboard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l?.home_stock ?? '', style: AppTextStyles.heading6Bold),
-              _ItemStock(title: '1. Rokok A', value: '1235 pcs'),
-              _ItemStock(title: '2. Rokok B', value: '4353 pcs'),
-              _ItemStock(title: '3. Rokok C', value: '8765 pcs'),
-              _ItemStock(title: '4. Rokok D', value: '35433 pcs'),
-              _ItemStock(title: '5. Rokok E', value: '1266435 pcs'),
+
+              if (isLoading == true) ...List.generate(5, (index) => _ShimmerRow()),
+
+              if (isLoading == false && stockItem != null && stockItem!.isNotEmpty) ...[
+                ...displayList.asMap().entries.map((e) {
+                  final idx = e.key + 1;
+                  final item = e.value;
+                  return _ItemStock(title: "$idx. ${item.inventoryName ?? '-'}", value: "${item.totalStock ?? 0} ${item.uomName ?? ''}");
+                }),
+              ],
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -50,6 +62,29 @@ class SectionsStockDashboard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _ShimmerRow() {
+    return Shimmer(
+      duration: const Duration(seconds: 2),
+      color: Colors.grey.shade300,
+      colorOpacity: 0.5,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: 120,
+            height: 14,
+            decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(4)),
+          ),
+          Container(
+            width: 80,
+            height: 14,
+            decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(4)),
+          ),
+        ],
       ),
     );
   }

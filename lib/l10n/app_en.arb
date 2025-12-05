@@ -62,6 +62,7 @@
   "customerDetail_editData": "Edit Data",
   "customerDetail_editCustomerData": "Edit Customer Data",
   "customerDetail_uploadPhoto": "Upload Photo",
+  "customerDetail_photoEvidence": "Photo Evidence",
   "customerDetail_order": "Order",
   "customerDetail_adjustment": "Adjustment",
   "customerDetail_return": "Return",

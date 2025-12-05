@@ -170,6 +170,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerDetail_uploadPhoto => 'Upload Photo';
 
   @override
+  String get customerDetail_photoEvidence => 'Photo Evidence';
+
+  @override
   String get customerDetail_order => 'Order';
 
   @override

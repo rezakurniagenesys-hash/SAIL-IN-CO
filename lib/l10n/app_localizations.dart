@@ -413,6 +413,12 @@ abstract class AppLocalizations {
   /// **'Upload Photo'**
   String get customerDetail_uploadPhoto;
 
+  /// No description provided for @customerDetail_photoEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Evidence'**
+  String get customerDetail_photoEvidence;
+
   /// No description provided for @customerDetail_order.
   ///
   /// In en, this message translates to:

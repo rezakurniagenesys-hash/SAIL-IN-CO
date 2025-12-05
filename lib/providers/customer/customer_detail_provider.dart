@@ -1,17 +1,41 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:sail_in_co/core/helpers/image_picker_helper.dart';
+import 'package:sail_in_co/core/helpers/location_helper.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
+import 'package:sail_in_co/data/models/customer/upload_foto/customer_upload_foto_request.dart';
+import 'package:sail_in_co/data/models/customer/upload_foto/customer_upload_foto_response.dart';
 import 'package:sail_in_co/data/repositories/customer_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
 
 class CustomerDetailProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
 
+  // ============= Customer Detail =============
   bool isLoading = false;
-
+  bool isUploadingImage = false;
   CustomerDetailData? customerDetailData;
   UserInfo? userInfo;
 
+  // ============= Upload Foto =============
+  File? image;
+  bool isLoadingLocation = true;
+  bool isSubmitting = false;
+  String address = '';
+  String coords = '';
+  String time = '';
+  Timer? _timer;
+  DateTime? _initialDateTime;
+  Position? currentPosition;
+  bool isStoreOpen = false;
+
+  // =============== Methods Customer Detail ===============
   Future<void> loadUserInfo() async {
     try {
       userInfo = await AuthService.getUserInfo();
@@ -22,7 +46,7 @@ class CustomerDetailProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getDetailCustomer(String customerId, String scheduleId) async {
+  Future<void> getDetailCustomer(String customerId, String scheduleId, BuildContext context) async {
     isLoading = true;
 
     await Future.delayed(const Duration(milliseconds: 1000));
@@ -30,8 +54,13 @@ class CustomerDetailProvider extends ChangeNotifier {
 
     try {
       final res = await _repo.getCustomerDetail(customerId, scheduleId);
-      customerDetailData = res?.data;
-      print("Customer detail data loaded: ${customerDetailData?.toJson()}");
+      if (res.statusCode == 200 && res.data != null) {
+        customerDetailData = CustomerDetailResponse.fromJson(res.data).data;
+      } else {
+        // Snackbar
+        SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     } catch (e) {
       debugPrint("Error loading customer detail: $e");
     } finally {
@@ -40,10 +69,140 @@ class CustomerDetailProvider extends ChangeNotifier {
     }
   }
 
-  //onRefresh
-  Future<void> onRefresh(String scheduleId) async {
+  Future<void> onRefresh(String scheduleId, BuildContext context) async {
     if (customerDetailData != null) {
-      await getDetailCustomer(customerDetailData?.customer?.noAcc6 ?? '', scheduleId);
+      await getDetailCustomer(customerDetailData?.customer?.noAcc6 ?? '', scheduleId, context);
+    }
+  }
+
+  void setLoadingImage(bool value) {
+    isUploadingImage = value;
+    notifyListeners();
+  }
+
+  Future<bool> pickImage(BuildContext context) async {
+    final picked = await ImagePickerHelper.pickFromCamera(context);
+    if (picked != null) {
+      image = picked;
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  // =============== Methods Upload Foto ===============
+  void setLocation(String addr, String coord) {
+    address = addr;
+    coords = coord;
+    notifyListeners();
+  }
+
+  void setLoadingLocation(bool value) {
+    isLoadingLocation = value;
+    notifyListeners();
+  }
+
+  // _initLocation
+  Future<void> initLocation(BuildContext context) async {
+    setLoadingLocation(true);
+
+    final pos = await LocationHelper.getCurrentPositionWithPermissionFlow(context);
+    if (!context.mounted) return;
+
+    if (pos != null) {
+      currentPosition = pos;
+      final addr = await LocationHelper.latLongToAddress(pos.latitude, pos.longitude);
+
+      setLocation(addr ?? 'Address not found', '${pos.latitude.toStringAsFixed(6)}, ${pos.longitude.toStringAsFixed(6)}');
+    }
+
+    setLoadingLocation(false);
+  }
+
+  void startDateTimeCounter(DateTime initialDateTime) {
+    // stop timer lama kalau ada
+    _timer?.cancel();
+
+    _initialDateTime = initialDateTime;
+
+    // set nilai awal
+    time = _formatTime(initialDateTime);
+    notifyListeners();
+
+    // timer akurat berdasarkan waktu real
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_initialDateTime == null) return;
+
+      final now = DateTime.now();
+      final elapsed = now.difference(_initialDateTime!);
+      final current = _initialDateTime!.add(elapsed);
+
+      time = _formatTime(current);
+      notifyListeners();
+    });
+  }
+
+  void stopTimer() {
+    _timer?.cancel();
+  }
+
+  String _formatTime(DateTime dt) {
+    final hh = dt.hour.toString().padLeft(2, '0');
+    final mm = dt.minute.toString().padLeft(2, '0');
+    final ss = dt.second.toString().padLeft(2, '0');
+    return '$hh:$mm:$ss';
+  }
+
+  void setStoreOpen(bool value) {
+    isStoreOpen = value;
+    notifyListeners();
+  }
+
+  // Submit Foto
+  Future<CustomerUploadFotoResponse?> submitPhoto(String customerId, String scheduleId, BuildContext context) async {
+    if (image == null) return null;
+
+    isSubmitting = true;
+    notifyListeners();
+
+    try {
+      // 1. Jika lokasi belum ada → init dulu
+      if (currentPosition == null) {
+        await initLocation(context);
+      }
+
+      // 2. Setelah init, cek lagi
+      if (currentPosition == null) {
+        // lokasi tetap tidak didapat → batal submit
+        isSubmitting = false;
+        notifyListeners();
+        debugPrint("Submit dibatalkan karena lokasi tidak tersedia.");
+        return null;
+      }
+
+      // 3. Jika sudah ada lokasi → lanjutkan submit
+      final req = CustomerUploadFotoRequest(
+        address: address,
+        latitude: currentPosition!.latitude.toString(),
+        longitude: currentPosition!.longitude.toString(),
+        statusVisit: isStoreOpen ? 2 : 1,
+        userModified: userInfo?.username ?? '',
+      );
+
+      final res = await _repo.updateCustomerPhoto(customerId, scheduleId, image!, req);
+
+      if (res.status == true) {
+        debugPrint("Customer photo uploaded successfully: ${res.toJson()}");
+      }
+
+      return res;
+    } catch (e) {
+      debugPrint("Error submitting customer photo: $e");
+      return null;
+    } finally {
+      // 4. Set submitting false di satu tempat saja
+      isSubmitting = false;
+      notifyListeners();
     }
   }
 

@@ -1,9 +1,7 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sail_in_co/core/helpers/image_picker_helper.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
@@ -11,6 +9,7 @@ import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
 import 'package:sail_in_co/ui/screens/adjustment/adjustment_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_edit/customer_edit_screen.dart';
+import 'package:sail_in_co/ui/screens/customer_detail/widgets/customer_bukti_foto.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/customer_upload_foto.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/draggable_scrollable_sheet_detail_customer.dart';
 import 'package:sail_in_co/ui/screens/order/order_screen.dart';
@@ -30,8 +29,6 @@ class CustomerDetailScreen extends StatefulWidget {
 }
 
 class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
-  File? image;
-
   @override
   void initState() {
     super.initState();
@@ -39,23 +36,13 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
       final provider = context.read<CustomerDetailProvider>();
       provider.clear();
       provider.loadUserInfo();
-      provider.getDetailCustomer(widget.customerId, widget.scheduleId);
+      provider.getDetailCustomer(widget.customerId, widget.scheduleId, context);
     });
-  }
-
-  Future<bool> pickImage() async {
-    final picked = await ImagePickerHelper.pickImageDialog(context);
-    if (picked != null) {
-      setState(() => image = picked);
-      return true;
-    }
-    return false;
   }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-
     return Scaffold(
       backgroundColor: AppColors.sky700,
       appBar: AppBarCustom(
@@ -63,7 +50,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         onRefresh: () {
           final provider = context.read<CustomerDetailProvider>();
           provider.clear();
-          provider.getDetailCustomer(widget.customerId, widget.scheduleId);
+          provider.getDetailCustomer(widget.customerId, widget.scheduleId, context);
         },
       ),
       body: Consumer<CustomerDetailProvider>(
@@ -92,13 +79,16 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                     height: 5,
                                     width: 5,
                                     decoration: BoxDecoration(
-                                      color: provider.customerDetailData?.customer?.statusVisit == 1 ? AppColors.success : AppColors.error,
+                                      color:
+                                          (provider.customerDetailData?.customer?.statusVisit == 1 || provider.customerDetailData?.customer?.statusVisit == 2)
+                                          ? AppColors.success
+                                          : AppColors.error,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    provider.customerDetailData?.customer?.statusVisit == 1
+                                    (provider.customerDetailData?.customer?.statusVisit == 1 || provider.customerDetailData?.customer?.statusVisit == 2)
                                         ? l.customerDetail_statusVisited
                                         : l.customerDetail_statusNotVisited,
                                     style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.white),
@@ -168,18 +158,62 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                           ),
                           Expanded(
                             child: AppButton(
-                              label: l.customerDetail_uploadPhoto,
+                              label: provider.customerDetailData?.customer?.linkPath != null ? l.customerDetail_photoEvidence : l.customerDetail_uploadPhoto,
                               type: AppButtonType.sky50,
+                              isLoading: provider.isUploadingImage,
+                              isDisabled: provider.isUploadingImage,
                               height: 42,
                               onPressed: () async {
-                                final picked = await pickImage();
-                                if (picked && mounted) {
+                                if (provider.customerDetailData?.customer?.linkPath != null) {
+                                  // sudah ada foto, tampilkan preview
                                   AppDialog.show(
+                                    context: context,
+                                    title: 'Foto Bukti',
+                                    paddingContent: 0,
+                                    content: CustomerBuktiFoto(data: provider.customerDetailData),
+                                  );
+                                  return;
+                                }
+
+                                provider.setLoadingImage(true);
+
+                                try {
+                                  // Step 1: pick image
+                                  final picked = await provider.pickImage(context);
+
+                                  if (!picked) {
+                                    return; // nothing selected
+                                  }
+
+                                  CustomerUploadFotoAction? action;
+
+                                  // Step 2: show preview dialog
+                                  action = await AppDialog.show<CustomerUploadFotoAction>(
                                     context: context,
                                     title: 'Upload Foto',
                                     paddingContent: 0,
-                                    content: CustomerUploadFoto(image: image),
+                                    content: CustomerUploadFoto(image: provider.image, customerId: widget.customerId, scheduleId: widget.scheduleId),
                                   );
+
+                                  // Step 3: repick loop
+                                  while (action == CustomerUploadFotoAction.repick) {
+                                    final repicked = await provider.pickImage(context);
+                                    if (!repicked) break;
+
+                                    action = await AppDialog.show<CustomerUploadFotoAction>(
+                                      context: context,
+                                      title: 'Upload Foto',
+                                      paddingContent: 0,
+                                      content: CustomerUploadFoto(image: provider.image, customerId: widget.customerId, scheduleId: widget.scheduleId),
+                                    );
+                                  }
+                                  // Step 4: submit
+                                  if (action == CustomerUploadFotoAction.submit) {
+                                    // Refresh detail after successful upload
+                                    provider.getDetailCustomer(widget.customerId, widget.scheduleId, context);
+                                  }
+                                } finally {
+                                  provider.setLoadingImage(false);
                                 }
                               },
                             ),
