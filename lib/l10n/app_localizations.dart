@@ -143,6 +143,12 @@ abstract class AppLocalizations {
   /// **'History'**
   String get dashboard_history;
 
+  /// No description provided for @dashboard_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get dashboard_sale;
+
   /// No description provided for @home_lastUpdate.
   ///
   /// In en, this message translates to:
@@ -304,6 +310,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not Visited'**
   String get customer_notVisit;
+
+  /// No description provided for @customer_failedNotVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed Not Visited'**
+  String get customer_failedNotVisit;
 
   /// No description provided for @customerDetail_title.
   ///
@@ -581,6 +593,30 @@ abstract class AppLocalizations {
   /// **'Not Visit'**
   String get order_notVisit;
 
+  /// No description provided for @order_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get order_date;
+
+  /// No description provided for @order_codeCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Code'**
+  String get order_codeCustomer;
+
+  /// No description provided for @order_codeSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Code'**
+  String get order_codeSales;
+
+  /// No description provided for @order_remark.
+  ///
+  /// In en, this message translates to:
+  /// **'Remark'**
+  String get order_remark;
+
   /// No description provided for @order_customerId.
   ///
   /// In en, this message translates to:
@@ -646,6 +682,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Product'**
   String get order_addProduct;
+
+  /// No description provided for @order_editProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Product'**
+  String get order_editProduct;
+
+  /// No description provided for @order_subTotalProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal Product'**
+  String get order_subTotalProduct;
 
   /// No description provided for @order_edit.
   ///
@@ -736,6 +784,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Inventory'**
   String get order_selectInventory;
+
+  /// No description provided for @order_currentStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Stock'**
+  String get order_currentStock;
+
+  /// No description provided for @order_qtyDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Qty'**
+  String get order_qtyDefault;
+
+  /// No description provided for @order_uomDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default UoM'**
+  String get order_uomDefault;
 
   /// No description provided for @transportation_management.
   ///
@@ -1210,6 +1276,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data'**
   String get emptyState_noData;
+
+  /// No description provided for @emptyState_dataNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Data not found'**
+  String get emptyState_dataNotFound;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

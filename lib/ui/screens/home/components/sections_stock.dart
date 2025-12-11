@@ -41,6 +41,16 @@ class SectionsStockDashboard extends StatelessWidget {
 
               if (isLoading == true) ...List.generate(5, (index) => _ShimmerRow()),
 
+              // emptyState_noData
+              if (isLoading == false && (stockItem == null || stockItem!.isEmpty)) ...[
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 28.0),
+                    child: Text(l?.emptyState_noData ?? '', style: AppTextStyles.body2Medium.copyWith(color: AppColors.neutral400)),
+                  ),
+                ),
+              ],
+
               if (isLoading == false && stockItem != null && stockItem!.isNotEmpty) ...[
                 ...displayList.asMap().entries.map((e) {
                   final idx = e.key + 1;

@@ -20,6 +20,7 @@ class AppDialog {
       barrierLabel: "Dialog",
       barrierColor: Colors.black.withOpacity(0.6),
       transitionDuration: const Duration(milliseconds: 280),
+
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: Material(
@@ -33,7 +34,7 @@ class AppDialog {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // HEADER
+                    // ---------------- HEADER ----------------
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -47,7 +48,8 @@ class AppDialog {
                             if (isBack)
                               IconButton(
                                 icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.white),
-                                onPressed: () => Navigator.pop(context), // return null
+                                // POP <T?> memastikan return null jika cancel
+                                onPressed: () => Navigator.of(context).pop<T>(null),
                               ),
                             Expanded(
                               child: Padding(
@@ -60,12 +62,12 @@ class AppDialog {
                       ),
                     ),
 
-                    // CONTENT
+                    // ---------------- CONTENT ----------------
                     Flexible(
                       child: SingleChildScrollView(padding: EdgeInsets.all(paddingContent), child: content),
                     ),
 
-                    // ACTION BUTTON
+                    // ---------------- ACTION BUTTON ----------------
                     if (actionButton != null) Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), child: actionButton),
                   ],
                 ),

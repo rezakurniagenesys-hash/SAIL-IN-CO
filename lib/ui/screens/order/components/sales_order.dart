@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
-import 'package:sail_in_co/ui/screens/order/components/widget/add_inventory.dart';
-import 'package:sail_in_co/ui/screens/order/components/widget/item_inventory_quick_sales.dart';
+import 'package:sail_in_co/ui/screens/order/components/widget/add_edit_inventory.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/sumary_row.dart';
 import 'package:sail_in_co/ui/screens/payment/enums/payments_enum.dart';
 import 'package:sail_in_co/ui/screens/payment/payment_screen.dart';
@@ -84,7 +83,7 @@ class SalesOrder extends StatelessWidget {
                   AppDialog.show(
                     context: context,
                     title: l.order_addProduct,
-                    content: AddInventory(),
+                    content: AddEditInventory(),
                     actionButton: AppButton(
                       isFullWidth: true,
                       label: l.order_insert,
@@ -98,7 +97,8 @@ class SalesOrder extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...List.generate(4, (index) => Padding(padding: const EdgeInsets.only(bottom: 12), child: ItemInventoryQuickSales())),
+          // TODO: Implementasi
+          // ...List.generate(4, (index) => Padding(padding: const EdgeInsets.only(bottom: 12), child: ItemInventoryQuickSales())),
           const SizedBox(height: 12 * 3),
           SummaryRow(data: {l.order_discount: 'Rp 38,000.00', l.order_subtotal: 'Rp 0.00', l.order_grandTotalPayment: 'Rp 38,000.00'}),
           const SizedBox(height: 24),

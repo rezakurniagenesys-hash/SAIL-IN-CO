@@ -35,6 +35,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboard_history => 'History';
 
   @override
+  String get dashboard_sale => 'Sales';
+
+  @override
   String get home_lastUpdate => 'Last Update';
 
   @override
@@ -114,6 +117,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customer_notVisit => 'Not Visited';
+
+  @override
+  String get customer_failedNotVisit => 'Failed Not Visited';
 
   @override
   String get customerDetail_title => 'Customer Detail';
@@ -254,6 +260,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get order_notVisit => 'Not Visit';
 
   @override
+  String get order_date => 'Date';
+
+  @override
+  String get order_codeCustomer => 'Customer Code';
+
+  @override
+  String get order_codeSales => 'Sales Code';
+
+  @override
+  String get order_remark => 'Remark';
+
+  @override
   String get order_customerId => 'Customer ID';
 
   @override
@@ -285,6 +303,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get order_addProduct => 'Add Product';
+
+  @override
+  String get order_editProduct => 'Edit Product';
+
+  @override
+  String get order_subTotalProduct => 'Subtotal Product';
 
   @override
   String get order_edit => 'Edit';
@@ -330,6 +354,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get order_selectInventory => 'Select Inventory';
+
+  @override
+  String get order_currentStock => 'Current Stock';
+
+  @override
+  String get order_qtyDefault => 'Default Qty';
+
+  @override
+  String get order_uomDefault => 'Default UoM';
 
   @override
   String get transportation_management => 'Transportation Management';
@@ -567,4 +600,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emptyState_noData => 'No data';
+
+  @override
+  String get emptyState_dataNotFound => 'Data not found';
 }

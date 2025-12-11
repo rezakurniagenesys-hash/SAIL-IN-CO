@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LocaleService extends ChangeNotifier {
   static const _key = 'locale_code';
-  Locale _locale = const Locale('id'); // default bahasa Indonesia
+  Locale _locale = const Locale('en'); // default bahasa Inggris
 
   Locale get locale => _locale;
 

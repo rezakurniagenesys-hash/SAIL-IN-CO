@@ -20,7 +20,8 @@
         "home": "Beranda",
         "customers": "Pelanggan",
         "transportation": "Transportasi",
-        "history": "Riwayat"
+        "history": "Riwayat",
+        "sale" : "Penjualan"
     },
 
     "home": {
@@ -54,7 +55,8 @@
         "list": "Daftar Pelanggan",
         "search": "Cari",
         "visit": "Dikunjungi",
-        "notVisit": "Belum Dikunjungi"
+        "notVisit": "Belum Dikunjungi",
+        "failedNotVisit": "Gagal Dikunjungi"
     },
     "customerDetail": {
         "title": "Detail Customer",
@@ -105,6 +107,10 @@
         "salesOrder": "Sales Order",
         "visit" : "Dikunjungi",
         "notVisit" : "Belum Dikunjungi",
+        "date" : "Tanggal",
+        "codeCustomer": "Kode Pelanggan",
+        "codeSales" : "Kode Sales",
+        "remark" : "Keterangan",
         "customerId": "ID Pelanggan",
         "paymentType": "Jenis Pembayaran",
         "salesId": "ID Sales",
@@ -116,6 +122,8 @@
         "phoneNumber": "Nomor HP",
         "inventoryDetail": "Detail Inventory",
         "addProduct": "Tambah Produk",
+        "editProduct": "Edit Produk",
+        "subTotalProduct": "Subtotal Produk",
         "edit": "Edit",
         "delete": "Hapus",
         "discount": "Diskon",
@@ -130,7 +138,10 @@
         "insert": "Tambah",
         "payment": "Pembayaran",
         "searchInventory": "Cari Inventory",
-        "selectInventory": "Pilih Inventory"
+        "selectInventory": "Pilih Inventory",
+        "currentStock" : "Stok Saat Ini",
+        "qtyDefault" : "Qty Default",
+        "uomDefault" : "UoM Default"
     },
     "transportation": {
         "management": "Manajemen Transportasi",
@@ -229,6 +240,7 @@
     },
 
     "emptyState": {
-        "noData": "Tidak ada data"
+        "noData": "Tidak ada data",
+        "dataNotFound": "Data tidak ditemukan"
     }
 }

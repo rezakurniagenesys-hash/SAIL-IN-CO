@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/core/utils/connection_utils.dart';
+import 'package:sail_in_co/data/dao/callsheet/callsheet_summary_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/stock/stock_request.dart';
 import 'package:sail_in_co/data/models/stock/stock_response.dart';
@@ -13,11 +15,15 @@ import 'package:sail_in_co/services/auth_service.dart';
 class HomeProvider extends ChangeNotifier {
   final _repo = HomeRepository();
   final _repoStock = StockRepository();
+  final daoCallSheet = CallsheetSummaryDao();
+
   UserInfo? userInfo;
   bool isLoading = false;
   bool isLoadingStock = false;
 
+  CallsheetSummaryResponse? summaryResponse;
   SummaryData? summaryData;
+
   StockResponse? stockResponse;
   List<StockItem>? stockItem;
 
@@ -31,7 +37,7 @@ class HomeProvider extends ChangeNotifier {
 
   void init(BuildContext context) {
     loadUserInfo();
-    getSummaryChart();
+    getSummaryChart(context);
     getStock(context);
   }
 
@@ -45,23 +51,40 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getSummaryChart() async {
+  Future<void> getSummaryChart(BuildContext context) async {
+    summaryData = null;
     isLoading = true;
-
-    await Future.delayed(const Duration(milliseconds: 1000));
-
     notifyListeners();
 
+    final online = await ConnectionUtils.isConnected();
+
     try {
-      final request = SummaryRequest(date: _formatDate(now), salesId: userInfo?.username ?? '');
-      final res = await _repo.getSummaryChart(request);
-      summaryData = res.data;
-      print("Summary chart data loaded: ${summaryData?.toJson()}");
+      if (online) {
+        final request = SummaryRequest(
+          // date: _formatDate(now),
+          date: '2025-11-28',
+          salesId: userInfo?.userId ?? '',
+        );
+        final res = await _repo.getSummaryChart(request);
+        if (res.statusCode == 200 && res.data != null) {
+          summaryResponse = CallsheetSummaryResponse.fromJson(res.data);
+          summaryData = summaryResponse?.data;
+          debugPrint("Summary chart: updated from API");
+        } else if (res.statusCode == 502 || res.statusCode == 500) {
+          SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        summaryData = await daoCallSheet.getSummary();
+        debugPrint("Summary chart: loaded from SQLite (offline)");
+      }
     } catch (e) {
       debugPrint("Error loading summary chart: $e");
     } finally {
       isLoading = false;
-      // Shoiw toast error handled in repository
       notifyListeners();
     }
   }
@@ -69,7 +92,6 @@ class HomeProvider extends ChangeNotifier {
   // getStock
   Future<void> getStock(BuildContext context) async {
     isLoadingStock = true;
-    await Future.delayed(const Duration(milliseconds: 1000));
     notifyListeners();
 
     try {
@@ -78,6 +100,9 @@ class HomeProvider extends ChangeNotifier {
       if (res.statusCode == 200 && res.data != null) {
         stockResponse = StockResponse.fromJson(res.data);
         stockItem = stockResponse?.data?.stock;
+      } else if (res.statusCode == 502 || res.statusCode == 500) {
+        SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);

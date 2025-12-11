@@ -13,7 +13,13 @@ class ApiConstants {
   static const String refreshTokenUrl = "/auth/api/refreshToken";
 
   // =======================================================
-  // Customer 
+  // Generals
+  // =======================================================
+  static const String generalInventory = "/stock/api/inventory";
+  // static const String generalUOMs = "/sales/api/inventory/{id}/uoms";
+
+  // =======================================================
+  // Customer
   // =======================================================
   static const String customerSearch = "/sales/api/callsheets/customer/search";
   static const String customerDetail = "/sales/api/callsheets/customer/{id}";
@@ -24,4 +30,11 @@ class ApiConstants {
 
   // Stock
   static const String stockUrl = "/sales/api/callsheets/stock";
+
+  // Payment
+  static const String salesReturns = "/stock/api/sales-returns?customer_id={customerId}";
+  static const String paymentMethods = "/stock/api/payment-methods?no_acc6={noAcc6}";
+
+  // quickSales
+  static const String quickSales = "/stock/api/quick-sales";
 }

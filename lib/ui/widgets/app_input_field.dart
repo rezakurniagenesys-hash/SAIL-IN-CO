@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 
-/// 🔹 Tambahkan textarea ke dalam enum
 enum AppInputType { text, number, date, textarea }
 
 class AppInputField extends StatelessWidget {
@@ -38,8 +37,9 @@ class AppInputField extends StatelessWidget {
   });
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime now = DateTime.now();
-    final DateTime? picked = await showDatePicker(context: context, initialDate: now, firstDate: DateTime(2000), lastDate: DateTime(2100));
+    final now = DateTime.now();
+    final picked = await showDatePicker(context: context, initialDate: now, firstDate: DateTime(2000), lastDate: DateTime(2100));
+
     if (picked != null && controller != null) {
       controller!.text = "${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}";
     }
@@ -50,71 +50,80 @@ class AppInputField extends StatelessWidget {
     final isDateType = type == AppInputType.date;
     final isTextArea = type == AppInputType.textarea;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (title?.isNotEmpty == true) ...[Text(title ?? '', style: AppTextStyles.body3Regular), SizedBox(height: 6)],
-        SizedBox(
-          height: isTextArea ? null : height,
-          child: TextFormField(
-            controller: controller,
-            keyboardType: type == AppInputType.number ? TextInputType.number : TextInputType.multiline,
-            obscureText: obscureText,
-            onChanged: onChanged,
-            validator: validator,
-            readOnly: readOnly || isDateType,
-            onTap: isDateType ? () => _selectDate(context) : null,
-            maxLines: isTextArea ? 4 : 1,
-            minLines: isTextArea ? 3 : 1,
-            style: const TextStyle(fontSize: 13, color: Colors.black),
-            decoration: InputDecoration(
-              labelText: label?.isNotEmpty == true ? label : null,
-              hintText: hintText,
-              hintStyle: const TextStyle(color: AppColors.neutral400, fontSize: 12),
-              labelStyle: const TextStyle(color: AppColors.neutral400, fontSize: 14),
-              floatingLabelStyle: const TextStyle(color: AppColors.sky950, fontWeight: FontWeight.w600, fontSize: 13),
-              filled: true,
-              fillColor: AppColors.white,
-              alignLabelWithHint: isTextArea,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: isTextArea
-                    ? 16
-                    : (height <= 36
-                          ? 8
-                          : height <= 44
-                          ? 10
-                          : 14),
-              ),
-              prefixIcon: prefixIcon,
-              suffixIcon: suffixIcon,
-
-              // Border default
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: borderSideColor, width: 1),
+    return FormField<String>(
+      validator: validator,
+      builder: (field) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title?.isNotEmpty == true)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text(title!, style: AppTextStyles.body3Regular),
               ),
 
-              // Border fokus
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: AppColors.sky950, width: 1.5),
-              ),
+            // ================= INPUT =================
+            SizedBox(
+              height: isTextArea ? null : height,
+              child: TextField(
+                controller: controller,
+                keyboardType: type == AppInputType.number ? TextInputType.number : TextInputType.multiline,
+                obscureText: obscureText,
+                readOnly: readOnly || isDateType,
+                maxLines: isTextArea ? 4 : 1,
+                minLines: isTextArea ? 3 : 1,
+                onChanged: (value) {
+                  onChanged?.call(value);
+                  field.didChange(value);
+                },
+                onTap: isDateType ? () => _selectDate(context) : null,
+                style: const TextStyle(fontSize: 13, color: Colors.black),
+                decoration: InputDecoration(
+                  labelText: label,
+                  hintText: hintText,
+                  hintStyle: const TextStyle(color: AppColors.neutral400, fontSize: 12),
+                  labelStyle: const TextStyle(color: AppColors.neutral400, fontSize: 14),
+                  floatingLabelStyle: const TextStyle(color: AppColors.sky950, fontWeight: FontWeight.w600, fontSize: 13),
 
-              // Border error
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.red, width: 1.5),
-              ),
+                  // ⬅ READONLY → warna abu-abu
+                  filled: true,
+                  fillColor: readOnly ? AppColors.neutral200 : AppColors.white,
 
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                  alignLabelWithHint: isTextArea,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: isTextArea
+                        ? 16
+                        : (height <= 36
+                              ? 8
+                              : height <= 44
+                              ? 10
+                              : 14),
+                  ),
+                  prefixIcon: prefixIcon,
+                  suffixIcon: suffixIcon,
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: readOnly ? AppColors.neutral300 : borderSideColor, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: AppColors.sky950, width: 1.5),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ],
+
+            // ================= ERROR TEXT =================
+            if (field.errorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, left: 4),
+                child: Text(field.errorText!, style: const TextStyle(color: Colors.red, fontSize: 11)),
+              ),
+          ],
+        );
+      },
     );
   }
 }

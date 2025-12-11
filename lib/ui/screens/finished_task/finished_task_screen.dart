@@ -8,7 +8,7 @@ import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/debouncer.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
-import 'package:sail_in_co/providers/customer/customer_management_provider.dart';
+import 'package:sail_in_co/providers/callsheet/finish_task_provider.dart';
 import 'package:sail_in_co/ui/screens/customer/components/item_customer.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_detail_screen.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
@@ -36,13 +36,13 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
 
     /// Load pertama
     Future.microtask(() {
-      context.read<CustomerManagementProvider>().getFinishTask(initial: true);
+      context.read<FinishTaskProvider>().getFinishTask(initial: true);
     });
 
     tabController.addListener(() {
       if (tabController.indexIsChanging) return;
 
-      final provider = context.read<CustomerManagementProvider>();
+      final provider = context.read<FinishTaskProvider>();
       provider.clearData();
       switch (tabController.index) {
         case 0:
@@ -76,7 +76,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
         appBar: AppBarCustom(
           title: l?.finishedTask_finishedTask ?? '',
           onRefresh: () {
-            final provider = context.read<CustomerManagementProvider>();
+            final provider = context.read<FinishTaskProvider>();
             searchCtrl.clear();
             provider.clearData();
             provider.getFinishTask(initial: true);
@@ -101,7 +101,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
                       hintText: l?.finishedTask_search ?? '',
                       onChanged: (text) {
                         _debouncer.run(() {
-                          final provider = context.read<CustomerManagementProvider>();
+                          final provider = context.read<FinishTaskProvider>();
                           provider.applyFilter(search: text);
                         });
                       },
@@ -114,7 +114,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
 
                       if (result != null) {
                         searchCtrl.text = result;
-                        final provider = context.read<CustomerManagementProvider>();
+                        final provider = context.read<FinishTaskProvider>();
                         provider.applyFilter(search: result);
                         tabController.index = 0;
                       }
@@ -159,13 +159,14 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
 
   /// ------------------------ UI: LIST ------------------------
   Widget _buildList() {
-    return Consumer<CustomerManagementProvider>(
+    return Consumer<FinishTaskProvider>(
       builder: (context, provider, child) {
         return RefreshIndicator(
           onRefresh: () async => provider.getFinishTask(initial: true),
           child: AppInfinityList(
             items: provider.customers,
             isLoading: provider.isLoading,
+            isSearchActive: searchCtrl.text.isNotEmpty,
             isLoadMore: provider.isLoadMore,
             onLoadMore: () => provider.getFinishTask(loadMore: true),
             itemBuilder: (context, index) {
@@ -181,6 +182,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
                   ).then((_) {
                     // refresh data when back from detail screen
                     provider.getFinishTask(initial: true);
+                    tabController.index = 0;
                   });
                 },
               );

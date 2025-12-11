@@ -7,7 +7,10 @@ import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/connection_provider.dart';
+import 'package:sail_in_co/providers/generals/general_providers.dart';
 import 'package:sail_in_co/providers/home/home_provider.dart';
+import 'package:sail_in_co/providers/sync/sync_provider.dart';
+import 'package:sail_in_co/ui/screens/development/developer_offline_page.dart';
 import 'package:sail_in_co/ui/screens/finished_task/finished_task_screen.dart';
 import 'package:sail_in_co/ui/screens/home/components/header_home.dart';
 import 'package:sail_in_co/ui/screens/home/components/sections_achievements.dart';
@@ -27,19 +30,36 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  initState() {
+  void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<HomeProvider>().init(context);
-    });
 
-    Future.delayed(const Duration(milliseconds: 1000), () {
+    /// Jalankan setelah frame pertama dirender
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final syncProvider = context.read<SyncProvider>();
+      syncProvider.init(
+        onShowLoading: () => showLoading(),
+        onHideLoading: () {
+          if (Navigator.canPop(context)) Navigator.pop(context);
+        },
+      );
+
+      /// Load first data
+      context.read<HomeProvider>().init(context);
+      context.read<GeneralProviders>().getInventory(context);
+
+      /// Tampilkan popup Sync Data
       // showSyncDataDialog();
     });
   }
 
+  // ------------------------------
+  // Dialog Sync Data
+  // ------------------------------
   void showSyncDataDialog() {
     final l = AppLocalizations.of(context);
+
+    final syncProvider = context.read<SyncProvider>();
+
     AppDialog.show(
       context: context,
       isBack: false,
@@ -52,14 +72,25 @@ class _HomeScreenState extends State<HomeScreen> {
         type: AppButtonType.primary,
         onPressed: () {
           Navigator.pop(context);
-          showLoading();
+
+          /// Sync init
+          syncProvider.init(
+            onShowLoading: () => showLoading(),
+            onHideLoading: () {
+              if (Navigator.canPop(context)) Navigator.pop(context);
+            },
+          );
         },
       ),
     );
   }
 
+  // ------------------------------
+  // Dialog Loading
+  // ------------------------------
   void showLoading() {
     final l = AppLocalizations.of(context);
+
     AppDialog.show(
       context: context,
       isBack: false,
@@ -67,24 +98,36 @@ class _HomeScreenState extends State<HomeScreen> {
       content: Column(
         spacing: 16,
         children: [
-          AppCustomLoadingSpinner(),
+          const AppCustomLoadingSpinner(),
           Text(l.homeDialog_syncNote, style: AppTextStyles.body3Regular, textAlign: TextAlign.center),
         ],
       ),
     );
 
+    /// Tutup otomatis setelah 3 detik
     Future.delayed(const Duration(seconds: 3), () {
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
+      if (Navigator.canPop(context)) Navigator.pop(context);
     });
   }
 
+  // ------------------------------
+  // UI
+  // ------------------------------
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.white,
+      // button pojok kanan
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const DeveloperOfflinePage()));
+        },
+        backgroundColor: AppColors.warning,
+        child: const Icon(Icons.developer_mode),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       appBar: AppBar(
         flexibleSpace: SafeArea(
           child: Consumer<ConnectionProvider>(
@@ -97,31 +140,42 @@ class _HomeScreenState extends State<HomeScreen> {
         toolbarHeight: 87,
         automaticallyImplyLeading: false,
       ),
-      // button pojok kanan\
+
       body: Consumer<HomeProvider>(
         builder: (context, homeProvider, child) {
           return Column(
             children: [
+              // Banner offline
               Consumer<ConnectionProvider>(
                 builder: (context, connectionProvider, child) {
-                  if (!connectionProvider.isConnected) {
-                    return Container(
-                      width: double.infinity,
-                      color: Colors.red.shade600,
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        l!.home_noInternet,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
+                  return (!connectionProvider.isConnected)
+                      ? Container(
+                          width: double.infinity,
+                          color: Colors.red.shade600,
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            l!.home_noInternet,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      : const SizedBox.shrink();
                 },
               ),
+
+              // Content
               Expanded(
                 child: LiquidPullToRefresh(
-                  onRefresh: () async => homeProvider.init(context),
+                  onRefresh: () async {
+                    homeProvider.init(context);
+                    final syncProvider = context.read<SyncProvider>();
+                    syncProvider.init(
+                      onShowLoading: () => showLoading(),
+                      onHideLoading: () {
+                        if (Navigator.canPop(context)) Navigator.pop(context);
+                      },
+                    );
+                  },
                   color: AppColors.sky950,
                   backgroundColor: AppColors.white,
                   height: 70,
@@ -132,12 +186,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       spacing: 16,
                       children: [
+                        // Task Chart
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FinishedTaskScreen()));
-                            },
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const FinishedTaskScreen())),
                             child: AppSemiDoughnutChart(
                               label: l?.home_tasks ?? '',
                               completed: homeProvider.summaryData?.completedTasks ?? 0,
@@ -147,8 +200,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
+
                         SectionsStockDashboard(stockItem: homeProvider.stockItem, isLoading: homeProvider.isLoadingStock),
-                        SectionsAchievementsDashboard(),
+
+                        const SectionsAchievementsDashboard(),
                         Container(color: AppColors.white, width: double.infinity, height: 200),
                       ],
                     ),

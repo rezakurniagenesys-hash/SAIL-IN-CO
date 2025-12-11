@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
+import 'package:detect_fake_location/detect_fake_location.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,7 +17,6 @@ class LocationHelper {
     try {
       debugPrint('Reverse geocoding for: $latitude, $longitude');
 
-      // quick guard: coordinates valid?
       if (latitude == 0 && longitude == 0) {
         debugPrint('Coordinates are (0,0) — skipping reverse geocoding.');
         return null;
@@ -24,18 +24,10 @@ class LocationHelper {
 
       final List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
 
-      debugPrint('placemarks length: ${placemarks.length}');
-      if (placemarks.isEmpty) {
-        debugPrint('No placemarks returned.');
-        return null;
-      }
+      if (placemarks.isEmpty) return null;
 
       final p = placemarks.first;
-      debugPrint(
-        'Placemark fields -> street:${p.street}, subLocality:${p.subLocality}, locality:${p.locality}, subAdmin:${p.subAdministrativeArea}, admin:${p.administrativeArea}, postal:${p.postalCode}',
-      );
 
-      // Build a human-friendly address, skipping null/empty parts
       final parts = <String>[];
       if ((p.street ?? '').isNotEmpty) parts.add(p.street!);
       if ((p.subLocality ?? '').isNotEmpty) parts.add(p.subLocality!);
@@ -48,19 +40,17 @@ class LocationHelper {
       return address.isNotEmpty ? address : null;
     } catch (e, st) {
       debugPrint('Error reverse geocoding: $e\n$st');
-      // Bisa kembalikan null atau pesan default
       return null;
     }
   }
 
-  /// Public: minta posisi saat ini. Kembalikan null jika gagal / tidak diizinkan.
+  /// Public: minta posisi saat ini. Kembalikan null jika gagal / tidak diizinkan atau fake.
   static Future<Position?> getCurrentPositionWithPermissionFlow(
     BuildContext context, {
     LocationAccuracy accuracy = LocationAccuracy.best,
     Duration settingsTimeout = const Duration(seconds: 30),
   }) async {
     try {
-      // Jika ada request permission yang sedang berjalan, tunggu sampai selesai
       if (_permissionCompleter != null && !_permissionCompleter!.isCompleted) {
         await _permissionCompleter!.future;
       }
@@ -71,42 +61,37 @@ class LocationHelper {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         await _showEnableLocationServiceDialog(context);
-
         if (!await Geolocator.isLocationServiceEnabled()) {
           _completePermissionCompleter();
           return null;
         }
       }
 
-      // Cek status permission
+      // Cek permission
       LocationPermission permission = await Geolocator.checkPermission();
-
-      // Jika sudah granted → ambil posisi
-      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+      if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
+        final permanentlyDenied = permission == LocationPermission.deniedForever;
         _completePermissionCompleter();
-        return await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
+        final openedSettings = await _showLocationPermissionBottomSheet(context, permanentlyDenied);
+        if (!openedSettings) return null;
+
+        final granted = await _waitForPermissionAfterReturning(context, timeout: settingsTimeout);
+        if (!granted) return null;
       }
 
-      final bool permanentlyDenied = (permission == LocationPermission.deniedForever);
-
-      // Lepaskan completer sebelum menampilkan bottomsheet
       _completePermissionCompleter();
 
-      final openedSettings = await _showLocationPermissionBottomSheet(context, permanentlyDenied);
+      // Ambil posisi
+      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
 
-      if (!openedSettings) {
-        // user menutup bottomsheet tanpa buka settings
+      // Cek fake location
+      final isFake = await DetectFakeLocation().detectFakeLocation();
+      if (isFake) {
+        await _showFakeGpsWarning(context);
         return null;
       }
 
-      // User membuka settings → tunggu app kembali & cek permission
-      final granted = await _waitForPermissionAfterReturning(context, timeout: settingsTimeout);
-
-      if (granted) {
-        return await Geolocator.getCurrentPosition(desiredAccuracy: accuracy);
-      }
-
-      return null;
+      return pos;
     } catch (e, st) {
       debugPrint('LocationHelper error: $e\n$st');
       _completePermissionCompleter();
@@ -114,7 +99,6 @@ class LocationHelper {
     }
   }
 
-  // helper untuk menyelesaikan dan reset completer
   static void _completePermissionCompleter() {
     try {
       if (_permissionCompleter != null && !_permissionCompleter!.isCompleted) {
@@ -124,20 +108,17 @@ class LocationHelper {
     _permissionCompleter = null;
   }
 
-  // Dialog singkat untuk minta user mengaktifkan Location Service (GPS)
   static Future<void> _showEnableLocationServiceDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Aktifkan Location Service'),
-        content: Text('Location service (GPS) belum aktif. Silakan aktifkan untuk mendapatkan lokasi.'),
+        title: Text('Aktifkan GPS'),
+        content: Text('GPS belum aktif. Silahkan aktifkan dulu untuk mendapatkan lokasi.'),
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text('Batal')),
           TextButton(
             onPressed: () async {
               Navigator.of(ctx).pop();
-              // Membuka setting location service sistem tidak standar di semua device.
-              // Kita bisa membuka App Settings sebagai alternatif:
               await openAppSettings();
             },
             child: Text('Buka Pengaturan'),
@@ -147,7 +128,6 @@ class LocationHelper {
     );
   }
 
-  // BottomSheet kustom yang menampilkan info izin lokasi; kembalikan true jika user memilih "Buka Pengaturan"
   static Future<bool> _showLocationPermissionBottomSheet(BuildContext context, bool permanentlyDenied) {
     return showModalBottomSheet<bool>(
       context: context,
@@ -183,7 +163,6 @@ class LocationHelper {
     ).then((value) => value == true);
   }
 
-  // Menunggu app resume lalu re-check permission; return true kalau granted
   static Future<bool> _waitForPermissionAfterReturning(BuildContext context, {Duration timeout = const Duration(seconds: 30)}) async {
     final completer = Completer<void>();
     late _LifecycleListener listener;
@@ -196,7 +175,6 @@ class LocationHelper {
 
     WidgetsBinding.instance.addObserver(listener);
 
-    // Tampilkan dialog kecil memberi tahu user kita menunggu (opsional)
     showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -224,31 +202,59 @@ class LocationHelper {
       },
     );
 
-    // Tunggu resume atau timeout
     await Future.any([completer.future, Future.delayed(timeout)]);
 
-    // Tutup dialog bila masih terbuka
     try {
       if (Navigator.of(context).canPop()) Navigator.of(context).pop();
     } catch (_) {}
 
     WidgetsBinding.instance.removeObserver(listener);
 
-    // Re-check permission
     final LocationPermission newPermission = await Geolocator.checkPermission();
     return (newPermission == LocationPermission.whileInUse || newPermission == LocationPermission.always);
   }
+
+  static Future<void> _showFakeGpsWarning(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isDismissible: false,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Peringatan Fake GPS!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              SizedBox(height: 12),
+              Text(
+                'Aplikasi mendeteksi penggunaan fake GPS. Mohon matikan aplikasi mock location untuk melanjutkan.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14),
+              ),
+              SizedBox(height: 20),
+              AppButton(
+                label: 'Tutup',
+                isFullWidth: true,
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
-// Listener lifecycle kecil
 class _LifecycleListener extends WidgetsBindingObserver {
   final VoidCallback onResume;
   _LifecycleListener({required this.onResume});
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      onResume();
-    }
+    if (state == AppLifecycleState.resumed) onResume();
   }
 }

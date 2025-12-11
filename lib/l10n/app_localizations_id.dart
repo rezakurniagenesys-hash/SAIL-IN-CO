@@ -35,6 +35,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get dashboard_history => 'Riwayat';
 
   @override
+  String get dashboard_sale => 'Penjualan';
+
+  @override
   String get home_lastUpdate => 'Pembaruan Terakhir';
 
   @override
@@ -114,6 +117,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get customer_notVisit => 'Belum Dikunjungi';
+
+  @override
+  String get customer_failedNotVisit => 'Gagal Dikunjungi';
 
   @override
   String get customerDetail_title => 'Detail Customer';
@@ -254,6 +260,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get order_notVisit => 'Belum Dikunjungi';
 
   @override
+  String get order_date => 'Tanggal';
+
+  @override
+  String get order_codeCustomer => 'Kode Pelanggan';
+
+  @override
+  String get order_codeSales => 'Kode Sales';
+
+  @override
+  String get order_remark => 'Keterangan';
+
+  @override
   String get order_customerId => 'ID Pelanggan';
 
   @override
@@ -285,6 +303,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get order_addProduct => 'Tambah Produk';
+
+  @override
+  String get order_editProduct => 'Edit Produk';
+
+  @override
+  String get order_subTotalProduct => 'Subtotal Produk';
 
   @override
   String get order_edit => 'Edit';
@@ -330,6 +354,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get order_selectInventory => 'Pilih Inventory';
+
+  @override
+  String get order_currentStock => 'Stok Saat Ini';
+
+  @override
+  String get order_qtyDefault => 'Qty Default';
+
+  @override
+  String get order_uomDefault => 'UoM Default';
 
   @override
   String get transportation_management => 'Manajemen Transportasi';
@@ -567,4 +600,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get emptyState_noData => 'Tidak ada data';
+
+  @override
+  String get emptyState_dataNotFound => 'Data tidak ditemukan';
 }

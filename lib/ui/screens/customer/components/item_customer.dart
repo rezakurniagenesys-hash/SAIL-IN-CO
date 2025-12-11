@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
@@ -54,14 +53,15 @@ class ItemCustomer extends StatelessWidget {
                           Container(
                             height: 5,
                             width: 5,
-                            decoration: BoxDecoration(
-                              color: (customer?.statusVisit == 1 || customer?.statusVisit == 2) ? AppColors.success : AppColors.error,
-                              shape: BoxShape.circle,
-                            ),
+                            decoration: BoxDecoration(color: (customer?.statusVisit == 2) ? AppColors.success : AppColors.error, shape: BoxShape.circle),
                           ),
                           SizedBox(width: 4),
                           Text(
-                            (customer?.statusVisit == 1 || customer?.statusVisit == 2) ? l!.customer_visit : l!.customer_notVisit,
+                            customer?.statusVisit == 1
+                                ? l!.customer_failedNotVisit
+                                : customer?.statusVisit == 2
+                                ? l!.customer_visit
+                                : l!.customer_notVisit,
                             style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                           ),
                         ],

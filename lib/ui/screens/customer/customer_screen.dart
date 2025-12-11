@@ -112,6 +112,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
             items: provider.customers,
             isLoading: provider.isLoading,
             isLoadMore: provider.isLoadMore,
+            isSearchActive: searchCtrl.text.isNotEmpty,
             onLoadMore: () => provider.getCustomers(loadMore: true),
             itemBuilder: (context, index) {
               return ItemCustomer(

@@ -2,212 +2,274 @@ import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 
-class AppDropdownSearch extends StatefulWidget {
-  final String? value;
-  final List<String> items;
-  final ValueChanged<String?> onChanged;
+class AppDropdownSearch<T> extends StatefulWidget {
+  final T? value;
+  final List<T> items;
+  final ValueChanged<T?> onChanged;
   final String? label;
   final String? hintText;
-  final String? Function(String?)? validator;
+  final String? Function(T?)? validator;
   final bool enabled;
   final Color borderSideColor;
+  final String Function(T item) display;
+  final bool Function(T a, T b)? compare;
 
   const AppDropdownSearch({
     super.key,
     required this.value,
     required this.items,
     required this.onChanged,
+    required this.display,
     this.label,
     this.hintText,
     this.validator,
     this.enabled = true,
     this.borderSideColor = AppColors.neutral300,
+    this.compare,
   });
 
   @override
-  State<AppDropdownSearch> createState() => _AppDropdownSearchState();
+  State<AppDropdownSearch<T>> createState() => _AppDropdownSearchState<T>();
 }
 
-class _AppDropdownSearchState extends State<AppDropdownSearch> {
-  late TextEditingController _controller;
+class _AppDropdownSearchState<T> extends State<AppDropdownSearch<T>> {
+  late TextEditingController _controller; // display only
+  late TextEditingController _searchController; // search in overlay
+
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
-  List<String> _filteredItems = [];
+
+  List<T> _filteredItems = [];
   bool _isFocused = false;
-  bool _isOverlayVisible = false;
+  bool _overlayVisible = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.value ?? '');
+
+    _controller = TextEditingController(text: widget.value == null ? '' : widget.display(widget.value as T));
+
+    _searchController = TextEditingController();
+
     _filteredItems = widget.items;
-    _controller.addListener(_onSearchChanged);
+
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant AppDropdownSearch<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Update items jika berubah
+    if (oldWidget.items != widget.items) {
+      setState(() {
+        _filteredItems = widget.items;
+      });
+    }
+
+    // Update value jika berubah
+    if (oldWidget.value != widget.value) {
+      _controller.text = widget.value == null ? '' : widget.display(widget.value as T);
+    }
+  }
+
+  bool isEqual(T a, T b) {
+    if (widget.compare != null) return widget.compare!(a, b);
+    return a == b;
   }
 
   void _onSearchChanged() {
     setState(() {
-      _filteredItems = widget.items.where((item) => item.toLowerCase().contains(_controller.text.toLowerCase())).toList();
+      _filteredItems = widget.items.where((item) => widget.display(item).toLowerCase().contains(_searchController.text.toLowerCase())).toList();
     });
 
-    // jika overlay belum tampil, langsung tampilkan
-    if (!_isOverlayVisible && widget.enabled) {
-      _showOverlay();
-    } else {
-      _refreshOverlay();
-    }
+    _refreshOverlay();
   }
 
-  void _toggleOverlay() {
-    if (_isOverlayVisible) {
-      _hideOverlay();
-    } else {
-      _showOverlay();
-    }
-  }
+  // ------------------ OVERLAY -------------------
 
-  void _showOverlay() {
-    if (!mounted || _overlayEntry != null) return;
+  void _showOverlay(FormFieldState<T> field) {
+    if (!mounted || _overlayEntry != null || !widget.enabled) return;
+
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
     final size = renderBox.size;
 
     _overlayEntry = OverlayEntry(
-      builder: (context) => GestureDetector(
-        onTap: _hideOverlay,
-        behavior: HitTestBehavior.translucent,
-        child: Stack(
-          children: [
-            Positioned(
-              width: size.width,
-              child: CompositedTransformFollower(
-                link: _layerLink,
-                showWhenUnlinked: false,
-                offset: Offset(0, size.height + 4),
-                child: Material(
-                  elevation: 4,
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 220),
-                    child: _filteredItems.isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Text("Tidak ada hasil", style: AppTextStyles.body4Reguler.copyWith(color: AppColors.neutral400, fontSize: 12)),
-                          )
-                        : ListView.builder(
-                            padding: EdgeInsets.zero,
-                            itemCount: _filteredItems.length,
-                            itemBuilder: (_, index) {
-                              final item = _filteredItems[index];
-                              final selected = item == widget.value;
-                              return InkWell(
-                                onTap: () {
-                                  widget.onChanged(item);
-                                  _controller.text = item;
-                                  _hideOverlay();
-                                  if (mounted) FocusScope.of(context).unfocus();
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                                  decoration: BoxDecoration(color: selected ? AppColors.sky950 : Colors.transparent, borderRadius: BorderRadius.circular(8)),
-                                  child: Text(
-                                    item,
-                                    style: AppTextStyles.body4Reguler.copyWith(
-                                      color: selected ? AppColors.white : AppColors.textPrimary,
-                                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                                      fontSize: 13,
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(child: GestureDetector(onTap: _hideOverlay)),
+
+          Positioned(
+            width: size.width,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              offset: Offset(0, size.height + 4),
+              showWhenUnlinked: false,
+              child: Material(
+                elevation: 4,
+                borderRadius: BorderRadius.circular(8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // SEARCH INPUT IN OVERLAY
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: TextField(
+                        controller: _searchController,
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          hintText: "Cari...",
+                          hintStyle: const TextStyle(color: AppColors.neutral400, fontSize: 12),
+                          prefixIcon: const Icon(Icons.search, size: 18),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        style: AppTextStyles.body4Reguler.copyWith(fontSize: 12),
+                      ),
+                    ),
+
+                    // LIST ITEMS
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 220),
+                      child: _filteredItems.isEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text("Tidak ada hasil", style: AppTextStyles.body4Reguler.copyWith(color: AppColors.neutral400, fontSize: 12)),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: _filteredItems.length,
+                              itemBuilder: (_, index) {
+                                final item = _filteredItems[index];
+                                final selected = widget.value != null && isEqual(item, widget.value as T);
+
+                                return InkWell(
+                                  onTap: () {
+                                    field.didChange(item); // ✔ FIX: beri tahu FormField bahwa value berubah
+                                    widget.onChanged(item); // provider update
+                                    _controller.text = widget.display(item);
+
+                                    setState(() {
+                                      _filteredItems = widget.items;
+                                    });
+
+                                    _hideOverlay();
+                                    FocusScope.of(context).unfocus();
+                                  },
+
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                    decoration: BoxDecoration(color: selected ? AppColors.sky950 : Colors.transparent),
+                                    child: Text(
+                                      widget.display(item),
+                                      style: AppTextStyles.body4Reguler.copyWith(
+                                        color: selected ? AppColors.white : AppColors.textPrimary,
+                                        fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
 
-    final overlay = Overlay.of(context);
-    if (mounted) {
-      overlay.insert(_overlayEntry!);
-      setState(() => _isOverlayVisible = true);
-    }
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() => _overlayVisible = true);
   }
 
   void _refreshOverlay() => _overlayEntry?.markNeedsBuild();
 
   void _hideOverlay() {
-    if (!mounted) return;
     _overlayEntry?.remove();
     _overlayEntry = null;
-    if (mounted) {
-      setState(() => _isOverlayVisible = false);
-    }
+
+    setState(() {
+      _overlayVisible = false;
+      _searchController.clear(); // reset search setiap tutup dropdown
+      _filteredItems = widget.items;
+    });
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_onSearchChanged);
+    _searchController.dispose();
     _controller.dispose();
-
-    // pastikan overlay dihapus tanpa akses context
     _overlayEntry?.remove();
-    _overlayEntry = null;
-
     super.dispose();
   }
 
+  // ------------------ WIDGET UTAMA -------------------
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: Focus(
-        onFocusChange: (hasFocus) {
-          setState(() => _isFocused = hasFocus);
-          if (!hasFocus) _hideOverlay();
-        },
-        child: TextFormField(
-          enabled: widget.enabled,
-          controller: _controller,
-          validator: widget.validator,
-          style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary, fontSize: 13),
-          decoration: InputDecoration(
-            labelText: widget.label,
-            hintText: widget.hintText ?? 'Pilih atau cari...',
-            hintStyle: const TextStyle(color: AppColors.neutral400, fontSize: 13),
-            labelStyle: AppTextStyles.body4Medium.copyWith(color: _isFocused ? AppColors.sky950 : AppColors.neutral400, fontSize: 13),
-            floatingLabelStyle: AppTextStyles.body4Medium.copyWith(color: AppColors.sky950, fontWeight: FontWeight.w600),
-            filled: true,
-            fillColor: widget.enabled ? AppColors.white : AppColors.neutral100,
-            suffixIcon: IconButton(
-              icon: Icon(_isOverlayVisible ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: AppColors.sky950),
-              onPressed: _toggleOverlay,
+    return FormField<T>(
+      validator: widget.validator,
+      initialValue: widget.value,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      builder: (field) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CompositedTransformTarget(
+              link: _layerLink,
+              child: GestureDetector(
+                onTap: () => _showOverlay(field),
+                child: AbsorbPointer(
+                  absorbing: true,
+                  child: TextField(
+                    controller: _controller,
+                    readOnly: true,
+                    enabled: widget.enabled,
+                    style: AppTextStyles.body4Reguler.copyWith(color: widget.enabled ? AppColors.textPrimary : AppColors.neutral400, fontSize: 13),
+                    decoration: InputDecoration(
+                      labelText: widget.label,
+                      hintText: widget.hintText ?? "Pilih...",
+                      labelStyle: AppTextStyles.body4Medium.copyWith(color: _isFocused ? AppColors.sky950 : AppColors.neutral400, fontSize: 13),
+                      floatingLabelStyle: AppTextStyles.body4Medium.copyWith(color: AppColors.sky950, fontWeight: FontWeight.w600),
+                      filled: true,
+                      fillColor: widget.enabled ? AppColors.white : AppColors.neutral100,
+                      suffixIcon: Icon(_overlayVisible ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: AppColors.sky950),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+
+                      // BORDER NORMAL (tidak berubah saat error)
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: widget.borderSideColor, width: 1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: AppColors.sky950, width: 1.5),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+
+                      // errorStyle tinggi 0 agar tidak merusak layout
+                      errorStyle: const TextStyle(height: 0),
+
+                      // HAPUS errorBorder & focusedErrorBorder
+                    ),
+                  ),
+                ),
+              ),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: widget.borderSideColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.sky950, width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Colors.red, width: 1.2),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Colors.red, width: 1.5),
-            ),
-          ),
-        ),
-      ),
+
+            // ==== ERROR TEXT DITAMPILKAN MANUAL ====
+            if (field.errorText != null && _controller.text.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, left: 4),
+                child: Text(field.errorText!, style: const TextStyle(color: Colors.red, fontSize: 11)),
+              ),
+          ],
+        );
+      },
     );
   }
 }

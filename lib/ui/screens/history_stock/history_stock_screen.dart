@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/stock/stock_provider.dart';
 import 'package:sail_in_co/ui/screens/history_stock/component/item_history_stock.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
@@ -28,6 +29,7 @@ class _HistoryStockScreenState extends State<HistoryStockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBarCustom(
@@ -48,7 +50,7 @@ class _HistoryStockScreenState extends State<HistoryStockScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: AppInputField( 
+                      child: AppInputField(
                         hintText: 'Search',
                         controller: stockProvider.searchController,
                         onChanged: (value) {
@@ -60,6 +62,12 @@ class _HistoryStockScreenState extends State<HistoryStockScreen> {
                 ),
                 if (stockProvider.isLoadingStock == true) ...[
                   Expanded(child: const Center(child: CircularProgressIndicator())),
+                ] else if (stockProvider.stockItem == null || stockProvider.stockItem!.isEmpty) ...[
+                  Expanded(
+                    child: Center(
+                      child: Text(l?.emptyState_noData ?? '', style: TextStyle(color: AppColors.neutral400, fontSize: 16)),
+                    ),
+                  ),
                 ] else ...[
                   ListView.builder(
                     shrinkWrap: true,

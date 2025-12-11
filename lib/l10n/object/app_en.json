@@ -19,7 +19,8 @@
         "home": "Home",
         "customers": "Customers",
         "transportation": "Transportation",
-        "history": "History"
+        "history": "History",
+        "sale" : "Sales"
     },
 
     "home": {
@@ -53,7 +54,8 @@
         "list": "Customer List",
         "search": "Search",
         "visit": "Visited",
-        "notVisit": "Not Visited"
+        "notVisit": "Not Visited",
+        "failedNotVisit": "Failed Not Visited"
     },
     "customerDetail": {
         "title": "Customer Detail",
@@ -104,6 +106,10 @@
         "salesOrder": "Sales Order",
         "visit" : "Visit",
         "notVisit" : "Not Visit",
+        "date" : "Date",
+        "codeCustomer": "Customer Code",
+        "codeSales" : "Sales Code",
+        "remark" : "Remark",
         "customerId": "Customer ID",
         "paymentType": "Payment Type",
         "salesId": "Sales ID",
@@ -115,6 +121,8 @@
         "phoneNumber": "Phone Number",
         "inventoryDetail": "Inventory Detail",
         "addProduct": "Add Product",
+        "editProduct": "Edit Product",
+        "subTotalProduct": "Subtotal Product",
         "edit": "Edit",
         "delete": "Delete",
         "discount": "Discount",
@@ -129,7 +137,10 @@
         "insert": "Insert",
         "payment" : "Payment",
         "searchInventory" : "Search Inventory",
-        "selectInventory" : "Select Inventory"
+        "selectInventory" : "Select Inventory",
+        "currentStock" : "Current Stock",
+        "qtyDefault" : "Default Qty",
+        "uomDefault" : "Default UoM"
     },
 
     "transportation": {
@@ -229,6 +240,7 @@
     },
 
     "emptyState": {
-        "noData": "No data"
+        "noData": "No data",
+        "dataNotFound": "Data not found"
     }
 }

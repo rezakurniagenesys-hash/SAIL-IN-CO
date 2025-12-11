@@ -108,12 +108,13 @@ class _AdjustmentScreenState extends State<AdjustmentScreen> {
               const SizedBox(height: 12),
               Text(l.order_searchInventory, style: AppTextStyles.body2Medium.copyWith(fontSize: 14, fontWeight: FontWeight.normal)),
               const SizedBox(height: 6),
-              AppDropdownSearch(
+              AppDropdownSearch<String>(
                 label: l.order_searchInventory,
                 hintText: l.order_selectInventory,
                 value: selectedInventory,
                 items: const ['Inventory A', 'Inventory B', 'Inventory C', 'Inventory D'],
                 onChanged: (value) => setState(() => selectedInventory = value ?? ''),
+                display: (String item) => item,
               ),
               const SizedBox(height: 12),
               Text(l.order_inventoryDetail, style: AppTextStyles.body2Medium.copyWith(fontSize: 14, fontWeight: FontWeight.normal)),

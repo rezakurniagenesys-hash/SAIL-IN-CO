@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:detect_fake_location/detect_fake_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 enum CustomerUploadFotoAction { repick, submit }
@@ -213,16 +215,20 @@ class _CustomerUploadFotoState extends State<CustomerUploadFoto> {
                         height: 44,
                         isDisabled: provider.isLoadingLocation,
                         onPressed: () async {
-                          provider.submitPhoto(widget.customerId, widget.scheduleId, context).then((res) {
-                            if (res != null && res.status == true) {
-                              Navigator.pop(context, CustomerUploadFotoAction.submit);
-                            } else {
-                              // show error
-                              ScaffoldMessenger.of(
-                                context,
-                              ).showSnackBar(SnackBar(content: Text(res?.message ?? 'Gagal mengunggah foto. Silakan coba lagi.'), backgroundColor: Colors.red));
-                            }
-                          });
+                          final isFake = await DetectFakeLocation().detectFakeLocation();
+                          if (isFake) {
+                            await _showFakeGpsWarning(context);
+                            return;
+                          } else {
+                            provider.submitPhoto(widget.customerId, widget.scheduleId, context).then((res) {
+                              if (res != null && res.status == true) {
+                                Navigator.pop(context, CustomerUploadFotoAction.submit);
+                              } else {
+                                // show error
+                                AppSnackBar.show(context, message: res?.message ?? 'Gagal mengunggah foto. Silakan coba lagi.', color: Colors.red);
+                              }
+                            });
+                          }
                         },
                       ),
                     ),
@@ -231,6 +237,40 @@ class _CustomerUploadFotoState extends State<CustomerUploadFoto> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  static Future<void> _showFakeGpsWarning(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isDismissible: false,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Peringatan Fake GPS!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              SizedBox(height: 12),
+              Text(
+                'Aplikasi mendeteksi penggunaan fake GPS. Mohon matikan aplikasi mock location untuk melanjutkan.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14),
+              ),
+              SizedBox(height: 20),
+              AppButton(
+                label: 'Tutup',
+                isFullWidth: true,
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          ),
         );
       },
     );

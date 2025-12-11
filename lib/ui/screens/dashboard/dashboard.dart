@@ -8,7 +8,6 @@ import 'package:sail_in_co/ui/screens/customer/customer_screen.dart';
 import 'package:sail_in_co/ui/screens/home/home_screen.dart';
 import 'package:sail_in_co/ui/screens/transactions/sales_transaction_screen.dart';
 import 'package:sail_in_co/ui/screens/transactions/transactions_screen.dart';
-import 'package:sail_in_co/ui/screens/transport/transport_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -21,12 +20,15 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   int _selectedIndex = 0;
   bool isSwipe = false;
 
-  final List<String> icons = [AssetIcons.typcnHome, AssetIcons.f7Person2Fill, AssetIcons.mingcuteCarFill, AssetIcons.mingcutePaperFill];
+  // final List<String> icons = [AssetIcons.typcnHome, AssetIcons.f7Person2Fill, AssetIcons.mingcuteCarFill, AssetIcons.mingcutePaperFill];
+  final List<String> icons = [AssetIcons.typcnHome, AssetIcons.f7Person2Fill, AssetIcons.fluentPersonSquareAdd16Filled, AssetIcons.mingcutePaperFill];
 
   late final PageController _pageController;
 
   late final AnimationController _controller;
   late final Animation<double> animation;
+
+  final disabledIndex = 2;
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
   }
 
   void _onItemTapped(int index) async {
+    if (index == disabledIndex) return;
     setState(() {
       _selectedIndex = index;
     });
@@ -75,7 +78,7 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
       case 1:
         return l?.dashboard_customers ?? 'Customers';
       case 2:
-        return l?.dashboard_transportation ?? 'Transportation';
+        return l?.dashboard_sale ?? 'Sales';
       case 3:
         return l?.dashboard_history ?? 'History';
       default:
@@ -92,42 +95,39 @@ class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMix
         controller: _pageController,
         onPageChanged: _onPageChanged,
         physics: isSwipe ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(), // disable swipe
-        children: <Widget>[HomeScreen(), CustomerScreen(), TransportScreen(), TransactionScreen()],
+        // children: <Widget>[HomeScreen(), CustomerScreen(), TransportScreen(), TransactionScreen()],
+        children: <Widget>[HomeScreen(), CustomerScreen(), SalesTransactionScreen(), TransactionScreen()],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: InkWell(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const SalesTransactionScreen()));
-        },
-        child: Container(
-          height: 70,
-          width: 70,
-          decoration: const BoxDecoration(
-            color: Color(0xFF122E4D),
-            shape: BoxShape.circle,
-            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))],
-          ),
-          child: Center(
-            child: SvgPicture.asset(AssetIcons.fluentPersonSquareAdd16Filled, height: 28, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFF122E4D),
-        shape: const SmoothShallowNotchedRectangle(),
-        notchMargin: 10,
-        elevation: 12,
-        child: Container(
-          color: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, icons[0]),
-              _buildNavItem(1, icons[1]),
-              const SizedBox(width: 60),
-              _buildNavItem(2, icons[2]),
-              _buildNavItem(3, icons[3]),
-            ],
+      // floatingActionButton: InkWell(
+      //   onTap: () {
+      //     Navigator.push(context, MaterialPageRoute(builder: (context) => const SalesTransactionScreen()));
+      //   },
+      //   child: Container(
+      //     height: 70,
+      //     width: 70,
+      //     decoration: const BoxDecoration(
+      //       color: Color(0xFF122E4D),
+      //       shape: BoxShape.circle,
+      //       boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))],
+      //     ),
+      //     child: Center(
+      //       child: SvgPicture.asset(AssetIcons.fluentPersonSquareAdd16Filled, height: 28, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+      //     ),
+      //   ),
+      // ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+        child: BottomAppBar(
+          color: const Color(0xFF122E4D),
+          elevation: 12,
+          shape: const SmoothShallowNotchedRectangle(),
+          child: SizedBox(
+            height: 70,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [_buildNavItem(0, icons[0]), _buildNavItem(1, icons[1]), _buildNavItem(2, icons[2]), _buildNavItem(3, icons[3])],
+            ),
           ),
         ),
       ),

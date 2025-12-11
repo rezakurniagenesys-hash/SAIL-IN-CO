@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
-import 'package:sail_in_co/ui/screens/order/components/widget/add_inventory.dart';
+import 'package:sail_in_co/ui/screens/order/components/widget/add_edit_inventory.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/item_inventory_quick_sales.dart';
 import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
@@ -67,7 +67,7 @@ class SalesTransactionScreen extends StatelessWidget {
                       AppDialog.show(
                         context: context,
                         title: l.transaction_addProduct,
-                        content: AddInventory(),
+                        content: AddEditInventory(),
                         actionButton: AppButton(
                           isFullWidth: true,
                           label: l.transaction_insert,
@@ -81,7 +81,8 @@ class SalesTransactionScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              ...List.generate(4, (index) => Padding(padding: const EdgeInsets.only(bottom: 12), child: ItemInventoryQuickSales(isDescriptionVisible: true))),
+              // TODO: Implementasi
+              // ...List.generate(4, (index) => Padding(padding: const EdgeInsets.only(bottom: 12), child: ItemInventoryQuickSales(isDescriptionVisible: true))),
               const SizedBox(height: 12 * 3),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

@@ -79,18 +79,22 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                     height: 5,
                                     width: 5,
                                     decoration: BoxDecoration(
-                                      color:
-                                          (provider.customerDetailData?.customer?.statusVisit == 1 || provider.customerDetailData?.customer?.statusVisit == 2)
-                                          ? AppColors.success
-                                          : AppColors.error,
+                                      color: (provider.customerDetailData?.customer?.statusVisit == 2) ? AppColors.success : AppColors.error,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    (provider.customerDetailData?.customer?.statusVisit == 1 || provider.customerDetailData?.customer?.statusVisit == 2)
-                                        ? l.customerDetail_statusVisited
-                                        : l.customerDetail_statusNotVisited,
+                                    //     customer?.statusVisit == 1
+                                    // ? l!.customer_failedNotVisit
+                                    // : customer?.statusVisit == 2
+                                    // ? l!.customer_visit
+                                    // : l!.customer_notVisit,
+                                    provider.customerDetailData?.customer?.statusVisit == 1
+                                        ? l.customer_failedNotVisit
+                                        : provider.customerDetailData?.customer?.statusVisit == 2
+                                        ? l.customer_visit
+                                        : l.customer_notVisit,
                                     style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.white),
                                   ),
                                 ],
@@ -232,7 +236,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                               type: AppButtonType.sky50,
                               height: 42,
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => OrderScreen()));
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => OrderScreen(customerDetailData: provider.customerDetailData)));
                               },
                             ),
                           ),

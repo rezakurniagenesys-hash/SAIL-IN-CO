@@ -3,6 +3,7 @@ import 'package:sail_in_co/l10n/app_localizations.dart';
 
 class AppInfinityList extends StatelessWidget {
   final ScrollController? controller;
+  final bool isSearchActive;
   final List items;
   final bool isLoading;
   final bool isLoadMore;
@@ -20,6 +21,7 @@ class AppInfinityList extends StatelessWidget {
     required this.isLoadMore,
     required this.itemBuilder,
     required this.onLoadMore,
+    this.isSearchActive = false,
     this.padding,
     this.emptyWidget,
     this.loadingWidget,
@@ -27,6 +29,7 @@ class AppInfinityList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('isSearchActive: $isSearchActive');
     final l = AppLocalizations.of(context);
     final ScrollController scrollCtrl = controller ?? ScrollController();
 
@@ -43,7 +46,10 @@ class AppInfinityList extends StatelessWidget {
             child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
           );
     }
-
+    // SEARCH - NO DATA FOUND ------------------------------
+    if (items.isEmpty && isSearchActive) {
+      return emptyWidget ?? Center(child: Text(l!.emptyState_dataNotFound));
+    }
     // EMPTY LIST --------------------------------------------
     if (items.isEmpty) {
       return emptyWidget ?? Center(child: Text(l!.emptyState_noData));

@@ -12,6 +12,7 @@ class StockRepository {
       final response = await _api.get("${ApiConstants.baseUrl}${ApiConstants.stockUrl}/${stockRequest.warehouseId}", query: stockRequest.toQueryParams());
       return response;
     } catch (e) {
+      print(e);
       return ApiResponse(data: null, statusCode: 500, message: e.toString());
     }
   }
