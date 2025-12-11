@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/core/constants/constant_date.dart';
+import 'package:sail_in_co/core/utils/connection_utils.dart';
+import 'package:sail_in_co/core/utils/date_utils.dart';
+import 'package:sail_in_co/data/dao/callsheet/callsheet_customer_item_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_item.dart';
 import 'package:sail_in_co/data/models/customer/customer_search_request.dart';
@@ -7,15 +11,9 @@ import 'package:sail_in_co/services/auth_service.dart';
 
 class FinishTaskProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
+  final callsheetCustomerItemDao = CallsheetCustomerItemDao();
 
-  // Date filter - default to today
-  final now = DateTime.now();
-
-  // Helper to format date to string YYYY-MM-DD
-  // '2025-11-28',
-  String _formatDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-  }
+  final date = ConstantDate.date;
 
   /// Data list
   List<CustomerItem> customers = [];
@@ -39,57 +37,67 @@ class FinishTaskProvider extends ChangeNotifier {
 
   Future<void> getFinishTask({bool loadMore = false, bool initial = false}) async {
     userInfo = await AuthService.getUserInfo();
-    // LOAD MORE
-    if (loadMore) {
-      if (isLoadMore) return;
-      if (page >= totalPages) return;
-
-      isLoadMore = true;
-      page++;
-      notifyListeners();
-    } else if (initial) {
-      searchText = null;
-      customerId = null;
-      status = null;
-      isLoading = true;
-      page = 1;
-      customers.clear();
-      notifyListeners();
-    }
-    // INITIAL LOAD
-    else {
-      isLoading = true;
-      page = 1;
-      customers.clear();
-      notifyListeners();
-    }
-    final request = CustomerSearchRequest(
-      page: page,
-      limit: limit,
-      search: searchText,
-      customerId: customerId,
-      status: status,
-      // date: _formatDate(now),
-      date: '2025-11-28',
-      salesId: userInfo?.userId ?? '',
-    );
-
-    final response = await _repo.getCustomerManagement(request);
-
-    if (response?.data?.customerData != null) {
+    final online = await ConnectionUtils.isConnected();
+    if (online) {
+      // LOAD MORE
       if (loadMore) {
-        customers.addAll(response!.data!.customerData!);
-      } else {
-        customers = response!.data!.customerData!;
-        totalPages = response.data!.pagination?.totalPages ?? 1;
-      }
-    }
+        if (isLoadMore) return;
+        if (page >= totalPages) return;
 
-    // END STATE
-    if (loadMore) {
-      isLoadMore = false;
+        isLoadMore = true;
+        page++;
+        notifyListeners();
+      } else if (initial) {
+        searchText = null;
+        customerId = null;
+        status = null;
+        isLoading = true;
+        page = 1;
+        customers.clear();
+        notifyListeners();
+      }
+      // INITIAL LOAD
+      else {
+        isLoading = true;
+        page = 1;
+        customers.clear();
+        notifyListeners();
+      }
+      final request = CustomerSearchRequest(
+        page: page,
+        limit: limit,
+        search: searchText,
+        customerId: customerId,
+        status: status,
+        date: DateUtilsHelper.formatYMD(date),
+        salesId: userInfo?.userId ?? '',
+      );
+
+      final response = await _repo.getCustomerManagement(request);
+
+      if (response?.data?.customerData != null) {
+        if (loadMore) {
+          customers.addAll(response!.data!.customerData!);
+        } else {
+          customers = response!.data!.customerData!;
+          totalPages = response.data!.pagination?.totalPages ?? 1;
+        }
+      }
+
+      // END STATE
+      if (loadMore) {
+        isLoadMore = false;
+      } else {
+        isLoading = false;
+      }
     } else {
-      isLoading = false;
+      if (status == null) {
+        customers = await callsheetCustomerItemDao.getCustomersByStatus([0, 1, 2], search: searchText);
+      } else if (status == 0) {
+        customers = await callsheetCustomerItemDao.getCustomersByStatus([0], search: searchText);
+      } else if (status == 1) {
+        customers = await callsheetCustomerItemDao.getCustomersByStatus([1, 2], search: searchText);
+      }
     }
 
     notifyListeners();
@@ -101,6 +109,8 @@ class FinishTaskProvider extends ChangeNotifier {
     this.customerId = customerId;
     this.status = status;
     page = 1;
+
+    print('Apply Filter: search=$searchText, customerId=$customerId, status=$status');
 
     getFinishTask();
   }

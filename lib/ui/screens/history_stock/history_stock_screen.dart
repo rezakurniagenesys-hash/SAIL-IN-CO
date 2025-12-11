@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
+import 'package:sail_in_co/core/utils/debouncer.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/stock/stock_provider.dart';
 import 'package:sail_in_co/ui/screens/history_stock/component/item_history_stock.dart';
@@ -17,6 +18,7 @@ class HistoryStockScreen extends StatefulWidget {
 }
 
 class _HistoryStockScreenState extends State<HistoryStockScreen> {
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
   @override
   void initState() {
     Future.microtask(() {
@@ -54,7 +56,9 @@ class _HistoryStockScreenState extends State<HistoryStockScreen> {
                         hintText: 'Search',
                         controller: stockProvider.searchController,
                         onChanged: (value) {
-                          stockProvider.getStock(context);
+                          _debouncer.run(() {
+                            stockProvider.searchStock(context);
+                          });
                         },
                       ),
                     ),
@@ -69,12 +73,14 @@ class _HistoryStockScreenState extends State<HistoryStockScreen> {
                     ),
                   ),
                 ] else ...[
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: stockProvider.stockItem?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return ItemHistoryStock(stockItem: stockProvider.stockItem?[index]);
-                    },
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: stockProvider.stockItem?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        return ItemHistoryStock(stockItem: stockProvider.stockItem?[index]);
+                      },
+                    ),
                   ),
                 ],
               ],

@@ -14,16 +14,19 @@ class CustomerUploadFotoRequest {
   @JsonKey(name: 'user_modified')
   final String userModified;
 
+  @JsonKey(name: 'visit_date')
+  final DateTime visitDate;
+
   CustomerUploadFotoRequest({
     required this.latitude,
     required this.longitude,
     required this.address,
     required this.statusVisit,
     required this.userModified,
+    required this.visitDate,
   });
 
-  factory CustomerUploadFotoRequest.fromJson(Map<String, dynamic> json) =>
-      _$CustomerUploadFotoRequestFromJson(json);
+  factory CustomerUploadFotoRequest.fromJson(Map<String, dynamic> json) => _$CustomerUploadFotoRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$CustomerUploadFotoRequestToJson(this);
 }

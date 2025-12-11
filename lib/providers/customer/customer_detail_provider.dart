@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sail_in_co/core/helpers/image_picker_helper.dart';
 import 'package:sail_in_co/core/helpers/location_helper.dart';
+import 'package:sail_in_co/core/utils/connection_utils.dart';
+import 'package:sail_in_co/data/dao/callsheet/callsheet_customer_detail_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/customer/upload_foto/customer_upload_foto_request.dart';
@@ -17,10 +19,13 @@ import 'package:sail_in_co/services/auth_service.dart';
 class CustomerDetailProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
 
+  final daoCustomerDetail = CustomerDetailDao();
+
   // ============= Customer Detail =============
   bool isLoading = false;
   bool isUploadingImage = false;
   CustomerDetailData? customerDetailData;
+  CustomerModel? customerModel;
   UserInfo? userInfo;
 
   // ============= Upload Foto =============
@@ -48,18 +53,22 @@ class CustomerDetailProvider extends ChangeNotifier {
 
   Future<void> getDetailCustomer(String customerId, String scheduleId, BuildContext context) async {
     isLoading = true;
-
-    await Future.delayed(const Duration(milliseconds: 1000));
     notifyListeners();
-
+    final online = await ConnectionUtils.isConnected();
     try {
-      final res = await _repo.getCustomerDetail(customerId, scheduleId);
-      if (res.statusCode == 200 && res.data != null) {
-        customerDetailData = CustomerDetailResponse.fromJson(res.data).data;
+      if (online) {
+        final res = await _repo.getCustomerDetail(customerId, scheduleId);
+        if (res.statusCode == 200 && res.data != null) {
+          customerDetailData = CustomerDetailResponse.fromJson(res.data).data;
+        } else {
+          // Snackbar
+          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       } else {
-        // Snackbar
-        SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        customerModel = await daoCustomerDetail.getCustomerDetail(customerId);
+        customerDetailData = CustomerDetailData(customer: customerModel);
+        debugPrint("Customer detail loaded from SQLite (offline)");
       }
     } catch (e) {
       debugPrint("Error loading customer detail: $e");
@@ -106,7 +115,17 @@ class CustomerDetailProvider extends ChangeNotifier {
   Future<void> initLocation(BuildContext context) async {
     setLoadingLocation(true);
 
-    final pos = await LocationHelper.getCurrentPositionWithPermissionFlow(context);
+    Position? pos;
+
+    final online = await ConnectionUtils.isConnected();
+
+    if (online) {
+      pos = await LocationHelper.getCurrentPositionWithPermissionFlow(context);
+    } else {
+      pos = await LocationHelper.getCurrentPositionOffline();
+    }
+
+    // final pos = await LocationHelper.getCurrentPositionWithPermissionFlow(context);
     if (!context.mounted) return;
 
     if (pos != null) {
@@ -187,6 +206,7 @@ class CustomerDetailProvider extends ChangeNotifier {
         longitude: currentPosition!.longitude.toString(),
         statusVisit: isStoreOpen ? 2 : 1,
         userModified: userInfo?.username ?? '',
+        visitDate: DateTime.now(),
       );
 
       final res = await _repo.updateCustomerPhoto(customerId, scheduleId, image!, req);

@@ -80,6 +80,10 @@ class CustomerModel {
   @JsonKey(name: "visit_notes")
   final String? visitNotes;
 
+  // photo_id_card
+  @JsonKey(name: "photo_id_card")
+  final String? photoIdCard;
+
   CustomerModel({
     this.noAcc6,
     this.name,
@@ -103,6 +107,7 @@ class CustomerModel {
     this.visitDate,
     this.reason,
     this.visitNotes,
+    this.photoIdCard,
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => _$CustomerModelFromJson(json);

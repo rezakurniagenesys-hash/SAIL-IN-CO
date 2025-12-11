@@ -79,7 +79,7 @@ class GeneralOrderProvider extends ChangeNotifier {
 
     priceController.text = item.price?.toString() ?? "0";
     priceUIController.text = item.price?.toString() ?? "0";
-    currentStockController.text = item.currentStock.toString();
+    currentStockController.text = item.currentStock.toString().replaceAll(RegExp(r'\.0$'), '');
 
     final defaultUom = _getDefaultUom(item);
     uomSelected = defaultUom;
@@ -143,23 +143,24 @@ class GeneralOrderProvider extends ChangeNotifier {
 
   void submit(BuildContext context) {
     if (formKey.currentState?.validate() ?? false) {
+      final currentStock = _parseInt(inventorySelected?.currentStock.toString().replaceAll(RegExp(r'\.0$'), ''));
       // stok kosong
-      if (_parseInt(inventorySelected?.currentStock.toString()) <= 0) {
+      if (currentStock <= 0) {
         AppSnackBar.show(context, message: "Stok kosong!", color: Colors.red);
         return;
       }
 
       // cek stok
-      if (_parseInt(qtyDefaultController.text) > _parseInt(inventorySelected?.currentStock.toString())) {
+      if (_parseInt(qtyDefaultController.text) > currentStock) {
         AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
         return;
       }
 
       // duplikasi
-      // if (oldInventoryIds.contains(inventorySelected?.inventoryId)) {
-      //   AppSnackBar.show(context, message: "Produk sudah ada dalam daftar!", color: Colors.red);
-      //   return;
-      // }
+      if (oldInventoryIds.contains(inventorySelected?.inventoryId)) {
+        AppSnackBar.show(context, message: "Produk sudah ada dalam daftar!", color: Colors.red);
+        return;
+      }
 
       // ==============================
       // HITUNG QTY

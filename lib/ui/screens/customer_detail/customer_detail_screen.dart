@@ -7,6 +7,10 @@ import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
+import 'package:sail_in_co/providers/generals/general_providers.dart';
+import 'package:sail_in_co/providers/order/general_order_provider.dart';
+import 'package:sail_in_co/providers/order/quick_sales_provider.dart';
+import 'package:sail_in_co/providers/order/sales_order_provider.dart';
 import 'package:sail_in_co/ui/screens/adjustment/adjustment_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_edit/customer_edit_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/customer_bukti_foto.dart';
@@ -236,7 +240,26 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                               type: AppButtonType.sky50,
                               height: 42,
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => OrderScreen(customerDetailData: provider.customerDetailData)));
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => OrderScreen(customerDetailData: provider.customerDetailData))).then((
+                                  value,
+                                ) {
+                                  // Pop value to refresh detail after order/payment
+                                  if (value != null && value == 'refresh-quick-sales') {
+                                    // Refresh detail after order/payment
+                                    provider.getDetailCustomer(widget.customerId, widget.scheduleId, context);
+                                    // Refresh inventory
+                                    context.read<GeneralProviders>().getInventory(context);
+                                    // Clear quick sales items
+                                    context.read<QuickSalesProvider>().clearQuickSalesItems();
+                                  } else if (value != null && value == 'refresh-sales-order') {
+                                    // Refresh detail after order/payment
+                                    provider.getDetailCustomer(widget.customerId, widget.scheduleId, context);
+                                    // Refresh inventory
+                                    context.read<GeneralProviders>().getInventory(context);
+                                    // Clear general order items
+                                    context.read<SalesOrderProvider>().clearSalesOrderItems();
+                                  }
+                                });
                               },
                             ),
                           ),

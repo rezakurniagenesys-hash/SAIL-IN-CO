@@ -113,10 +113,10 @@ class PaymentProvider extends ChangeNotifier {
     try {
       final res = await repository.postQuickSales(payload: newPayload!);
 
-      if (res.statusCode == 200 && res.data != null) {
+      if ((res.statusCode == 201) && res.data != null) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment confirmed successfully.'), backgroundColor: Colors.green));
         Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        Navigator.of(context).pop('refresh-quick-sales');
       } else if (res.statusCode == 502) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
       } else {

@@ -14,6 +14,7 @@ CustomerUploadFotoRequest _$CustomerUploadFotoRequestFromJson(
   address: json['address'] as String,
   statusVisit: (json['status_visit'] as num).toInt(),
   userModified: json['user_modified'] as String,
+  visitDate: DateTime.parse(json['visit_date'] as String),
 );
 
 Map<String, dynamic> _$CustomerUploadFotoRequestToJson(
@@ -24,4 +25,5 @@ Map<String, dynamic> _$CustomerUploadFotoRequestToJson(
   'address': instance.address,
   'status_visit': instance.statusVisit,
   'user_modified': instance.userModified,
+  'visit_date': instance.visitDate.toIso8601String(),
 };

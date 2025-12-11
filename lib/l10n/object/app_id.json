@@ -36,7 +36,7 @@
         "registeredCustomers": "Customer Terdaftar",
         "newCustomers": "Customer Baru",
         "soldStock": "Stok Terjual",
-        "noInternet": "Tidak ada koneksi internet",
+        "noInternet": "Anda sekarang bekerja dalam mode offline",
         "seeDetail": "Lihat Detail",
         "settlement": "Settlement"
     },
@@ -141,7 +141,8 @@
         "selectInventory": "Pilih Inventory",
         "currentStock" : "Stok Saat Ini",
         "qtyDefault" : "Qty Default",
-        "uomDefault" : "UoM Default"
+        "uomDefault" : "UoM Default",
+        "save" : "Simpan"
     },
     "transportation": {
         "management": "Manajemen Transportasi",

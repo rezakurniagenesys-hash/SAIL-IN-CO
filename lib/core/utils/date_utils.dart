@@ -15,6 +15,18 @@ class DateUtilsHelper {
     return DateFormat(pattern).format(date);
   }
 
+  /// Format ke YYYY-MM-DD
+  static String formatYMD(DateTime? date) {
+    if (date == null) return '-';
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  /// Format ke YYYY-MM-DD HH:mm:ss (opsional)
+  static String formatYMDHMS(DateTime? date) {
+    if (date == null) return '-';
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
+  }
+
   /// Parse string ke DateTime dengan pattern tertentu
   static DateTime? parseDate(String? dateString, {String pattern = 'dd-MM-yyyy'}) {
     if (dateString == null || dateString.isEmpty) return null;

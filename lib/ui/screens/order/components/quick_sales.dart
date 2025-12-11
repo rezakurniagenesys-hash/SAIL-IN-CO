@@ -8,6 +8,7 @@ import 'package:sail_in_co/core/utils/currency_format.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
+import 'package:sail_in_co/providers/generals/general_providers.dart';
 import 'package:sail_in_co/providers/order/general_order_provider.dart';
 import 'package:sail_in_co/providers/order/quick_sales_provider.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/add_edit_inventory.dart';

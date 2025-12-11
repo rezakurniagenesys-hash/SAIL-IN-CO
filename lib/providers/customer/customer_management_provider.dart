@@ -9,16 +9,7 @@ import 'package:sail_in_co/services/auth_service.dart';
 
 class CustomerManagementProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
-
-  // Date filter - default to today
-  final now = DateTime.now();
-
-  // Helper to format date to string YYYY-MM-DD
-  // '2025-11-28',
-  String _formatDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-  }
-
+  
   /// Data list
   List<CustomerItem> customers = [];
 

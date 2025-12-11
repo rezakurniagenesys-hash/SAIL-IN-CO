@@ -35,7 +35,7 @@
         "registeredCustomers": "Registered Customers",
         "newCustomers": "New Customers",
         "soldStock": "Sold Stock",
-        "noInternet": "No internet connection",
+        "noInternet": "You are now working in offline mode",
         "seeDetail": "See Detail",
         "settlement": "Settlement"
     },
@@ -140,7 +140,8 @@
         "selectInventory" : "Select Inventory",
         "currentStock" : "Current Stock",
         "qtyDefault" : "Default Qty",
-        "uomDefault" : "Default UoM"
+        "uomDefault" : "Default UoM",
+        "save" : "Save"
     },
 
     "transportation": {

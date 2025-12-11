@@ -247,6 +247,35 @@ class LocationHelper {
       },
     );
   }
+
+  /// Ambil lokasi GPS saat offline.
+  /// Tidak ada dialog permission, tidak reverse geocoding, tidak cek fake GPS.
+  static Future<Position?> getCurrentPositionOffline({LocationAccuracy accuracy = LocationAccuracy.medium}) async {
+    try {
+      // Pastikan service GPS aktif
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        debugPrint("GPS tidak aktif (offline mode)");
+        return null;
+      }
+
+      // Permission harus sudah diberi sebelumnya
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        debugPrint("Permission lokasi ditolak (offline mode)");
+        return null;
+      }
+
+      // Ambil lokasi tanpa internet
+      final pos = await Geolocator.getLastKnownPosition();
+
+      debugPrint("Lokasi offline: ${pos?.latitude}, ${pos?.longitude}");
+      return pos;
+    } catch (e, st) {
+      debugPrint("Error getCurrentPositionOffline: $e\n$st");
+      return null;
+    }
+  }
 }
 
 class _LifecycleListener extends WidgetsBindingObserver {

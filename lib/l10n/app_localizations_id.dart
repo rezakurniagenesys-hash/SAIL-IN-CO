@@ -71,7 +71,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get home_soldStock => 'Stok Terjual';
 
   @override
-  String get home_noInternet => 'Tidak ada koneksi internet';
+  String get home_noInternet => 'Anda sekarang bekerja dalam mode offline';
 
   @override
   String get home_seeDetail => 'Lihat Detail';
@@ -363,6 +363,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get order_uomDefault => 'UoM Default';
+
+  @override
+  String get order_save => 'Simpan';
 
   @override
   String get transportation_management => 'Manajemen Transportasi';

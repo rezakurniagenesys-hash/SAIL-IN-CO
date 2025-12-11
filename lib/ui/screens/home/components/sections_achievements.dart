@@ -31,9 +31,9 @@ class SectionsAchievementsDashboard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  CircleAchivement(title: l?.home_registeredCustomers ?? '', count: 10),
-                  CircleAchivement(title: l?.home_newCustomers ?? '', count: 4),
-                  CircleAchivement(title: l?.home_soldStock ?? '', count: 7),
+                  CircleAchivement(title: l?.home_registeredCustomers ?? '', count: 0),
+                  CircleAchivement(title: l?.home_newCustomers ?? '', count: 0),
+                  CircleAchivement(title: l?.home_soldStock ?? '', count: 0),
                 ],
               ),
               Padding(

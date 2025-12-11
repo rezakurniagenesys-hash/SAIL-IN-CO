@@ -79,7 +79,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
                 controller: _tabController,
                 children: [
                   QuickSales(customerDetailData: widget.customerDetailData),
-                  SalesOrder(),
+                  SalesOrder(customerDetailData: widget.customerDetailData),
                 ],
               ),
             ),

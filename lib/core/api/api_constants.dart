@@ -35,6 +35,6 @@ class ApiConstants {
   static const String salesReturns = "/stock/api/sales-returns?customer_id={customerId}";
   static const String paymentMethods = "/stock/api/payment-methods?no_acc6={noAcc6}";
 
-  // quickSales
   static const String quickSales = "/stock/api/quick-sales";
+  static const String salesOrders = "/stock/api/sales-orders";
 }

@@ -60,6 +60,7 @@ CustomerModel _$CustomerModelFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['visit_date'] as String),
       reason: json['reason'] as String?,
       visitNotes: json['visit_notes'] as String?,
+      photoIdCard: json['photo_id_card'] as String?,
     );
 
 Map<String, dynamic> _$CustomerModelToJson(CustomerModel instance) =>
@@ -86,4 +87,5 @@ Map<String, dynamic> _$CustomerModelToJson(CustomerModel instance) =>
       'visit_date': instance.visitDate?.toIso8601String(),
       'reason': instance.reason,
       'visit_notes': instance.visitNotes,
+      'photo_id_card': instance.photoIdCard,
     };

@@ -102,7 +102,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
                       onChanged: (text) {
                         _debouncer.run(() {
                           final provider = context.read<FinishTaskProvider>();
-                          provider.applyFilter(search: text);
+                          provider.applyFilter(search: text, status: provider.status);
                         });
                       },
                     ),

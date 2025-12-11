@@ -218,7 +218,7 @@ abstract class AppLocalizations {
   /// No description provided for @home_noInternet.
   ///
   /// In en, this message translates to:
-  /// **'No internet connection'**
+  /// **'You are now working in offline mode'**
   String get home_noInternet;
 
   /// No description provided for @home_seeDetail.
@@ -802,6 +802,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default UoM'**
   String get order_uomDefault;
+
+  /// No description provided for @order_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get order_save;
 
   /// No description provided for @transportation_management.
   ///

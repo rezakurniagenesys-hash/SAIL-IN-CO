@@ -1,8 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/core/constants/constant_date.dart';
 import 'package:sail_in_co/core/utils/connection_utils.dart';
+import 'package:sail_in_co/core/utils/date_utils.dart';
 import 'package:sail_in_co/data/dao/callsheet/callsheet_summary_dao.dart';
+import 'package:sail_in_co/data/dao/stock/stock_item_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/stock/stock_request.dart';
 import 'package:sail_in_co/data/models/stock/stock_response.dart';
@@ -15,7 +18,9 @@ import 'package:sail_in_co/services/auth_service.dart';
 class HomeProvider extends ChangeNotifier {
   final _repo = HomeRepository();
   final _repoStock = StockRepository();
+
   final daoCallSheet = CallsheetSummaryDao();
+  final daoStock = StockItemDao();
 
   UserInfo? userInfo;
   bool isLoading = false;
@@ -27,13 +32,7 @@ class HomeProvider extends ChangeNotifier {
   StockResponse? stockResponse;
   List<StockItem>? stockItem;
 
-  // Date filter - default to today
-  final now = DateTime.now();
-
-  // Helper to format date to string YYYY-MM-DD
-  String _formatDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-  }
+  final date = ConstantDate.date;
 
   void init(BuildContext context) {
     loadUserInfo();
@@ -52,6 +51,7 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> getSummaryChart(BuildContext context) async {
+    final userInfoService = await AuthService.getUserInfo();
     summaryData = null;
     isLoading = true;
     notifyListeners();
@@ -62,8 +62,8 @@ class HomeProvider extends ChangeNotifier {
       if (online) {
         final request = SummaryRequest(
           // date: _formatDate(now),
-          date: '2025-11-28',
-          salesId: userInfo?.userId ?? '',
+          date: DateUtilsHelper.formatYMD(date),
+          salesId: userInfoService?.userId ?? '',
         );
         final res = await _repo.getSummaryChart(request);
         if (res.statusCode == 200 && res.data != null) {
@@ -91,21 +91,30 @@ class HomeProvider extends ChangeNotifier {
 
   // getStock
   Future<void> getStock(BuildContext context) async {
+    final userInfoService = await AuthService.getUserInfo();
+    stockItem = null;
     isLoadingStock = true;
     notifyListeners();
 
+    final online = await ConnectionUtils.isConnected();
+
     try {
-      final stockRequest = StockRequest(warehouseId: userInfo?.userId ?? '', date: _formatDate(now));
-      final res = await _repoStock.getStock(stockRequest: stockRequest);
-      if (res.statusCode == 200 && res.data != null) {
-        stockResponse = StockResponse.fromJson(res.data);
-        stockItem = stockResponse?.data?.stock;
-      } else if (res.statusCode == 502 || res.statusCode == 500) {
-        SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (online) {
+        final stockRequest = StockRequest(warehouseId: userInfoService?.userId ?? '000', date: DateUtilsHelper.formatYMD(date));
+        final res = await _repoStock.getStock(stockRequest: stockRequest);
+        if (res.statusCode == 200 && res.data != null) {
+          stockResponse = StockResponse.fromJson(res.data);
+          stockItem = stockResponse?.data?.stock;
+        } else if (res.statusCode == 502 || res.statusCode == 500) {
+          SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       } else {
-        SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        stockItem = await daoStock.getStockItems();
+        debugPrint("Stock data: loaded from SQLite (offline)");
       }
     } catch (e) {
       debugPrint("Error loading stock data: $e");

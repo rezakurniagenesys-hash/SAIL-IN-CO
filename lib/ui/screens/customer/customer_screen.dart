@@ -97,6 +97,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
               ],
             ),
             Expanded(child: _buildList()),
+            Container(color: Colors.white, width: double.infinity, height: 80),
           ],
         ),
       ),

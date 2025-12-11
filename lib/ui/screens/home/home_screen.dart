@@ -35,6 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     /// Jalankan setelah frame pertama dirender
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      /// Load first data
+      context.read<HomeProvider>().init(context);
+      context.read<GeneralProviders>().getInventory(context);
+
       final syncProvider = context.read<SyncProvider>();
       syncProvider.init(
         onShowLoading: () => showLoading(),
@@ -42,10 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
           if (Navigator.canPop(context)) Navigator.pop(context);
         },
       );
-
-      /// Load first data
-      context.read<HomeProvider>().init(context);
-      context.read<GeneralProviders>().getInventory(context);
 
       /// Tampilkan popup Sync Data
       // showSyncDataDialog();
@@ -105,9 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     /// Tutup otomatis setelah 3 detik
-    Future.delayed(const Duration(seconds: 3), () {
-      if (Navigator.canPop(context)) Navigator.pop(context);
-    });
+    // Future.delayed(const Duration(seconds: 3), () {
+    //   if (Navigator.canPop(context)) Navigator.pop(context);
+    // });
   }
 
   // ------------------------------
@@ -151,12 +151,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   return (!connectionProvider.isConnected)
                       ? Container(
                           width: double.infinity,
-                          color: Colors.red.shade600,
+                          color: Color(0xFFFDF5D2),
                           padding: const EdgeInsets.all(8),
-                          child: Text(
-                            l!.home_noInternet,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.wifi_off, color: Colors.black),
+                              const SizedBox(width: 8),
+                              Text(
+                                l!.home_noInternet,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.normal),
+                              ),
+                            ],
                           ),
                         )
                       : const SizedBox.shrink();
@@ -168,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: LiquidPullToRefresh(
                   onRefresh: () async {
                     homeProvider.init(context);
+                    context.read<GeneralProviders>().getInventory(context);
                     final syncProvider = context.read<SyncProvider>();
                     syncProvider.init(
                       onShowLoading: () => showLoading(),

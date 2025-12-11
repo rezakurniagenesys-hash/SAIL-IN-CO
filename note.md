@@ -15,3 +15,6 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 Opsi 2 (mode watch — otomatis regenerate setiap save):
 flutter pub run build_runner watch --delete-conflicting-outputs
+
+
+DAO : Data Access Object
