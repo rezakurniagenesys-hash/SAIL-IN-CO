@@ -14,6 +14,7 @@ import 'package:sail_in_co/ui/screens/development/developer_offline_page.dart';
 import 'package:sail_in_co/ui/screens/finished_task/finished_task_screen.dart';
 import 'package:sail_in_co/ui/screens/home/components/header_home.dart';
 import 'package:sail_in_co/ui/screens/home/components/sections_achievements.dart';
+import 'package:sail_in_co/ui/screens/home/components/sections_petty_cash.dart';
 import 'package:sail_in_co/ui/screens/home/components/sections_stock.dart';
 import 'package:sail_in_co/ui/screens/home/components/sync_data_dialog_content.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
@@ -207,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
+                        const SectionsPettyCash(),
 
                         SectionsStockDashboard(stockItem: homeProvider.stockItem, isLoading: homeProvider.isLoadingStock),
 

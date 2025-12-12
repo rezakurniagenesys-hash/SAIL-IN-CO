@@ -60,6 +60,7 @@ class ImagePickerHelper {
   static Future<File?> pickImageDialog(BuildContext context) async {
     return showModalBottomSheet<File?>(
       context: context,
+      useSafeArea: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) => SafeArea(
         child: Wrap(
@@ -98,6 +99,7 @@ class ImagePickerHelper {
   static Future<void> _showCameraPermissionBottomSheet(BuildContext context, bool permanentlyDenied) {
     return showModalBottomSheet(
       context: context,
+      useSafeArea: true,
       // tampilan yang lebih modern
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       isScrollControlled: true,

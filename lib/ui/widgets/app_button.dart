@@ -21,6 +21,10 @@ class AppButton extends StatelessWidget {
   final Color? borderColor;
   final double borderWidth;
 
+  /// Custom disabled colors
+  final Color? disabledBackgroundColor;
+  final Color? disabledTextColor;
+
   const AppButton({
     super.key,
     required this.label,
@@ -37,19 +41,23 @@ class AppButton extends StatelessWidget {
     this.hasBorder = false,
     this.borderColor,
     this.borderWidth = 1.2,
+
+    this.disabledBackgroundColor,
+    this.disabledTextColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool disabled = isDisabled || isLoading;
 
+    // --- BASE NORMAL COLORS ---
     Color backgroundColor;
     Color textColor = Colors.white;
 
     switch (type) {
       case AppButtonType.primary:
         backgroundColor = AppColors.sky700;
-        textColor = isDisabled ? AppColors.neutral400 : Colors.white;
+        textColor = Colors.white;
         break;
       case AppButtonType.warning:
         backgroundColor = AppColors.warning;
@@ -66,13 +74,24 @@ class AppButton extends StatelessWidget {
         break;
       case AppButtonType.neutral400:
         backgroundColor = AppColors.neutral400;
+        textColor = Colors.white;
         break;
     }
 
-    /// If disabled → make style muted
+    // --- DISABLED COLORS ---
     if (disabled) {
-      backgroundColor = backgroundColor.withOpacity(0.45);
-      // textColor = textColor.withOpacity(0.6);
+      backgroundColor =
+          disabledBackgroundColor ??
+          {
+            AppButtonType.primary: AppColors.sky400,
+            AppButtonType.warning: AppColors.warning.withOpacity(0.45),
+            AppButtonType.danger: AppColors.error.withOpacity(0.45),
+            AppButtonType.sky950: AppColors.sky700.withOpacity(0.45),
+            AppButtonType.sky50: AppColors.neutral200,
+            AppButtonType.neutral400: AppColors.neutral300,
+          }[type]!;
+
+      textColor = disabledTextColor ?? AppColors.neutral500;
     }
 
     return SizedBox(
@@ -98,7 +117,6 @@ class AppButton extends StatelessWidget {
               SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(textColor)))
             else ...[
               if (icon != null) ...[Icon(icon, size: 18, color: textColor), const SizedBox(width: 6)],
-
               if (icon == null && isFullWidth)
                 Expanded(
                   child: AutoSizeText(

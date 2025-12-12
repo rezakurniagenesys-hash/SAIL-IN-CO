@@ -116,6 +116,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
             isSearchActive: searchCtrl.text.isNotEmpty,
             onLoadMore: () => provider.getCustomers(loadMore: true),
             itemBuilder: (context, index) {
+              final data = provider.customers[index];
               return ItemCustomer(
                 customer: provider.customers[index],
                 onTap: () async {
@@ -123,7 +124,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          CustomerDetailScreen(customerId: provider.customers[index].noAcc6 ?? '', scheduleId: provider.customers[index].scheduleId ?? ''),
+                          CustomerDetailScreen(customerId: data.noAcc6 ?? '', scheduleId: data.scheduleId ?? '', hasVisited: data.hasVisit.toString()),
                     ),
                   ).then((_) {
                     // refresh data when back from detail screen

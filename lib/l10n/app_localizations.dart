@@ -461,6 +461,12 @@ abstract class AppLocalizations {
   /// **'Outstanding Order'**
   String get customerDetail_outstandingOrder;
 
+  /// No description provided for @customerDetail_sales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get customerDetail_sales;
+
   /// No description provided for @customerDetail_stock.
   ///
   /// In en, this message translates to:
@@ -568,6 +574,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Return Payment'**
   String get customerDetail_returnPayment;
+
+  /// No description provided for @customerDetail_notDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Delivered'**
+  String get customerDetail_notDelivered;
+
+  /// No description provided for @customerDetail_delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get customerDetail_delivered;
+
+  /// No description provided for @customerDetail_waitingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Payment'**
+  String get customerDetail_waitingPayment;
+
+  /// No description provided for @customerDetail_outstandingOrderDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding Order Detail'**
+  String get customerDetail_outstandingOrderDetail;
+
+  /// No description provided for @customerDetail_shippingID.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping ID'**
+  String get customerDetail_shippingID;
+
+  /// No description provided for @customerDetail_salesorderID.
+  ///
+  /// In en, this message translates to:
+  /// **'Salesorder ID'**
+  String get customerDetail_salesorderID;
+
+  /// No description provided for @customerDetail_shipping.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping'**
+  String get customerDetail_shipping;
+
+  /// No description provided for @customerDetail_shippingOrderDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping Order Detail'**
+  String get customerDetail_shippingOrderDetail;
+
+  /// No description provided for @customerDetail_salesOrderId.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Order ID'**
+  String get customerDetail_salesOrderId;
 
   /// No description provided for @order_quickSales.
   ///
@@ -1240,6 +1300,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Return Payment'**
   String get payment_returnPayment;
+
+  /// No description provided for @payment_outstandingOrderPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding Order Payment'**
+  String get payment_outstandingOrderPayment;
 
   /// No description provided for @finishedTask_finishedTask.
   ///

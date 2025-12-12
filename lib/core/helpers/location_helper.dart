@@ -131,6 +131,7 @@ class LocationHelper {
   static Future<bool> _showLocationPermissionBottomSheet(BuildContext context, bool permanentlyDenied) {
     return showModalBottomSheet<bool>(
       context: context,
+      useSafeArea: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       isScrollControlled: true,
       builder: (ctx) {
@@ -218,6 +219,7 @@ class LocationHelper {
     await showModalBottomSheet<void>(
       context: context,
       isDismissible: false,
+      useSafeArea: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) {
         return Padding(

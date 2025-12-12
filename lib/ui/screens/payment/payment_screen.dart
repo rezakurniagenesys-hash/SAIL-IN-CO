@@ -30,6 +30,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final provider = context.read<PaymentProvider>();
       provider.init(context, widget.quickSalesPayloadModel?.customerId ?? "");
       if (widget.quickSalesPayloadModel != null) {
+        // provider.init(context, widget.quickSalesPayloadModel?.customerId ?? "");
         provider.setQuickSalesPayloadModel(widget.quickSalesPayloadModel);
       }
     });
@@ -49,6 +50,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       case PaymentType.returnPayment:
         labelLanguage = l.payment_returnPayment;
         break;
+      case PaymentType.outstandingOrderPayment:
+        labelLanguage = l.payment_outstandingOrderPayment;
     }
 
     return Scaffold(

@@ -11,6 +11,7 @@ import 'package:sail_in_co/providers/generals/general_providers.dart';
 import 'package:sail_in_co/providers/order/general_order_provider.dart';
 import 'package:sail_in_co/providers/order/quick_sales_provider.dart';
 import 'package:sail_in_co/providers/order/sales_order_provider.dart';
+import 'package:sail_in_co/providers/return/return_provider.dart';
 import 'package:sail_in_co/ui/screens/adjustment/adjustment_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_edit/customer_edit_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/customer_bukti_foto.dart';
@@ -24,9 +25,10 @@ import 'package:sail_in_co/ui/widgets/app_dialog.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class CustomerDetailScreen extends StatefulWidget {
-  const CustomerDetailScreen({super.key, required this.customerId, required this.scheduleId});
+  const CustomerDetailScreen({super.key, required this.customerId, required this.scheduleId, this.hasVisited = ''});
   final String customerId;
   final String scheduleId;
+  final String hasVisited;
 
   @override
   State<CustomerDetailScreen> createState() => _CustomerDetailScreenState();
@@ -47,6 +49,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final bool hasVisit = widget.hasVisited == '0' ? true : false;
     return Scaffold(
       backgroundColor: AppColors.sky700,
       appBar: AppBarCustom(
@@ -166,10 +169,13 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                           ),
                           Expanded(
                             child: AppButton(
+                              isDisabled: (provider.isUploadingImage || hasVisit),
+                              disabledBackgroundColor: Colors.grey.shade300,
+                              disabledTextColor: Colors.grey.shade600,
                               label: provider.customerDetailData?.customer?.linkPath != null ? l.customerDetail_photoEvidence : l.customerDetail_uploadPhoto,
                               type: AppButtonType.sky50,
                               isLoading: provider.isUploadingImage,
-                              isDisabled: provider.isUploadingImage,
+
                               height: 42,
                               onPressed: () async {
                                 if (provider.customerDetailData?.customer?.linkPath != null) {
@@ -279,7 +285,19 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                               type: AppButtonType.sky50,
                               height: 42,
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => ReturnScreen()));
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => ReturnScreen(customerDetailData: provider.customerDetailData))).then((
+                                  value,
+                                ) {
+                                  // Pop value to refresh detail after return
+                                  if (value != null && value == 'refresh-return-payment') {
+                                    // Refresh detail after return
+                                    provider.getDetailCustomer(widget.customerId, widget.scheduleId, context);
+                                    // Refresh inventory
+                                    context.read<GeneralProviders>().getInventory(context);
+                                    // Clear return order items
+                                    context.read<ReturnProvider>().clearReturnOrderItems();
+                                  }
+                                });
                               },
                             ),
                           ),

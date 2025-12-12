@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/core/constants/constant_date.dart';
+import 'package:sail_in_co/core/utils/date_utils.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_item.dart';
 import 'package:sail_in_co/data/models/customer/customer_search_request.dart';
@@ -9,9 +11,11 @@ import 'package:sail_in_co/services/auth_service.dart';
 
 class CustomerManagementProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
-  
+
   /// Data list
   List<CustomerItem> customers = [];
+
+  final date = ConstantDate.date;
 
   /// Pagination
   int page = 1;
@@ -63,11 +67,11 @@ class CustomerManagementProvider extends ChangeNotifier {
       customerId: customerId,
       status: status,
       // date: _formatDate(now),
-      // date: '2025-11-28',
+      date: DateUtilsHelper.formatYMD(date),
       salesId: userInfo?.userId ?? '',
     );
 
-    final response = await _repo.getCustomerManagement(request);
+    final response = await _repo.getSearchVisit(request);
 
     if (response?.data?.customerData != null) {
       if (loadMore) {

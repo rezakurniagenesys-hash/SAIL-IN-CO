@@ -13,6 +13,10 @@ class AppInfinityList extends StatelessWidget {
   final Widget? emptyWidget;
   final Widget? loadingWidget;
 
+  /// NEW PARAMS
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
+
   const AppInfinityList({
     super.key,
     this.controller,
@@ -25,11 +29,12 @@ class AppInfinityList extends StatelessWidget {
     this.padding,
     this.emptyWidget,
     this.loadingWidget,
+    this.shrinkWrap = false,
+    this.physics,
   });
 
   @override
   Widget build(BuildContext context) {
-    print('isSearchActive: $isSearchActive');
     final l = AppLocalizations.of(context);
     final ScrollController scrollCtrl = controller ?? ScrollController();
 
@@ -39,33 +44,35 @@ class AppInfinityList extends StatelessWidget {
       }
     });
 
-    // INITIAL LOADING ---------------------------------------
+    // INITIAL LOADING
     if (isLoading) {
       return loadingWidget ??
           const Center(
             child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
           );
     }
-    // SEARCH - NO DATA FOUND ------------------------------
+
+    // SEARCH NO DATA
     if (items.isEmpty && isSearchActive) {
       return emptyWidget ?? Center(child: Text(l!.emptyState_dataNotFound));
     }
-    // EMPTY LIST --------------------------------------------
+
+    // EMPTY LIST
     if (items.isEmpty) {
       return emptyWidget ?? Center(child: Text(l!.emptyState_noData));
     }
 
-    // LIST VIEW ---------------------------------------------
+    // LIST VIEW
     return ListView.builder(
       controller: scrollCtrl,
       padding: padding ?? EdgeInsets.zero,
+      shrinkWrap: shrinkWrap,
+      physics: physics,
       itemCount: items.length + (isLoadMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index < items.length) {
           return itemBuilder(context, index);
         }
-
-        // LOAD MORE SPINNER
         return const Padding(
           padding: EdgeInsets.all(16),
           child: Center(child: CircularProgressIndicator()),

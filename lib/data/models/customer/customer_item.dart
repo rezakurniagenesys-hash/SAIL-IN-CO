@@ -15,10 +15,17 @@ class CustomerItem {
 
   @JsonKey(name: "status_visit")
   final int? statusVisit;
+
+  @JsonKey(name: "has_visit")
+  final int? hasVisit;
+
   @JsonKey(name: "schedule_id")
   final String? scheduleId;
 
-  CustomerItem({this.noAcc6, this.nmAcc6, this.address, this.phone, this.statusVisit, this.scheduleId});
+  @JsonKey(name: "schedule_date")
+  final String? scheduleDate;
+
+  CustomerItem({this.hasVisit, this.scheduleDate, this.noAcc6, this.nmAcc6, this.address, this.phone, this.statusVisit, this.scheduleId});
 
   factory CustomerItem.fromJson(Map<String, dynamic> json) => _$CustomerItemFromJson(json);
 

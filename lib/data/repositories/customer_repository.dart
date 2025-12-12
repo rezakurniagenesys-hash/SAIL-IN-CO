@@ -23,6 +23,17 @@ class CustomerRepository {
     }
   }
 
+  Future<CustomerResponseModel?> getSearchVisit(CustomerSearchRequest request) async {
+    try {
+      final response = await _api.get(ApiConstants.baseUrl + ApiConstants.customerSearchVisit, query: request.toQuery());
+
+      return CustomerResponseModel.fromJson(response.data);
+    } catch (e) {
+      print("Error fetching customer: $e");
+      return null;
+    }
+  }
+
   // Customer Detail
   Future<ApiResponse> getCustomerDetail(String customerId, String scheduleId) async {
     try {

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
-import 'package:sail_in_co/ui/screens/customer_detail/components/item_outstanding_order.dart';
-import 'package:sail_in_co/ui/widgets/app_date_picker.dart';
-import 'package:sail_in_co/ui/widgets/app_input_field.dart';
+import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/ui/screens/customer_detail/widgets/sales/outstanding_order_page.dart';
 
 class OutstandingOrderScreen extends StatelessWidget {
   const OutstandingOrderScreen({super.key, required this.scrollController});
@@ -12,37 +9,66 @@ class OutstandingOrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: scrollController,
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          Row(
+    // 0 = Outstanding Orders, 1 = Sales
+    final ValueNotifier<int> tabIndex = ValueNotifier<int>(0);
+
+    return ValueListenableBuilder<int>(
+      valueListenable: tabIndex,
+      builder: (context, index, _) {
+        return SingleChildScrollView(
+          controller: scrollController,
+          physics: const BouncingScrollPhysics(),
+          child: Column(
             children: [
-              Expanded(
-                child: AppInputField(
-                  controller: TextEditingController(),
-                  onChanged: (value) {
-                    // Handle search logic here
-                  },
+              // TAB HEADER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => tabIndex.value = 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: index == 0
+                          ? BoxDecoration(
+                              border: Border(bottom: BorderSide(color: AppColors.sky700, width: 2)),
+                            )
+                          : null,
+                      child: Text(
+                        'Outstanding Orders',
+                        style: AppTextStyles.label2SemiBold.copyWith(color: index == 0 ? AppColors.sky700 : AppColors.neutral400),
+                      ),
+                    ),
+                  ),
+
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => tabIndex.value = 1,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: index == 1
+                          ? BoxDecoration(
+                              border: Border(bottom: BorderSide(color: AppColors.sky700, width: 2)),
+                            )
+                          : null,
+                      child: Text('Sales', style: AppTextStyles.label2SemiBold.copyWith(color: index == 1 ? AppColors.sky700 : AppColors.neutral400)),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // TAB CONTENT
+              if (index == 0) const OutstandingOrderPage(),
+              if (index == 1)
+                SizedBox(
+                  child: Text('Sales Page Coming Soon...', style: AppTextStyles.heading2Bold.copyWith(color: AppColors.textSecondary)),
                 ),
-              ),
-              SizedBox(width: 8),
-              InkWell(
-                onTap: () async {
-                  final date = await showAppDatePicker(context);
-                  if (date != null) {
-                    print("Tanggal dipilih: $date");
-                  }
-                },
-                child: SvgPicture.asset(AssetIcons.icRoundDateRange, height: 28, colorFilter: const ColorFilter.mode(AppColors.sky950, BlendMode.srcIn)),
-              ),
             ],
           ),
-          const SizedBox(height: 24),
-          Column(spacing: 18, children: List.generate(20, (i) => ItemOutstandingOrder())),
-        ],
-      ),
+        );
+      },
     );
   }
 }

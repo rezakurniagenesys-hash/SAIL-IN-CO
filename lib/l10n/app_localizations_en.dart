@@ -194,6 +194,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerDetail_outstandingOrder => 'Outstanding Order';
 
   @override
+  String get customerDetail_sales => 'Sales';
+
+  @override
   String get customerDetail_stock => 'Stock';
 
   @override
@@ -246,6 +249,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerDetail_returnPayment => 'Return Payment';
+
+  @override
+  String get customerDetail_notDelivered => 'Not Delivered';
+
+  @override
+  String get customerDetail_delivered => 'Delivered';
+
+  @override
+  String get customerDetail_waitingPayment => 'Waiting for Payment';
+
+  @override
+  String get customerDetail_outstandingOrderDetail => 'Outstanding Order Detail';
+
+  @override
+  String get customerDetail_shippingID => 'Shipping ID';
+
+  @override
+  String get customerDetail_salesorderID => 'Salesorder ID';
+
+  @override
+  String get customerDetail_shipping => 'Shipping';
+
+  @override
+  String get customerDetail_shippingOrderDetail => 'Shipping Order Detail';
+
+  @override
+  String get customerDetail_salesOrderId => 'Sales Order ID';
 
   @override
   String get order_quickSales => 'Quick Sales';
@@ -582,6 +612,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payment_returnPayment => 'Return Payment';
+
+  @override
+  String get payment_outstandingOrderPayment => 'Outstanding Order Payment';
 
   @override
   String get finishedTask_finishedTask => 'Finished Task';

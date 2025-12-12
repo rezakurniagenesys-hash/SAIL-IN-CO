@@ -46,16 +46,17 @@ class ItemInventoryQuickSales extends StatelessWidget {
               Text(CurrencyFormat.toRupiah(item.price * item.qty), style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l!.order_discount,
-                style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.normal),
-              ),
-              Text(CurrencyFormat.toRupiah(item.discount * item.qty2), style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
-            ],
-          ),
+          if (item.discount > 0)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l!.order_discount,
+                  style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.normal),
+                ),
+                Text(CurrencyFormat.toRupiah(item.discount * item.qty2), style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
+              ],
+            ),
           if (isDescriptionVisible)
             Text(
               item.notes,
@@ -65,7 +66,7 @@ class ItemInventoryQuickSales extends StatelessWidget {
           Row(
             children: [
               AppButton(
-                label: l.order_edit,
+                label: l?.order_edit ?? '',
                 type: AppButtonType.warning,
                 onPressed: () {
                   if (onEdit != null) {
@@ -74,7 +75,7 @@ class ItemInventoryQuickSales extends StatelessWidget {
                 },
               ),
               const SizedBox(width: 8),
-              AppButton(label: l.order_delete, type: AppButtonType.danger, onPressed: onDelete),
+              AppButton(label: l?.order_delete ?? '', type: AppButtonType.danger, onPressed: onDelete),
             ],
           ),
         ],

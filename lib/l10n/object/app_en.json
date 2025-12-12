@@ -82,6 +82,7 @@
         "return": "Return",
         "activityHistory": "Activity History",
         "outstandingOrder": "Outstanding Order",
+        "sales" : "Sales",
         "stock": "Stock",
         "filterAll": "All",
         "filterSales": "Sales",
@@ -99,7 +100,17 @@
         "paymentCash": "Cash",
         "paymentCredit": "Credit",
         "saveChanges": "Save Changes",
-        "returnPayment": "Return Payment"
+        "returnPayment": "Return Payment",
+        "notDelivered": "Not Delivered",
+        "delivered": "Delivered",
+        "waitingPayment": "Waiting for Payment",
+        "outstandingOrderDetail": "Outstanding Order Detail",
+        "shippingID": "Shipping ID",
+        "salesorderID" : "Salesorder ID",
+        "shipping" : "Shipping",
+        "shippingOrderDetail": "Shipping Order Detail",
+        "salesOrderId" : "Sales Order ID"
+
     },
     "order": {
         "quickSales": "Quick Sales",
@@ -228,7 +239,8 @@
         "pendingPayment": "Pending Payment",
         "confirmPayment": "Confirm Payment",
         "salesOrderPayment": "Sales Order Payment",
-        "returnPayment": "Return Payment"
+        "returnPayment": "Return Payment",
+        "outstandingOrderPayment": "Outstanding Order Payment"
     },
 
     "finishedTask": {

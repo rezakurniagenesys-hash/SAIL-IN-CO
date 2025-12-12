@@ -194,6 +194,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get customerDetail_outstandingOrder => 'Pesanan Belum Selesai';
 
   @override
+  String get customerDetail_sales => 'Penjualan';
+
+  @override
   String get customerDetail_stock => 'Stock';
 
   @override
@@ -246,6 +249,33 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get customerDetail_returnPayment => 'Pengembalian Pembayaran';
+
+  @override
+  String get customerDetail_notDelivered => 'Belum Dikirim';
+
+  @override
+  String get customerDetail_delivered => 'Dikirim';
+
+  @override
+  String get customerDetail_waitingPayment => 'Menunggu Pembayaran';
+
+  @override
+  String get customerDetail_outstandingOrderDetail => 'Detail Pesanan Belum Selesai';
+
+  @override
+  String get customerDetail_shippingID => 'ID Pengiriman';
+
+  @override
+  String get customerDetail_salesorderID => 'ID Pesanan Penjualan';
+
+  @override
+  String get customerDetail_shipping => 'Pengiriman';
+
+  @override
+  String get customerDetail_shippingOrderDetail => 'Detail Pesanan Pengiriman';
+
+  @override
+  String get customerDetail_salesOrderId => 'ID Pesanan Penjualan';
 
   @override
   String get order_quickSales => 'Penjualan Cepat';
@@ -582,6 +612,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get payment_returnPayment => 'Pembayaran Retur';
+
+  @override
+  String get payment_outstandingOrderPayment => 'Pembayaran Pesanan Belum Selesai';
 
   @override
   String get finishedTask_finishedTask => 'Tugas Terselesaikan';

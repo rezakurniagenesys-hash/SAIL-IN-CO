@@ -116,7 +116,7 @@ class QuickSalesProvider extends ChangeNotifier {
   void submitPayment(BuildContext context) async {
     final userInfo = await AuthService.getUserInfo();
     QuickSalesPayloadModel quickSalesPayloadModel = QuickSalesPayloadModel(
-      quickSalesDate: DateUtilsHelper.formatYMD(date),
+      quickSalesDate: DateUtilsHelper.formatYMD(DateTime.now()),
       customerId: customerDetailData?.customer?.noAcc6 ?? '',
       areaId: customerDetailData?.customer?.areaId ?? '',
       salesId: userInfo?.userId ?? '',
@@ -155,6 +155,9 @@ class QuickSalesProvider extends ChangeNotifier {
           grandTotal: e.grand_total,
           notes: e.notes,
           userRecord: userInfo?.username ?? '',
+          price2: e.price,
+          vatValue: 0,
+          discValue: (e.discount * e.qty2),
         );
       }).toList(),
     );

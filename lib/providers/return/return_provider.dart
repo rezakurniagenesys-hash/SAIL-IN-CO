@@ -10,27 +10,31 @@ import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
 import 'package:sail_in_co/data/models/salesorder/sales_order_detail.dart';
 import 'package:sail_in_co/data/models/salesorder/sales_order_payload_model.dart';
+import 'package:sail_in_co/data/models/salesorder/sales_return_payment_payload.dart';
 import 'package:sail_in_co/data/repositories/sales_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
 
-class SalesOrderProvider extends ChangeNotifier {
+class ReturnProvider extends ChangeNotifier {
   final salesRepository = SalesRepository();
-  List<GeneralOrderDraftItem> salesOrderItems = [];
+
+  List<GeneralOrderDraftItem> returnOrderItems = [];
   TextEditingController notesController = TextEditingController();
   UserInfo? userInfo;
   CustomerDetailData? customerDetailData;
 
   bool isLoadingSubmit = false;
-
-  // Date filter - default to today
   final date = ConstantDate.date;
 
   Future<void> loadUserInfo() async {
-    userInfo = await AuthService.getUserInfo();
-
-    Future.microtask(() {
-      if (hasListeners) notifyListeners();
-    });
+    try {
+      userInfo = await AuthService.getUserInfo();
+    } catch (e) {
+      debugPrint("Error loading user info: $e");
+    } finally {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    }
   }
 
   void setCustomerDetailData(CustomerDetailData? data) {
@@ -46,7 +50,7 @@ class SalesOrderProvider extends ChangeNotifier {
   int totalDiscount() {
     int total = 0;
 
-    for (var item in salesOrderItems) {
+    for (var item in returnOrderItems) {
       final int qty = item.qty2;
       final int discount = item.discount;
       total += qty * discount;
@@ -58,7 +62,7 @@ class SalesOrderProvider extends ChangeNotifier {
   int subTotal() {
     int total = 0;
 
-    for (var item in salesOrderItems) {
+    for (var item in returnOrderItems) {
       final int qty = item.qty2;
       final int price = item.price;
       final int multiplier = int.tryParse(item.uom.value) ?? 1;
@@ -73,7 +77,7 @@ class SalesOrderProvider extends ChangeNotifier {
   int grandTotal() {
     int total = 0;
 
-    for (var item in salesOrderItems) {
+    for (var item in returnOrderItems) {
       final int qty = item.qty2;
       final int price = item.price;
       final int discount = item.discount;
@@ -88,27 +92,27 @@ class SalesOrderProvider extends ChangeNotifier {
     return total;
   }
 
-  void addQuickSalesItem(GeneralOrderDraftItem item) {
-    salesOrderItems.add(item);
+  void addReturnOrderItem(GeneralOrderDraftItem item) {
+    returnOrderItems.add(item);
     notifyListeners();
   }
 
-  void updateQuickSalesItem(int index, GeneralOrderDraftItem item) {
-    if (index >= 0 && index < salesOrderItems.length) {
-      salesOrderItems[index] = item;
+  void updateReturnOrderItem(int index, GeneralOrderDraftItem item) {
+    if (index >= 0 && index < returnOrderItems.length) {
+      returnOrderItems[index] = item;
       notifyListeners();
     }
   }
 
-  void removeQuickSalesItem(int index) {
-    if (index >= 0 && index < salesOrderItems.length) {
-      salesOrderItems.removeAt(index);
+  void removeReturnOrderItem(int index) {
+    if (index >= 0 && index < returnOrderItems.length) {
+      returnOrderItems.removeAt(index);
       notifyListeners();
     }
   }
 
-  void clearSalesOrderItems() {
-    salesOrderItems.clear();
+  void clearReturnOrderItems() {
+    returnOrderItems.clear();
     notifyListeners();
   }
 
@@ -116,8 +120,8 @@ class SalesOrderProvider extends ChangeNotifier {
     isLoadingSubmit = true;
     notifyListeners();
     final userInfo = await AuthService.getUserInfo();
-    SalesOrderPayloadModel salesOrderPayloadModel = SalesOrderPayloadModel(
-      salesOrderDate: DateUtilsHelper.formatYMD(DateTime.now()),
+    SalesReturnPaymentPayload returnOrderPayloadModel = SalesReturnPaymentPayload(
+      salesReturnDate: DateUtilsHelper.formatYMD(DateTime.now()),
       customerId: customerDetailData?.customer?.noAcc6 ?? '',
       areaId: customerDetailData?.customer?.areaId ?? '',
       salesId: userInfo?.userId ?? '',
@@ -136,9 +140,9 @@ class SalesOrderProvider extends ChangeNotifier {
       destinationAddress: customerDetailData?.customer?.address ?? '',
       salesType: 1, // Hardcoded Quick Sales
       userRecord: userInfo?.username ?? '',
-      details: salesOrderItems.map((e) {
+      details: returnOrderItems.map((e) {
         // index 1 + 1 sesuai jumalh data
-        final index = salesOrderItems.indexOf(e) + 1;
+        final index = returnOrderItems.indexOf(e) + 1;
         return SalesOrderDetail(
           index: index,
           inventoryId: e.inventory.inventoryId,
@@ -159,14 +163,14 @@ class SalesOrderProvider extends ChangeNotifier {
       }).toList(),
     );
 
-    log("Sales Order Payload: ${salesOrderPayloadModel.toJson()}");
+    log("Sales Order Payload: ${returnOrderPayloadModel.toJson()}");
 
     try {
-      final res = await salesRepository.postSalesOrder(payload: salesOrderPayloadModel);
+      final res = await salesRepository.potstSalesReturn(payload: returnOrderPayloadModel);
 
       if ((res.statusCode == 201) && res.data != null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Berhasil mengirim sales order.'), backgroundColor: Colors.green));
-        Navigator.of(context).pop('refresh-sales-order');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan.'), backgroundColor: Colors.green));
+        Navigator.of(context).pop('refresh-return-payment');
       } else if (res.statusCode == 502) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
       } else {

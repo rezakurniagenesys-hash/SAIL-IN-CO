@@ -22,6 +22,16 @@ class QuickSalesDetailModel {
   final num qty2;
   final num price;
 
+  /// Tambahan baru
+  @JsonKey(name: 'price2')
+  final num price2;
+
+  @JsonKey(name: 'vat_value')
+  final num vatValue;
+
+  @JsonKey(name: 'disc_value')
+  final num discValue;
+
   @JsonKey(name: 'sub_total')
   final num subTotal;
 
@@ -42,6 +52,9 @@ class QuickSalesDetailModel {
     required this.qty,
     required this.qty2,
     required this.price,
+    required this.price2, // NEW
+    required this.vatValue, // NEW
+    required this.discValue, // NEW
     required this.subTotal,
     required this.grandTotal,
     required this.notes,

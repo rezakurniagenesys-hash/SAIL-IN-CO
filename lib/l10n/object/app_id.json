@@ -83,6 +83,7 @@
         "return": "Pengembalian",
         "activityHistory": "Riwayat Aktivitas",
         "outstandingOrder": "Pesanan Belum Selesai",
+        "sales" : "Penjualan",
         "stock": "Stock",
         "filterAll": "Semua",
         "filterSales": "Penjualan",
@@ -100,7 +101,16 @@
         "paymentCash": "Cash",
         "paymentCredit": "Credit",
         "saveChanges": "Simpan Perubahan",
-        "returnPayment": "Pengembalian Pembayaran"
+        "returnPayment": "Pengembalian Pembayaran",
+        "notDelivered": "Belum Dikirim",
+        "delivered": "Dikirim",
+        "waitingPayment": "Menunggu Pembayaran",
+        "outstandingOrderDetail": "Detail Pesanan Belum Selesai",
+        "shippingID": "ID Pengiriman",
+        "salesorderID" : "ID Pesanan Penjualan",
+        "shipping" : "Pengiriman",
+        "shippingOrderDetail": "Detail Pesanan Pengiriman",
+        "salesOrderId" : "ID Pesanan Penjualan"
     },
     "order": {
         "quickSales": "Penjualan Cepat",
@@ -228,7 +238,8 @@
         "pendingPayment": "Pembayaran Tertunda",
         "confirmPayment": "Konfirmasi Pembayaran",
         "salesOrderPayment": "Pembayaran Sales Order",
-        "returnPayment": "Pembayaran Retur"
+        "returnPayment": "Pembayaran Retur",
+        "outstandingOrderPayment": "Pembayaran Pesanan Belum Selesai"
     },
 
     "finishedTask": {

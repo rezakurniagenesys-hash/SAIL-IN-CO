@@ -22,6 +22,7 @@ class ApiConstants {
   // Customer
   // =======================================================
   static const String customerSearch = "/sales/api/callsheets/customer/search";
+  static const String customerSearchVisit = "/sales/api/callsheets/customer/search-visit";
   static const String customerDetail = "/sales/api/callsheets/customer/{id}";
   static const String customerUpdatePhoto = "/sales/api/callsheets/customer/{id}/upload";
 
@@ -37,4 +38,6 @@ class ApiConstants {
 
   static const String quickSales = "/stock/api/quick-sales";
   static const String salesOrders = "/stock/api/sales-orders";
+  static const String shippings = "/stock/api/shippings";
+  static const String returnPayments = "/stock/api/sales-returns";
 }

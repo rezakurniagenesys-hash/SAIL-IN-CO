@@ -246,6 +246,7 @@ class _CustomerUploadFotoState extends State<CustomerUploadFoto> {
     await showModalBottomSheet<void>(
       context: context,
       isDismissible: false,
+      useSafeArea: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) {
         return Padding(

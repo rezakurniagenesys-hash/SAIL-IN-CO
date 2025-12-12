@@ -11,6 +11,8 @@ import 'package:sail_in_co/providers/order/general_order_provider.dart';
 import 'package:sail_in_co/providers/order/quick_sales_provider.dart';
 import 'package:sail_in_co/providers/order/sales_order_provider.dart';
 import 'package:sail_in_co/providers/payment/payment_provider.dart';
+import 'package:sail_in_co/providers/return/return_provider.dart';
+import 'package:sail_in_co/providers/sales/sales_provider.dart';
 import 'package:sail_in_co/providers/stock/stock_provider.dart';
 import 'package:sail_in_co/providers/sync/sync_provider.dart';
 
@@ -37,4 +39,10 @@ List<SingleChildWidget> appProviders = [
   ChangeNotifierProvider(create: (_) => GeneralOrderProvider()),
   ChangeNotifierProvider(create: (_) => QuickSalesProvider()),
   ChangeNotifierProvider(create: (_) => SalesOrderProvider()),
+
+  // Return
+  ChangeNotifierProvider(create: (_) => ReturnProvider()),
+
+  //Sales
+  ChangeNotifierProvider(create: (_) => SalesProvider()),
 ];

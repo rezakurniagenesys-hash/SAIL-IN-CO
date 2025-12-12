@@ -33,7 +33,7 @@ class DraggableScrollableSheetDetailCustomer extends StatelessWidget {
                   labelStyle: AppTextStyles.label2SemiBold,
                   tabs: [
                     Tab(text: l!.customerDetail_activityHistory),
-                    Tab(text: l.customerDetail_outstandingOrder),
+                    Tab(text: l.customerDetail_sales),
                     Tab(text: l.customerDetail_stock),
                   ],
                 ),

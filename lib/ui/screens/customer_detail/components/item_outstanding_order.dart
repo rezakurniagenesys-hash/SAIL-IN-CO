@@ -3,18 +3,26 @@ import 'package:flutter_svg/svg.dart';
 import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/data/models/history/sales_order_response_model.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 
 class ItemOutstandingOrder extends StatelessWidget {
-  const ItemOutstandingOrder({super.key});
+  const ItemOutstandingOrder({super.key, this.item, this.onView, this.onPayment, this.onShipping, this.onPrint});
+  final SalesOrderModel? item;
+  final VoidCallback? onView;
+  final VoidCallback? onPayment;
+  final VoidCallback? onShipping;
+  final VoidCallback? onPrint;
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           margin: EdgeInsets.only(right: 8),
-          child: Text('11/08', style: AppTextStyles.body2Medium),
+          child: Text(formatDate(DateTime.parse(item?.salesOrderDate ?? DateTime.now().toIso8601String())), style: AppTextStyles.body2Medium),
         ),
         Expanded(
           child: Column(
@@ -24,31 +32,36 @@ class ItemOutstandingOrder extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('QS.0123123.1231321', style: AppTextStyles.body2Medium),
+                  Text(item?.salesOrderId ?? '-', style: AppTextStyles.body2Medium),
                   Row(
                     children: [
                       Container(
                         height: 5,
                         width: 5,
-                        decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: (item?.isShipped == 1) ? AppColors.green : AppColors.error, shape: BoxShape.circle),
                       ),
                       SizedBox(width: 4),
-                      Text('Not Delivered', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary)),
+                      Text(
+                        (item?.isShipped == 1) ? l?.customerDetail_delivered ?? '' : l?.customerDetail_notDelivered ?? '',
+                        style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary),
+                      ),
                     ],
                   ),
                 ],
               ),
-              Text('Waiting for payment', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+              if (item?.isShipped == 0)
+                Text(l?.customerDetail_waitingPayment ?? '', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+              if (item?.isShipped == 1) Text(l?.customerDetail_shipping ?? '', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
               SizedBox(height: 8),
               Row(
                 spacing: 6,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  buildButton(AssetIcons.carbonViewFilled, () {}, true),
-                  buildButton(AssetIcons.fluentPayment20Filled, () {}, false),
-                  buildButton(AssetIcons.materialSymbolsLocalShippingRounded, () {}, false),
-                  buildButton(AssetIcons.materialSymbolsPrintRounded, () {}, true),
-                  buildButton(AssetIcons.materialSymbolsDelete, () {}, false),
+                  buildButton(AssetIcons.carbonViewFilled, onView ?? () {}, true),
+                  buildButton(AssetIcons.materialSymbolsLocalShippingRounded, (item?.isShipped == 1 ? null : onShipping) ?? () {}, item?.isShipped == 0),
+                  buildButton(AssetIcons.fluentPayment20Filled, (item?.isPaid == 1 ? null : onPayment) ?? () {}, item?.isPaid == 0),
+                  buildButton(AssetIcons.materialSymbolsPrintRounded, onPrint ?? () {}, true),
+                  // buildButton(AssetIcons.materialSymbolsDelete, onDelete ?? () {}, true),
                 ],
               ),
             ],
@@ -72,5 +85,12 @@ class ItemOutstandingOrder extends StatelessWidget {
         child: SvgPicture.asset(icon, color: isActive ? AppColors.sky700 : AppColors.grey, width: 20, height: 20),
       ),
     );
+  }
+
+  // Format date (DD/MM)
+  String formatDate(DateTime date) {
+    String day = date.day.toString().padLeft(2, '0');
+    String month = date.month.toString().padLeft(2, '0');
+    return '$day/$month';
   }
 }
