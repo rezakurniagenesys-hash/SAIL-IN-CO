@@ -6,6 +6,9 @@ import 'package:path/path.dart' as p;
 import 'package:sail_in_co/ui/screens/development/callsheet_customer_offline_page.dart';
 import 'package:sail_in_co/ui/screens/development/inventory_offline_page.dart';
 import 'package:sail_in_co/ui/screens/development/payment_method_offline_page.dart';
+import 'package:sail_in_co/ui/screens/development/quick_sales_offline_page.dart';
+import 'package:sail_in_co/ui/screens/development/sales_order_offline_page.dart';
+import 'package:sail_in_co/ui/screens/development/sales_return_offline_page.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'callsheet_offline_page.dart';
@@ -88,7 +91,29 @@ class _DeveloperOfflinePageState extends State<DeveloperOfflinePage> {
             icon: Icons.payment_outlined,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodOfflinePage())),
           ),
-
+          _menuItem(
+            title: "Quick Sales Offline",
+            subtitle: "Cek penjualan yang belum tersinkronisasi",
+            icon: Icons.point_of_sale_outlined,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuickSalesOfflinePage())),
+          ),
+          _menuItem(
+            title: "Sales Order Offline",
+            subtitle: "Cek sales order yang belum tersinkronisasi",
+            icon: Icons.shopping_cart_outlined,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SalesOrderOfflinePage()));
+            },
+          ),
+          // Sales Return Offline
+          _menuItem(
+            title: "Sales Return Offline",
+            subtitle: "Cek sales return yang belum tersinkronisasi",
+            icon: Icons.assignment_return_outlined,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SalesReturnOfflinePage()));
+            },
+          ),
           const SizedBox(height: 30),
         ],
       ),

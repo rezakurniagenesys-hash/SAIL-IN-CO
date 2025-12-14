@@ -398,6 +398,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get order_save => 'Save';
 
   @override
+  String get order_lastUpdated => 'Last Updated';
+
+  @override
+  String get order_waitingForShipping => 'Waiting for Shipping';
+
+  @override
   String get transportation_management => 'Transportation Management';
 
   @override

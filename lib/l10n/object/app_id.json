@@ -152,7 +152,9 @@
         "currentStock" : "Stok Saat Ini",
         "qtyDefault" : "Qty Default",
         "uomDefault" : "UoM Default",
-        "save" : "Simpan"
+        "save" : "Simpan",
+        "lastUpdated" : "Terakhir Diperbarui",
+        "waitingForShipping": "Menunggu Pengiriman"
     },
     "transportation": {
         "management": "Manajemen Transportasi",

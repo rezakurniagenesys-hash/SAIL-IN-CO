@@ -152,7 +152,9 @@
         "currentStock" : "Current Stock",
         "qtyDefault" : "Default Qty",
         "uomDefault" : "Default UoM",
-        "save" : "Save"
+        "save" : "Save",
+        "lastUpdated" : "Last Updated",
+        "waitingForShipping": "Waiting for Shipping"
     },
 
     "transportation": {

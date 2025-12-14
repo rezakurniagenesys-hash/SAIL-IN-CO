@@ -3,7 +3,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/core/utils/connection_utils.dart';
+import 'package:sail_in_co/data/dao/master/method_payment_dao.dart';
+import 'package:sail_in_co/data/dao/sales/outstanding_payment_dao.dart';
+import 'package:sail_in_co/data/dao/sales/quick_sales_dao.dart';
+import 'package:sail_in_co/data/models/history/sales_order_response_model.dart';
 import 'package:sail_in_co/data/models/payment/payment_method_response.dart';
+import 'package:sail_in_co/data/models/quicksales/outstanding_payment_payload_model.dart';
 import 'package:sail_in_co/data/models/quicksales/quick_sales_payload_model.dart';
 import 'package:sail_in_co/data/models/sales/sales_return_response.dart';
 import 'package:sail_in_co/data/repositories/payment_repository.dart';
@@ -13,6 +19,11 @@ class PaymentProvider extends ChangeNotifier {
   final repository = PaymentRepository();
 
   QuickSalesPayloadModel? quickSalesPayloadModel;
+  SalesOrderModel? salesOrderModel;
+
+  final daoQuickSales = QuickSalesDao();
+  final daoMethodPayment = MethodPaymentDao();
+  final daoOutstandingPayment = OutstandingPaymentDao();
 
   bool isLoading = false;
   bool isLoadingSubmit = false;
@@ -23,6 +34,7 @@ class PaymentProvider extends ChangeNotifier {
   SalesReturnData? selectedSalesReturn;
 
   num remainingPayment = 0;
+  num totalPayment = 0;
 
   Future<void> init(BuildContext context, String customerId) async {
     isLoading = true;
@@ -41,6 +53,13 @@ class PaymentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setSalesOrderModel(SalesOrderModel? model) {
+    salesOrderModel = model;
+    remainingPayment = int.parse(model?.grandTotalShipping ?? '0');
+    totalPayment = int.parse(model?.grandTotalShipping ?? '0');
+    notifyListeners();
+  }
+
   void setSelectedSalesReturn(SalesReturnData? salesReturn) {
     selectedSalesReturn = salesReturn;
     final num sisaValue = num.tryParse(salesReturn?.sisa ?? '0') ?? 0;
@@ -53,20 +72,23 @@ class PaymentProvider extends ChangeNotifier {
   void setQuickSalesPayloadModel(QuickSalesPayloadModel? model) {
     quickSalesPayloadModel = model;
     remainingPayment = model?.grandTotal ?? 0;
+    totalPayment = model?.grandTotal ?? 0;
     notifyListeners();
   }
 
   Future<void> getSalesReturn(BuildContext context, String customerId) async {
+    final online = await ConnectionUtils.isConnected();
     try {
-      final res = await repository.getSalesReturns(customerId: customerId);
-
-      if (res.statusCode == 200 && res.data != null) {
-        final responseSalesReturn = SalesReturnResponse.fromJson(res.data);
-        salesReturnData = responseSalesReturn.data;
-      } else if (res.statusCode == 502) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+      if (online) {
+        final res = await repository.getSalesReturns(customerId: customerId);
+        if (res.statusCode == 200 && res.data != null) {
+          final responseSalesReturn = SalesReturnResponse.fromJson(res.data);
+          salesReturnData = responseSalesReturn.data;
+        } else if (res.statusCode == 502) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching sales return data: $e'), backgroundColor: Colors.red));
@@ -75,16 +97,22 @@ class PaymentProvider extends ChangeNotifier {
 
   Future<void> getPaymentMethod(BuildContext context) async {
     final userInfo = await AuthService.getUserInfo();
+    final online = await ConnectionUtils.isConnected();
     try {
-      final res = await repository.getPaymentMethods(noAcc6: userInfo?.userId ?? '');
+      if (online) {
+        final res = await repository.getPaymentMethods(noAcc6: userInfo?.userId ?? '');
 
-      if (res.statusCode == 200 && res.data != null) {
-        final responsePaymentMethod = PaymentMethodResponse.fromJson(res.data);
-        paymentMethodData = responsePaymentMethod.data;
-      } else if (res.statusCode == 502) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+        if (res.statusCode == 200 && res.data != null) {
+          final responsePaymentMethod = PaymentMethodResponse.fromJson(res.data);
+          paymentMethodData = responsePaymentMethod.data;
+        } else if (res.statusCode == 502) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        // OFFLINE HANDLING HERE
+        paymentMethodData = await daoMethodPayment.getPaymentMethods();
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));
@@ -109,18 +137,64 @@ class PaymentProvider extends ChangeNotifier {
       sourceId: 'SOU.001',
     );
     log('Confirmed Payment with Payload: ${newPayload?.toJson()}');
-
+    final online = await ConnectionUtils.isConnected();
     try {
-      final res = await repository.postQuickSales(payload: newPayload!);
+      if (online) {
+        final res = await repository.postQuickSales(payload: newPayload!);
 
-      if ((res.statusCode == 201) && res.data != null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment confirmed successfully.'), backgroundColor: Colors.green));
+        if ((res.statusCode == 201) && res.data != null) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil dilakukan.'), backgroundColor: Colors.green));
+          Navigator.of(context).pop();
+          Navigator.of(context).pop('refresh-quick-sales');
+        } else if (res.statusCode == 502) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        }
+      } else {
+        // OFFLINE HANDLING HERE
+        await daoQuickSales.saveQuickSales(newPayload!);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil disimpan secara lokal.'), backgroundColor: Colors.green));
         Navigator.of(context).pop();
         Navigator.of(context).pop('refresh-quick-sales');
-      } else if (res.statusCode == 502) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));
+    } finally {
+      isLoadingSubmit = false;
+      notifyListeners();
+    }
+  }
+
+  void submitInvoicePaymentJournal(BuildContext context) async {
+    final userInfo = await AuthService.getUserInfo();
+    isLoadingSubmit = true;
+    notifyListeners();
+    OutstandingPaymentPayloadModel newPayload = OutstandingPaymentPayloadModel(
+      invoiceId: salesOrderModel?.invoiceId ?? '',
+      slipId: selectedPaymentMethod?.slipId ?? '',
+      salesReturnId: selectedSalesReturn?.salesReturnId ?? '',
+      salesReturnPayment: num.tryParse(selectedSalesReturn?.sisa ?? '0') ?? 0,
+      remainingPayment: remainingPayment,
+      userRecord: userInfo?.username ?? '',
+    );
+    final online = await ConnectionUtils.isConnected();
+    try {
+      if (online) {
+        final res = await repository.postInvoicePaymentJournal(payload: newPayload);
+        if ((res.statusCode == 201) && res.data != null) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil dilakukan.'), backgroundColor: Colors.green));
+          Navigator.of(context).pop('refresh-outstanding-order-payment');
+        } else if (res.statusCode == 502) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        // OFFLINE HANDLING HERE
+        await daoOutstandingPayment.saveOutstandingPayment(newPayload);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil disimpan secara lokal.'), backgroundColor: Colors.green));
+        Navigator.of(context).pop('refresh-outstanding-order-payment');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));

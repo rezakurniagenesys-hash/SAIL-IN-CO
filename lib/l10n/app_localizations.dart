@@ -869,6 +869,18 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get order_save;
 
+  /// No description provided for @order_lastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Updated'**
+  String get order_lastUpdated;
+
+  /// No description provided for @order_waitingForShipping.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Shipping'**
+  String get order_waitingForShipping;
+
   /// No description provided for @transportation_management.
   ///
   /// In en, this message translates to:

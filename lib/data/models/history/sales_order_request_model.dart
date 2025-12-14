@@ -7,6 +7,9 @@ class SalesOrderRequestModel {
   @JsonKey(name: 'user_id')
   final String userId;
 
+  @JsonKey(name: 'customer_id')
+  final String customerId;
+
   @JsonKey(name: 'void')
   final int voidFlag;
 
@@ -25,6 +28,7 @@ class SalesOrderRequestModel {
 
   SalesOrderRequestModel({
     required this.userId,
+    required this.customerId,
     required this.voidFlag,
     required this.status,
     required this.startDate,
@@ -40,6 +44,7 @@ class SalesOrderRequestModel {
   /// For queryParameters → Dio/http
   Map<String, dynamic> toQuery() => {
     "user_id": userId,
+    "customer_id": customerId,
     "void": voidFlag,
     "status": status,
     "start_date": startDate,

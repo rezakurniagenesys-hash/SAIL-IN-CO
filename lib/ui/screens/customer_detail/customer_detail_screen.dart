@@ -307,7 +307,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                 ),
               ),
 
-              DraggableScrollableSheetDetailCustomer(),
+              DraggableScrollableSheetDetailCustomer(customerId: widget.customerId),
             ],
           );
         },

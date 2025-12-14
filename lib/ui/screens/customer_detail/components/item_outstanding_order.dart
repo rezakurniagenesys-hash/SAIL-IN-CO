@@ -22,7 +22,9 @@ class ItemOutstandingOrder extends StatelessWidget {
       children: [
         Container(
           margin: EdgeInsets.only(right: 8),
-          child: Text(formatDate(DateTime.parse(item?.salesOrderDate ?? DateTime.now().toIso8601String())), style: AppTextStyles.body2Medium),
+          child: Text(
+            formatDate(DateTime.parse(item?.salesOrderDate ?? DateTime.now().toIso8601String()))
+            , style: AppTextStyles.body2Medium),
         ),
         Expanded(
           child: Column(
@@ -51,7 +53,8 @@ class ItemOutstandingOrder extends StatelessWidget {
               ),
               if (item?.isShipped == 0)
                 Text(l?.customerDetail_waitingPayment ?? '', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
-              if (item?.isShipped == 1) Text(l?.customerDetail_shipping ?? '', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+              if (item?.isShipped == 1)
+                Text("${l?.customerDetail_shipping ?? ''} | ${item?.shippingId}", style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
               SizedBox(height: 8),
               Row(
                 spacing: 6,

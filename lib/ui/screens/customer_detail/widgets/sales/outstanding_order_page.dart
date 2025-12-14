@@ -2,22 +2,28 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/constants/asset_icons.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
+import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/debouncer.dart';
 import 'package:sail_in_co/providers/sales/sales_provider.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/components/item_outstanding_order.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/sub_feature/view_outstanding_order_screen.dart';
 import 'package:sail_in_co/ui/screens/payment/enums/payments_enum.dart';
 import 'package:sail_in_co/ui/screens/payment/payment_screen.dart';
+import 'package:sail_in_co/ui/screens/receipt/receipt_pdf_view.dart';
+import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_date_picker.dart';
+import 'package:sail_in_co/ui/widgets/app_dialog.dart';
+import 'package:sail_in_co/ui/widgets/app_dropdown_field.dart';
 import 'package:sail_in_co/ui/widgets/app_infinite_list.dart';
 import 'package:sail_in_co/ui/widgets/app_input_field.dart';
 
 class OutstandingOrderPage extends StatefulWidget {
-  const OutstandingOrderPage({super.key});
-
+  const OutstandingOrderPage({super.key, required this.customerId});
+  final String customerId;
   @override
   State<OutstandingOrderPage> createState() => _OutstandingOrderPageState();
 }
@@ -31,7 +37,7 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
     Future.microtask(() {
       final provider = context.read<SalesProvider>();
       provider.clearData();
-      provider.getOutstandingSalesOrders(initial: true);
+      provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
     });
   }
 
@@ -47,7 +53,7 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
                 controller: provider.searchController,
                 onChanged: (value) {
                   _debouncer.run(() {
-                    provider.searchOutstandingSalesOrders(value);
+                    provider.searchOutstandingSalesOrders(value, widget.customerId);
                   });
                 },
               ),
@@ -55,10 +61,76 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
             SizedBox(width: 8),
             InkWell(
               onTap: () async {
-                final date = await showAppDatePicker(context);
-                if (date != null) {
-                  print("Tanggal dipilih: $date");
-                }
+                // final date = await showAppDatePicker(context);
+                // if (date != null) {
+                //   print("Tanggal dipilih: $date");
+                // }
+
+                AppDialog.show(
+                  context: context,
+                  title: 'Filter Date',
+                  content: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppInputField(
+                              controller: provider.startDateController,
+                              hintText: 'Start Date',
+                              // readOnly: true,
+                              prefixIcon: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  AssetIcons.icRoundDateRange,
+                                  height: 16,
+                                  colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
+                                ),
+                              ),
+                              onTap: () async {
+                                final date = await showAppDatePicker(context);
+                                if (date != null) {
+                                  provider.setStartDate(date);
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: AppInputField(
+                              hintText: 'End Date',
+                              controller: provider.endDateController,
+                              // readOnly: true,
+                              prefixIcon: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  AssetIcons.icRoundDateRange,
+                                  height: 16,
+                                  colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
+                                ),
+                              ),
+                              onTap: () async {
+                                final date = await showAppDatePicker(context);
+                                if (date != null) {
+                                  provider.setEndDate(date);
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  actionButton: AppButton(
+                    label: 'Filter',
+                    isFullWidth: true,
+                    type: AppButtonType.primary,
+                    height: 42,
+                    onPressed: () {
+                      provider.filterDate(widget.customerId);
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
               },
               child: SvgPicture.asset(AssetIcons.icRoundDateRange, height: 28, colorFilter: const ColorFilter.mode(AppColors.sky950, BlendMode.srcIn)),
             ),
@@ -74,14 +146,14 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
     return Consumer<SalesProvider>(
       builder: (context, provider, child) {
         return RefreshIndicator(
-          onRefresh: () async => provider.getOutstandingSalesOrders(initial: true),
+          onRefresh: () async => provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId),
           child: AppInfinityList(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             items: provider.dataSalesOrder,
             isLoading: provider.isLoading,
             isLoadMore: provider.isLoadMore,
-            onLoadMore: () => provider.getOutstandingSalesOrders(loadMore: true),
+            onLoadMore: () => provider.getOutstandingSalesOrders(loadMore: true, customerId: widget.customerId),
             itemBuilder: (context, index) {
               return ItemOutstandingOrder(
                 item: provider.dataSalesOrder[index],
@@ -99,18 +171,59 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
                     ),
                   ).then((value) {
                     if (value == 'refresh-shipping-order') {
-                      provider.getOutstandingSalesOrders(initial: true);
+                      provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
                     }
                   });
                 },
                 onPayment: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(paymentType: PaymentType.outstandingOrderPayment))).then((
-                    value,
-                  ) {
-                    // if (value == 'refresh-payment-order') {
-                    //   provider.getOutstandingSalesOrders(initial: true);
-                    // }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentScreen(paymentType: PaymentType.outstandingOrderPayment, salesOrderModel: provider.dataSalesOrder[index]),
+                    ),
+                  ).then((value) {
+                    if (value == 'refresh-outstanding-order-payment') {
+                      provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
+                    }
                   });
+                },
+                onPrint: () {
+                  AppDialog.show(
+                    context: context,
+                    title: 'Print Invoice',
+                    content: Column(
+                      children: [
+                        Text('Print', style: AppTextStyles.label2SemiBold),
+                        Container(margin: const EdgeInsets.symmetric(vertical: 12), height: 1, color: AppColors.sky600),
+                        SvgPicture.asset(AssetIcons.printIcon, width: 50, height: 50),
+                        Row(
+                          children: [
+                            Text('Device', style: AppTextStyles.body4Medium.copyWith(color: AppColors.textPrimary)),
+                            Spacer(),
+                            Text('Status', style: AppTextStyles.body4Medium.copyWith(color: AppColors.emerald600)),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        AppDropdownField(label: 'Printer Name', value: '', items: ['Printer 1', 'Printer 2'], onChanged: (value) {}),
+                        SizedBox(height: 16),
+                        AppButton(isDisabled: true, height: 44, label: 'Refresh', onPressed: () {}, isFullWidth: true, type: AppButtonType.primary),
+                        SizedBox(height: 16),
+                        AppButton(height: 44, label: 'Print', onPressed: () {}, isFullWidth: true, type: AppButtonType.primary),
+                        SizedBox(height: 16),
+                        AppButton(
+                          height: 44,
+                          label: 'Download as PDF',
+                          onPressed: () {
+                            // Future<void> openReceiptPdf(ReceiptData data) async {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ReceiptPdfViewPage()));
+                            // }
+                          },
+                          isFullWidth: true,
+                          type: AppButtonType.primary,
+                        ),
+                      ],
+                    ),
+                  );
                 },
               );
             },

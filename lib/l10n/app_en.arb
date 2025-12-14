@@ -138,6 +138,8 @@
   "order_qtyDefault": "Default Qty",
   "order_uomDefault": "Default UoM",
   "order_save": "Save",
+  "order_lastUpdated": "Last Updated",
+  "order_waitingForShipping": "Waiting for Shipping",
   "transportation_management": "Transportation Management",
   "transportation_history": "History",
   "transportation_add": "Add",

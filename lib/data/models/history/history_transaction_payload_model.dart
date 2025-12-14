@@ -1,0 +1,105 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'history_transaction_payload_model.g.dart';
+
+@JsonSerializable(includeIfNull: false)
+class HistoryTransactionPayloadModel {
+  @JsonKey(name: 'user_id')
+  final String userId;
+
+  @JsonKey(name: 'type')
+  final String? type;
+
+  @JsonKey(name: 'start_date')
+  final String startDate;
+
+  @JsonKey(name: 'end_date')
+  final String endDate;
+
+  final int page;
+  final int limit;
+
+  /// Optional filters
+  @JsonKey(name: 'sales_id')
+  final String? salesId;
+
+  @JsonKey(name: 'sales_date')
+  final String? salesDate;
+
+  @JsonKey(name: 'inventory_name')
+  final String? inventoryName;
+
+  @JsonKey(name: 'search')
+  final String? search;
+
+  HistoryTransactionPayloadModel({
+    required this.userId,
+    this.type,
+    required this.startDate,
+    required this.endDate,
+    required this.page,
+    required this.limit,
+    this.salesId,
+    this.salesDate,
+    this.inventoryName,
+    this.search,
+  });
+
+  /// ===============================
+  /// COPY WITH
+  /// ===============================
+  HistoryTransactionPayloadModel copyWith({
+    String? userId,
+    String? type,
+    String? startDate,
+    String? endDate,
+    int? page,
+    int? limit,
+    String? salesId,
+    String? salesDate,
+    String? inventoryName,
+    String? search,
+  }) {
+    return HistoryTransactionPayloadModel(
+      userId: userId ?? this.userId,
+      type: type ?? this.type,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      page: page ?? this.page,
+      limit: limit ?? this.limit,
+      salesId: salesId ?? this.salesId,
+      salesDate: salesDate ?? this.salesDate,
+      inventoryName: inventoryName ?? this.inventoryName,
+      search: search ?? this.search,
+    );
+  }
+
+  /// ===============================
+  /// TO QUERY PARAMS
+  /// ===============================
+  Map<String, dynamic> toQuery() {
+    final Map<String, dynamic> query = {'user_id': userId, 'start_date': startDate, 'end_date': endDate, 'page': page, 'limit': limit};
+
+    if (type != null && type!.isNotEmpty) {
+      query['type'] = type;
+    }
+    if (salesId != null && salesId!.isNotEmpty) {
+      query['sales_id'] = salesId;
+    }
+    if (salesDate != null && salesDate!.isNotEmpty) {
+      query['sales_date'] = salesDate;
+    }
+    if (inventoryName != null && inventoryName!.isNotEmpty) {
+      query['inventory_name'] = inventoryName;
+    }
+    if (search != null && search!.isNotEmpty) {
+      query['search'] = search;
+    }
+
+    return query;
+  }
+
+  factory HistoryTransactionPayloadModel.fromJson(Map<String, dynamic> json) => _$HistoryTransactionPayloadModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HistoryTransactionPayloadModelToJson(this);
+}

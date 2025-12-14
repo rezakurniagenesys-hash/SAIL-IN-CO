@@ -208,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        const SectionsPettyCash(),
+                        SectionsPettyCash(pettyCashAmount: homeProvider.remainingBalancePattyCash),
 
                         SectionsStockDashboard(stockItem: homeProvider.stockItem, isLoading: homeProvider.isLoadingStock),
 

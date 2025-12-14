@@ -73,6 +73,12 @@ class CustomerDetailDao {
     );
   }
 
+  // Update detail customer where no_acc6
+  Future<int> updateCustomerDetail(String noAcc6, Map<String, dynamic> values) async {
+    final db = await dbHelper.database;
+    return db.update("customer_detail", values, where: "no_acc6 = ?", whereArgs: [noAcc6]);
+  }
+
   /// Delete detail customer
   Future<int> deleteCustomerDetail(String noAcc6) async {
     final db = await dbHelper.database;

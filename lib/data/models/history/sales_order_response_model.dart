@@ -40,6 +40,15 @@ class SalesOrderModel {
   @JsonKey(name: 'sales_order_date')
   final String salesOrderDate;
 
+  @JsonKey(name: 'customer_id')
+  final String customerId;
+
+  @JsonKey(name: 'shipping_id')
+  final String? shippingId;
+
+  @JsonKey(name: 'invoice_id')
+  final String? invoiceId;
+
   @JsonKey(name: 'total_qty')
   final int totalQty;
 
@@ -52,21 +61,28 @@ class SalesOrderModel {
   @JsonKey(name: 'is_paid')
   final int isPaid;
 
-  @JsonKey(name: 'customer_id')
-  final int customerId;
+  @JsonKey(name: 'grand_total_shipping')
+  final dynamic grandTotalShipping;
 
-  @JsonKey(name: 'shipping_id')
-  final int shippingId;
+  @JsonKey(name: 'grand_total_invoice')
+  final dynamic grandTotalInvoice;
+
+  @JsonKey(name: 'total_payment')
+  final dynamic totalPayment;
 
   SalesOrderModel({
     required this.salesOrderId,
     required this.salesOrderDate,
+    required this.customerId,
     required this.totalQty,
     required this.inventoryNames,
     required this.isShipped,
     required this.isPaid,
-    required this.customerId,
-    required this.shippingId,
+    this.shippingId,
+    this.invoiceId,
+    this.grandTotalShipping,
+    this.grandTotalInvoice,
+    this.totalPayment,
   });
 
   factory SalesOrderModel.fromJson(Map<String, dynamic> json) => _$SalesOrderModelFromJson(json);

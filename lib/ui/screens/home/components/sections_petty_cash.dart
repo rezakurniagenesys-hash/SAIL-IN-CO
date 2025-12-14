@@ -6,7 +6,8 @@ import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
 
 class SectionsPettyCash extends StatelessWidget {
-  const SectionsPettyCash({super.key});
+  const SectionsPettyCash({super.key, required this.pettyCashAmount});
+  final num pettyCashAmount;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class SectionsPettyCash extends StatelessWidget {
               Text('Petty Cash', style: AppTextStyles.heading5Bold.copyWith(color: Colors.white)),
             ],
           ),
-          Text(CurrencyFormat.toRupiah(0), style: AppTextStyles.heading5Bold.copyWith(color: Colors.white)),
+          Text(CurrencyFormat.toRupiah(pettyCashAmount), style: AppTextStyles.heading5Bold.copyWith(color: Colors.white)),
         ],
       ),
     );

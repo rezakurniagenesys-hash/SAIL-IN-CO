@@ -18,6 +18,7 @@ class AppInputField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool readOnly;
   final Color borderSideColor;
+  final VoidCallback? onTap;
 
   const AppInputField({
     super.key,
@@ -34,6 +35,7 @@ class AppInputField extends StatelessWidget {
     this.validator,
     this.readOnly = false,
     this.borderSideColor = AppColors.neutral300,
+    this.onTap,
   });
 
   Future<void> _selectDate(BuildContext context) async {
@@ -76,8 +78,14 @@ class AppInputField extends StatelessWidget {
                   onChanged?.call(value);
                   field.didChange(value);
                 },
-                onTap: isDateType ? () => _selectDate(context) : null,
+                onTap: () {
+                  if (isDateType) {
+                    _selectDate(context);
+                  }
+                  onTap?.call();
+                },
                 style: const TextStyle(fontSize: 13, color: Colors.black),
+
                 decoration: InputDecoration(
                   labelText: label,
                   hintText: hintText,

@@ -398,6 +398,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get order_save => 'Simpan';
 
   @override
+  String get order_lastUpdated => 'Terakhir Diperbarui';
+
+  @override
+  String get order_waitingForShipping => 'Menunggu Pengiriman';
+
+  @override
   String get transportation_management => 'Manajemen Transportasi';
 
   @override

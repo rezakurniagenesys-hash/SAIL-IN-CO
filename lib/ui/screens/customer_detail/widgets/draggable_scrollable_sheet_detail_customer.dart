@@ -8,7 +8,8 @@ import 'package:sail_in_co/ui/screens/customer_detail/widgets/stock_history_scre
 import 'package:sail_in_co/ui/widgets/app_draggable_scrollable_sheet.dart';
 
 class DraggableScrollableSheetDetailCustomer extends StatelessWidget {
-  const DraggableScrollableSheetDetailCustomer({super.key});
+  const DraggableScrollableSheetDetailCustomer({super.key, required this.customerId});
+  final String customerId;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +44,8 @@ class DraggableScrollableSheetDetailCustomer extends StatelessWidget {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      ActivityHistoryScreen(scrollController: scrollController),
-                      OutstandingOrderScreen(scrollController: scrollController),
+                      ActivityHistoryScreen(scrollController: scrollController, customerId: customerId),
+                      OutstandingOrderScreen(scrollController: scrollController, customerId: customerId),
                       StockHistoryScreen(scrollController: scrollController),
                     ],
                   ),

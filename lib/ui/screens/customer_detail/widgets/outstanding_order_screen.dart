@@ -4,8 +4,9 @@ import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/sales/outstanding_order_page.dart';
 
 class OutstandingOrderScreen extends StatelessWidget {
-  const OutstandingOrderScreen({super.key, required this.scrollController});
+  const OutstandingOrderScreen({super.key, required this.scrollController, required this.customerId});
   final ScrollController scrollController;
+  final String customerId;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +61,7 @@ class OutstandingOrderScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // TAB CONTENT
-              if (index == 0) const OutstandingOrderPage(),
+              if (index == 0) OutstandingOrderPage(customerId: customerId),
               if (index == 1)
                 SizedBox(
                   child: Text('Sales Page Coming Soon...', style: AppTextStyles.heading2Bold.copyWith(color: AppColors.textSecondary)),

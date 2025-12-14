@@ -1,6 +1,7 @@
 import 'package:sail_in_co/core/api/api_client.dart';
 import 'package:sail_in_co/core/api/api_constants.dart';
 import 'package:sail_in_co/core/api/api_response.dart';
+import 'package:sail_in_co/data/models/quicksales/outstanding_payment_payload_model.dart';
 import 'package:sail_in_co/data/models/quicksales/quick_sales_payload_model.dart';
 
 class PaymentRepository {
@@ -36,4 +37,13 @@ class PaymentRepository {
     }
   }
 
+  // Post - /invoices/payment-journal
+  Future<ApiResponse> postInvoicePaymentJournal({required OutstandingPaymentPayloadModel payload}) async {
+    try {
+      final response = await _api.post("${ApiConstants.baseUrl}${ApiConstants.invoicePaymentJournal}", data: payload.toJson());
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
 }

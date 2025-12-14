@@ -16,4 +16,14 @@ class HomeRepository {
       return ApiResponse(data: null, statusCode: 500, message: e.toString());
     }
   }
+
+  // Patty Cash
+  Future<ApiResponse> getPattyCash({required String userId}) async {
+    try {
+      final response = await _api.post("${ApiConstants.baseUrl}${ApiConstants.pattyCash}", data: {'userID': userId});
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
 }

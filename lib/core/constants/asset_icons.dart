@@ -31,4 +31,5 @@ class AssetIcons {
   static const String permissionLocation = '$pathSvg/permission_location.svg';
   static const String boxSolid = '$pathSvg/box-solid.svg';
   static const String walletSolid = '$pathSvg/wallet-solid.svg';
+  static const String printIcon = '$pathSvg/print-icon.svg';
 }

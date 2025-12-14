@@ -4,7 +4,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/constants/constant_date.dart';
+import 'package:sail_in_co/core/utils/connection_utils.dart';
 import 'package:sail_in_co/core/utils/date_utils.dart';
+import 'package:sail_in_co/data/dao/sales/sales_return_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
@@ -16,6 +18,7 @@ import 'package:sail_in_co/services/auth_service.dart';
 
 class ReturnProvider extends ChangeNotifier {
   final salesRepository = SalesRepository();
+  final daoSalesReturn = SalesReturnDao();
 
   List<GeneralOrderDraftItem> returnOrderItems = [];
   TextEditingController notesController = TextEditingController();
@@ -164,17 +167,27 @@ class ReturnProvider extends ChangeNotifier {
     );
 
     log("Sales Order Payload: ${returnOrderPayloadModel.toJson()}");
-
+    final online = await ConnectionUtils.isConnected();
     try {
-      final res = await salesRepository.potstSalesReturn(payload: returnOrderPayloadModel);
+      if (online) {
+        final res = await salesRepository.potstSalesReturn(payload: returnOrderPayloadModel);
 
-      if ((res.statusCode == 201) && res.data != null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan.'), backgroundColor: Colors.green));
-        Navigator.of(context).pop('refresh-return-payment');
-      } else if (res.statusCode == 502) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+        if ((res.statusCode == 201) && res.data != null) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan.'), backgroundColor: Colors.green));
+          Navigator.of(context).pop('refresh-return-payment');
+        } else if (res.statusCode == 502) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+        await daoSalesReturn.saveSalesReturn(returnOrderPayloadModel);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan secara lokal.'), backgroundColor: Colors.green));
+        Navigator.of(context).pop('refresh-return-payment');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));

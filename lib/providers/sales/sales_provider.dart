@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/utils/connection_utils.dart';
+import 'package:sail_in_co/core/utils/date_utils.dart';
+import 'package:sail_in_co/data/dao/sales/outstanding_sales_order_dao.dart';
+import 'package:sail_in_co/data/dao/sales/shipping_sales_order_dao.dart';
 import 'package:sail_in_co/data/models/history/sales_order_detail_response_model.dart';
 import 'package:sail_in_co/data/models/history/sales_order_request_model.dart';
 import 'package:sail_in_co/data/models/history/sales_order_response_model.dart';
@@ -11,12 +14,16 @@ import 'package:sail_in_co/services/auth_service.dart';
 
 class SalesProvider extends ChangeNotifier {
   final repository = SalesRepository();
+  final daoShippingSalesOrder = ShippingSalesOrderDao();
+  final daoOutstandingSalesOrder = OutstandingSalesOrderDao();
 
   final TextEditingController searchController = TextEditingController();
+  final TextEditingController startDateController = TextEditingController();
+  final TextEditingController endDateController = TextEditingController();
 
   /// Pagination
   int page = 1;
-  int limit = 20;
+  int limit = 100;
   int totalPages = 1;
 
   /// States
@@ -25,6 +32,9 @@ class SalesProvider extends ChangeNotifier {
   bool isLoadingDetail = false;
   bool isSubmitting = false;
 
+  DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 23, 59, 59);
+
   /// Data list
   SalesOrderResponseModel? salesOrderResponse;
   List<SalesOrderModel> dataSalesOrder = [];
@@ -32,14 +42,13 @@ class SalesProvider extends ChangeNotifier {
   // Data Detail
   SalesOrderHeaderModel? salesOrderHeader;
 
-
   int totalDiscount() {
     int total = 0;
 
     for (var item in salesOrderHeader?.details ?? []) {
-      final int qty = int.tryParse(item.qty2) ?? 0;
+      // final int qty = int.tryParse(item.qty2) ?? 0;
       final int discount = int.tryParse(item.discValue ?? '0') ?? 0;
-      total += qty * discount;
+      total += discount;
     }
 
     return total;
@@ -70,59 +79,92 @@ class SalesProvider extends ChangeNotifier {
     return total;
   }
 
+  // set start date
+  void setStartDate(DateTime date) {
+    startDate = date;
+    startDateController.text = DateUtilsHelper.formatYMD(date);
+
+    notifyListeners();
+  }
+
+  // set end date
+  void setEndDate(DateTime date) {
+    endDate = date;
+    endDateController.text = DateUtilsHelper.formatYMD(date);
+    notifyListeners();
+  }
+
+  void filterDate(String customerId) {
+    page = 1;
+    dataSalesOrder.clear();
+
+    getOutstandingSalesOrders(initial: true, customerId: customerId);
+    notifyListeners();
+  }
+
   // Get - List Outstanding Sales Orders
-  Future<void> getOutstandingSalesOrders({bool loadMore = false, bool initial = false}) async {
+  Future<void> getOutstandingSalesOrders({bool loadMore = false, bool initial = false, required String customerId}) async {
+    endDateController.text = DateUtilsHelper.formatYMD(endDate);
+    startDateController.text = DateUtilsHelper.formatYMD(startDate);
     final userInfo = await AuthService.getUserInfo();
-    // LOAD MORE
-    if (loadMore) {
-      if (isLoadMore) return;
-      if (page >= totalPages) return;
-
-      isLoadMore = true;
-      page++;
-      notifyListeners();
-    } else if (initial) {
-      isLoading = true;
-      page = 1;
-      dataSalesOrder.clear();
-      notifyListeners();
-    }
-    // INITIAL LOAD
-    else {
-      isLoading = true;
-      page = 1;
-      dataSalesOrder.clear();
-      notifyListeners();
-    }
-    final request = SalesOrderRequestModel(
-      page: page,
-      limit: limit,
-      search: searchController.text,
-      userId: userInfo?.userId ?? '',
-      voidFlag: 0,
-      status: 1,
-      startDate: '2025-12-01',
-      endDate: '2025-12-12',
-    );
-
-    final response = await repository.getOutstandingSalesOrders(payload: request);
-
-    final data = SalesOrderResponseModel.fromJson(response.data);
-
-    if (data.data.data.isNotEmpty) {
+    final online = await ConnectionUtils.isConnected();
+    if (online) {
+      // LOAD MORE
       if (loadMore) {
-        dataSalesOrder.addAll(data.data.data);
-      } else {
-        dataSalesOrder = data.data.data;
-        totalPages = data.data.totalPages;
-      }
-    }
+        if (isLoadMore) return;
+        if (page >= totalPages) return;
 
-    // END STATE
-    if (loadMore) {
-      isLoadMore = false;
+        isLoadMore = true;
+        page++;
+        notifyListeners();
+      } else if (initial) {
+        isLoading = true;
+        page = 1;
+        dataSalesOrder.clear();
+        notifyListeners();
+      }
+      // INITIAL LOAD
+      else {
+        isLoading = true;
+        page = 1;
+        dataSalesOrder.clear();
+        notifyListeners();
+      }
+      final request = SalesOrderRequestModel(
+        page: page,
+        limit: limit,
+        search: searchController.text,
+        userId: userInfo?.userId ?? '',
+        customerId: customerId,
+        voidFlag: 0,
+        status: 1,
+        startDate: DateUtilsHelper.formatYMD(startDate),
+        endDate: DateUtilsHelper.formatYMD(endDate),
+      );
+
+      final response = await repository.getOutstandingSalesOrders(payload: request);
+
+      final data = SalesOrderResponseModel.fromJson(response.data);
+
+      if (data.data.data.isNotEmpty) {
+        if (loadMore) {
+          dataSalesOrder.addAll(data.data.data);
+        } else {
+          dataSalesOrder = data.data.data;
+          totalPages = data.data.totalPages;
+        }
+      }
+
+      // END STATE
+      if (loadMore) {
+        isLoadMore = false;
+      } else {
+        isLoading = false;
+      }
     } else {
-      isLoading = false;
+      await daoOutstandingSalesOrder.getByCustomerId(customerId: customerId, search: searchController.text).then((value) {
+        dataSalesOrder = value;
+      });
     }
 
     notifyListeners();
@@ -162,16 +204,24 @@ class SalesProvider extends ChangeNotifier {
     final userInfo = await AuthService.getUserInfo();
     isSubmitting = true;
     notifyListeners();
+    final online = await ConnectionUtils.isConnected();
+    final payload = ShippingSalesOrderPayload(salesOrderId: salesOrderId, userRecord: userInfo?.username ?? '');
     try {
-      final payload = ShippingSalesOrderPayload(salesOrderId: salesOrderId, userRecord: userInfo?.username ?? '');
-      final res = await repository.postShippingForSalesOrder(payload: payload);
-      if (res.statusCode == 201 && res.data != null) {
-        SnackBar snackBar = const SnackBar(content: Text('Berhasil mengirim shipping sales order.'), backgroundColor: Colors.green);
+      if (online) {
+        final res = await repository.postShippingForSalesOrder(payload: payload);
+        if (res.statusCode == 201 && res.data != null) {
+          SnackBar snackBar = const SnackBar(content: Text('Berhasil mengirim shipping sales order.'), backgroundColor: Colors.green);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop('refresh-shipping-order');
+        } else {
+          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        await daoShippingSalesOrder.saveShipping(payload);
+        SnackBar snackBar = const SnackBar(content: Text('Shipping sales order disimpan secara offline.'), backgroundColor: Colors.green);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         Navigator.of(context).pop('refresh-shipping-order');
-      } else {
-        SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } catch (e) {
       SnackBar snackBar = SnackBar(content: Text('Error posting shipping sales order: $e'), backgroundColor: Colors.red);
@@ -182,12 +232,12 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  void searchOutstandingSalesOrders(String query) {
+  void searchOutstandingSalesOrders(String query, String customerId) {
     searchController.text = query;
     page = 1;
     dataSalesOrder.clear();
 
-    getOutstandingSalesOrders(initial: true);
+    getOutstandingSalesOrders(initial: true, customerId: customerId);
     notifyListeners();
   }
 

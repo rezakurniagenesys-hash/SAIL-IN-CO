@@ -9,6 +9,7 @@ import 'package:sail_in_co/core/helpers/image_picker_helper.dart';
 import 'package:sail_in_co/core/helpers/location_helper.dart';
 import 'package:sail_in_co/core/utils/connection_utils.dart';
 import 'package:sail_in_co/data/dao/callsheet/callsheet_customer_detail_dao.dart';
+import 'package:sail_in_co/data/dao/callsheet/callsheet_customer_upload_foto_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/customer/upload_foto/customer_upload_foto_request.dart';
@@ -20,6 +21,7 @@ class CustomerDetailProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
 
   final daoCustomerDetail = CustomerDetailDao();
+  final daoCustomerUploadFoto = CustomerUploadFotoDao();
 
   // ============= Customer Detail =============
   bool isLoading = false;
@@ -183,44 +185,70 @@ class CustomerDetailProvider extends ChangeNotifier {
 
     isSubmitting = true;
     notifyListeners();
+    final online = await ConnectionUtils.isConnected();
+    final req = CustomerUploadFotoRequest(
+      address: address,
+      latitude: currentPosition!.latitude.toString(),
+      longitude: currentPosition!.longitude.toString(),
+      statusVisit: isStoreOpen ? 2 : 1,
+      userModified: userInfo?.username ?? '',
+      visitDate: DateTime.now(),
+    );
 
     try {
-      // 1. Jika lokasi belum ada → init dulu
-      if (currentPosition == null) {
-        await initLocation(context);
+      if (online) {
+        // Jika lokasi belum ada → init dulu
+        if (currentPosition == null) {
+          await initLocation(context);
+        }
+
+        // Setelah init, cek lagi
+        if (currentPosition == null) {
+          // lokasi tetap tidak didapat → batal submit
+          isSubmitting = false;
+          notifyListeners();
+          debugPrint("Submit dibatalkan karena lokasi tidak tersedia.");
+          return null;
+        }
+        // Upload foto ke server
+        final res = await _repo.updateCustomerPhoto(customerId, scheduleId, image!, req);
+
+        if (res.status == true) {
+          debugPrint("Customer photo uploaded successfully: ${res.toJson()}");
+        }
+
+        return res;
+      } else {
+        await daoCustomerUploadFoto.save(
+          payload: req,
+          imageBase64: ImagePickerHelper.convertFileToBase64(image!),
+        );
+        CustomerUploadFotoResponse dataUpload = CustomerUploadFotoResponse(
+          status: false,
+          message: '',
+          data: CustomerUploadFotoData(
+            filename: '',
+            originalName: '',
+            size: 0,
+            url: '',
+            fullUrl: '',
+            scheduleId: scheduleId,
+            customerId: customerId,
+            latitude: currentPosition?.latitude.toString() ?? '',
+            longitude: currentPosition?.longitude.toString() ?? '',
+            address: address,
+            statusVisit: isStoreOpen ? 2 : 1,
+            linkPathUpdated: false,
+          ),
+        );
+        final response = dataUpload.copyWith(status: true, message: 'Berhasil upload foto customer secara lokal.');
+        return response;
       }
-
-      // 2. Setelah init, cek lagi
-      if (currentPosition == null) {
-        // lokasi tetap tidak didapat → batal submit
-        isSubmitting = false;
-        notifyListeners();
-        debugPrint("Submit dibatalkan karena lokasi tidak tersedia.");
-        return null;
-      }
-
-      // 3. Jika sudah ada lokasi → lanjutkan submit
-      final req = CustomerUploadFotoRequest(
-        address: address,
-        latitude: currentPosition!.latitude.toString(),
-        longitude: currentPosition!.longitude.toString(),
-        statusVisit: isStoreOpen ? 2 : 1,
-        userModified: userInfo?.username ?? '',
-        visitDate: DateTime.now(),
-      );
-
-      final res = await _repo.updateCustomerPhoto(customerId, scheduleId, image!, req);
-
-      if (res.status == true) {
-        debugPrint("Customer photo uploaded successfully: ${res.toJson()}");
-      }
-
-      return res;
     } catch (e) {
       debugPrint("Error submitting customer photo: $e");
       return null;
     } finally {
-      // 4. Set submitting false di satu tempat saja
+      // Set submitting false di satu tempat saja
       isSubmitting = false;
       notifyListeners();
     }

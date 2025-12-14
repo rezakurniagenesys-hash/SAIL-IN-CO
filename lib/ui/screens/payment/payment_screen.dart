@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
+import 'package:sail_in_co/data/models/history/sales_order_response_model.dart';
 import 'package:sail_in_co/data/models/payment/payment_method_response.dart';
 import 'package:sail_in_co/data/models/quicksales/quick_sales_payload_model.dart';
 import 'package:sail_in_co/data/models/sales/sales_return_response.dart';
@@ -14,9 +15,10 @@ import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_dropdown_search.dart';
 
 class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({super.key, required this.paymentType, this.quickSalesPayloadModel});
+  const PaymentScreen({super.key, required this.paymentType, this.quickSalesPayloadModel, this.salesOrderModel});
   final PaymentType paymentType;
   final QuickSalesPayloadModel? quickSalesPayloadModel;
+  final SalesOrderModel? salesOrderModel;
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -28,10 +30,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<PaymentProvider>();
-      provider.init(context, widget.quickSalesPayloadModel?.customerId ?? "");
       if (widget.quickSalesPayloadModel != null) {
-        // provider.init(context, widget.quickSalesPayloadModel?.customerId ?? "");
+        provider.init(context, widget.quickSalesPayloadModel?.customerId ?? "");
         provider.setQuickSalesPayloadModel(widget.quickSalesPayloadModel);
+      }
+      if (widget.salesOrderModel != null) {
+        provider.init(context, widget.salesOrderModel?.customerId ?? "");
+        provider.setSalesOrderModel(widget.salesOrderModel);
       }
     });
   }
@@ -75,7 +80,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     children: [
                       Text(l.payment_totalAmount, style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
                       Text(
-                        CurrencyFormat.toRupiah(paymentProvider.quickSalesPayloadModel?.grandTotal),
+                        CurrencyFormat.toRupiah(
+                          paymentProvider.quickSalesPayloadModel != null
+                              ? paymentProvider.quickSalesPayloadModel!.grandTotal
+                              : paymentProvider.salesOrderModel != null
+                              ? paymentProvider.salesOrderModel!.grandTotalShipping
+                              : 0,
+                        ),
                         style: AppTextStyles.heading3Bold.copyWith(color: AppColors.textPrimary),
                       ),
                       if (widget.paymentType != PaymentType.returnPayment)
@@ -187,7 +198,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           label: l.payment_confirmPayment,
                           type: AppButtonType.primary,
                           onPressed: () {
-                            paymentProvider.confirmPayment(context);
+                            if (widget.quickSalesPayloadModel != null) {
+                              paymentProvider.confirmPayment(context);
+                            }
+                            if (widget.salesOrderModel != null) {
+                              paymentProvider.submitInvoicePaymentJournal(context);
+                            }
                           },
                         ),
                       ),

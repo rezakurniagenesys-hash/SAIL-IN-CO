@@ -138,6 +138,8 @@
   "order_qtyDefault": "Qty Default",
   "order_uomDefault": "UoM Default",
   "order_save": "Simpan",
+  "order_lastUpdated": "Terakhir Diperbarui",
+  "order_waitingForShipping": "Menunggu Pengiriman",
   "transportation_management": "Manajemen Transportasi",
   "transportation_history": "Riwayat",
   "transportation_add": "Tambah",

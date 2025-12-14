@@ -8,14 +8,16 @@ class CustomerUploadFotoResponse {
   final String message;
   final CustomerUploadFotoData data;
 
-  CustomerUploadFotoResponse({
-    required this.status,
-    required this.message,
-    required this.data,
-  });
+  CustomerUploadFotoResponse({required this.status, required this.message, required this.data});
 
-  factory CustomerUploadFotoResponse.fromJson(Map<String, dynamic> json) =>
-      _$CustomerUploadFotoResponseFromJson(json);
+  /// ===============================
+  /// COPY WITH (STATUS FRIENDLY)
+  /// ===============================
+  CustomerUploadFotoResponse copyWith({bool? status, String? message, CustomerUploadFotoData? data}) {
+    return CustomerUploadFotoResponse(status: status ?? this.status, message: message ?? this.message, data: data ?? this.data);
+  }
+
+  factory CustomerUploadFotoResponse.fromJson(Map<String, dynamic> json) => _$CustomerUploadFotoResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$CustomerUploadFotoResponseToJson(this);
 }
@@ -62,8 +64,7 @@ class CustomerUploadFotoData {
     required this.linkPathUpdated,
   });
 
-  factory CustomerUploadFotoData.fromJson(Map<String, dynamic> json) =>
-      _$CustomerUploadFotoDataFromJson(json);
+  factory CustomerUploadFotoData.fromJson(Map<String, dynamic> json) => _$CustomerUploadFotoDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$CustomerUploadFotoDataToJson(this);
 }

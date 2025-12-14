@@ -10,6 +10,7 @@ SalesOrderRequestModel _$SalesOrderRequestModelFromJson(
   Map<String, dynamic> json,
 ) => SalesOrderRequestModel(
   userId: json['user_id'] as String,
+  customerId: json['customer_id'] as String,
   voidFlag: (json['void'] as num).toInt(),
   status: (json['status'] as num).toInt(),
   startDate: json['start_date'] as String,
@@ -23,6 +24,7 @@ Map<String, dynamic> _$SalesOrderRequestModelToJson(
   SalesOrderRequestModel instance,
 ) => <String, dynamic>{
   'user_id': instance.userId,
+  'customer_id': instance.customerId,
   'void': instance.voidFlag,
   'status': instance.status,
   'start_date': instance.startDate,

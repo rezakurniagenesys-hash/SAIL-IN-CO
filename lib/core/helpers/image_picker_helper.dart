@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -136,5 +137,19 @@ class ImagePickerHelper {
   static void _showError(BuildContext context, String message) {
     // Anda bisa ganti menjadi SnackBar/Toast sesuai style aplikasi
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  //convertFileToBase64
+  static String convertFileToBase64(File file) {
+    final bytes = file.readAsBytesSync();
+    return base64Encode(bytes);
+  }
+
+  ///convertBase64ToFile
+  static File convertBase64ToFile(String base64String) {
+    final bytes = base64Decode(base64String);
+    final file = File('');
+    file.writeAsBytesSync(bytes);
+    return file;
   }
 }

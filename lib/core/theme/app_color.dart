@@ -27,6 +27,7 @@ class AppColors {
   static const Color grey = Color(0xFFBDBDBD);
   static const Color greyDark = Color(0xFF757575);
   static const Color green = Color(0xFF3DFE02);
+  static const Color emerald600 = Color(0xFF059669);
 
   // 🟢 STATUS COLORS
   static const Color success = Color(0xFF4CAF50);

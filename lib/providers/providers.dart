@@ -6,6 +6,7 @@ import 'package:sail_in_co/providers/connection_provider.dart';
 import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
 import 'package:sail_in_co/providers/customer/customer_management_provider.dart';
 import 'package:sail_in_co/providers/generals/general_providers.dart';
+import 'package:sail_in_co/providers/history/activity_history_provider.dart';
 import 'package:sail_in_co/providers/home/home_provider.dart';
 import 'package:sail_in_co/providers/order/general_order_provider.dart';
 import 'package:sail_in_co/providers/order/quick_sales_provider.dart';
@@ -45,4 +46,6 @@ List<SingleChildWidget> appProviders = [
 
   //Sales
   ChangeNotifierProvider(create: (_) => SalesProvider()),
+
+  ChangeNotifierProvider(create: (_) => ActivityHistoryProvider()),
 ];
