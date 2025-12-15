@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
+import 'package:sail_in_co/core/utils/date_utils.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
+import 'package:sail_in_co/providers/generals/general_providers.dart';
 import 'package:sail_in_co/providers/order/general_order_provider.dart';
 import 'package:sail_in_co/providers/return/return_provider.dart';
 import 'package:sail_in_co/ui/screens/order/components/widget/add_edit_inventory.dart';
@@ -30,6 +32,9 @@ class _ReturnScreenState extends State<ReturnScreen> {
     final provider = context.read<ReturnProvider>();
     provider.loadUserInfo();
     provider.setCustomerDetailData(widget.customerDetailData);
+
+    final generalOrderProvider = context.read<GeneralOrderProvider>();
+    generalOrderProvider.setPriceMode(OrderPriceMode.lockedFromMaster);
   }
 
   @override
@@ -60,7 +65,7 @@ class _ReturnScreenState extends State<ReturnScreen> {
                           spacing: 12,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            infoItem(l.order_date, DateTime.now().toString().split(' ').first),
+                            infoItem(l.order_date, DateUtilsHelper.formatDMY(DateTime.now())),
                             infoItem(l.order_codeCustomer, widget.customerDetailData?.customer?.noAcc6 ?? '-'),
                             infoItem(l.order_address, widget.customerDetailData?.customer?.address ?? '-'),
                           ],
@@ -88,8 +93,11 @@ class _ReturnScreenState extends State<ReturnScreen> {
                       Text(l.order_inventoryDetail, style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
                       AppButton(
                         label: l.order_addProduct,
+                        isLoading: context.watch<GeneralProviders>().isLoadingInventory,
                         icon: Icons.add,
                         onPressed: () async {
+                          // reset form
+                          await context.read<GeneralProviders>().getInventory(context);
                           // reset form
                           generalOrderProvider.clearSelection();
                           // set old inventory ids

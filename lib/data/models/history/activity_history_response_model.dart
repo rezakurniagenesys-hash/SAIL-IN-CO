@@ -116,7 +116,7 @@ class ActivityHistoryFilters {
   final String endDate;
 
   @JsonKey(name: 'user_id')
-  final String userId;
+  final dynamic userId;
 
   final String search;
   final String type;

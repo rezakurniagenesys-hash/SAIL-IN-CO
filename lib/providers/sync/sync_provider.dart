@@ -236,11 +236,11 @@ class SyncProvider extends ChangeNotifier {
       try {
         final request = HistoryTransactionPayloadModel(
           userId: userInfo?.userId ?? '',
+          customerId: item.noAcc6 ?? '',
           startDate: DateUtilsHelper.formatYMD(startDate),
           endDate: DateUtilsHelper.formatYMD(endDate),
           page: 1,
           limit: 100,
-          salesId: item.noAcc6 ?? '',
         );
 
         final res = await repoActivityHistory.getActivityHistory(payload: request);

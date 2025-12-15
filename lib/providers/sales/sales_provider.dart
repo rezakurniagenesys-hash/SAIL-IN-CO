@@ -11,6 +11,7 @@ import 'package:sail_in_co/data/models/history/sales_order_response_model.dart';
 import 'package:sail_in_co/data/models/history/shipping_sales_order_payload.dart';
 import 'package:sail_in_co/data/repositories/sales_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class SalesProvider extends ChangeNotifier {
   final repository = SalesRepository();
@@ -183,8 +184,7 @@ class SalesProvider extends ChangeNotifier {
           salesOrderHeader = dataDetail.data;
         } else {
           // Snackbar
-          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         // customerModel = await daoCustomerDetail.getCustomerDetail(customerId);
@@ -210,22 +210,18 @@ class SalesProvider extends ChangeNotifier {
       if (online) {
         final res = await repository.postShippingForSalesOrder(payload: payload);
         if (res.statusCode == 201 && res.data != null) {
-          SnackBar snackBar = const SnackBar(content: Text('Berhasil mengirim shipping sales order.'), backgroundColor: Colors.green);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: 'Berhasil mengirim shipping sales order.', color: Colors.green);
           Navigator.of(context).pop('refresh-shipping-order');
         } else {
-          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         await daoShippingSalesOrder.saveShipping(payload);
-        SnackBar snackBar = const SnackBar(content: Text('Shipping sales order disimpan secara offline.'), backgroundColor: Colors.green);
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        AppSnackBar.show(context, message: 'Shipping sales order disimpan secara offline.', color: Colors.green);
         Navigator.of(context).pop('refresh-shipping-order');
       }
     } catch (e) {
-      SnackBar snackBar = SnackBar(content: Text('Error posting shipping sales order: $e'), backgroundColor: Colors.red);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      AppSnackBar.show(context, message: 'Error posting shipping sales order: $e', color: Colors.red);
     } finally {
       isSubmitting = false;
       notifyListeners();

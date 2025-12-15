@@ -16,6 +16,7 @@ import 'package:sail_in_co/data/models/customer/upload_foto/customer_upload_foto
 import 'package:sail_in_co/data/models/customer/upload_foto/customer_upload_foto_response.dart';
 import 'package:sail_in_co/data/repositories/customer_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class CustomerDetailProvider extends ChangeNotifier {
   final _repo = CustomerRepository();
@@ -64,8 +65,7 @@ class CustomerDetailProvider extends ChangeNotifier {
           customerDetailData = CustomerDetailResponse.fromJson(res.data).data;
         } else {
           // Snackbar
-          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         customerModel = await daoCustomerDetail.getCustomerDetail(customerId);
@@ -219,10 +219,7 @@ class CustomerDetailProvider extends ChangeNotifier {
 
         return res;
       } else {
-        await daoCustomerUploadFoto.save(
-          payload: req,
-          imageBase64: ImagePickerHelper.convertFileToBase64(image!),
-        );
+        await daoCustomerUploadFoto.save(payload: req, imageBase64: ImagePickerHelper.convertFileToBase64(image!));
         CustomerUploadFotoResponse dataUpload = CustomerUploadFotoResponse(
           status: false,
           message: '',
@@ -257,6 +254,18 @@ class CustomerDetailProvider extends ChangeNotifier {
   void clear() {
     customerDetailData = null;
     isLoading = false;
+    notifyListeners();
+  }
+
+  // Jump
+  int _currentIndex = 0;
+
+  int get currentIndex => _currentIndex;
+
+  /// Set tab manual
+  void setTab(int index) {
+    if (_currentIndex == index) return;
+    _currentIndex = index;
     notifyListeners();
   }
 }

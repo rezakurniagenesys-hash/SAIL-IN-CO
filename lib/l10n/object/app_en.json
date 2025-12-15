@@ -257,5 +257,10 @@
     "emptyState": {
         "noData": "No data",
         "dataNotFound": "Data not found"
+    },
+
+    "messages": {
+        "quantityCannotBeZero": "Quantity cannot be set to 0.",
+        "duplicateInventory": "Failed to save data due to inventory duplication"
     }
 }

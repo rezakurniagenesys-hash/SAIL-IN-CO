@@ -14,6 +14,7 @@ import 'package:sail_in_co/data/models/quicksales/quick_sales_payload_model.dart
 import 'package:sail_in_co/data/models/sales/sales_return_response.dart';
 import 'package:sail_in_co/data/repositories/payment_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class PaymentProvider extends ChangeNotifier {
   final repository = PaymentRepository();
@@ -55,24 +56,29 @@ class PaymentProvider extends ChangeNotifier {
 
   void setSalesOrderModel(SalesOrderModel? model) {
     salesOrderModel = model;
-    remainingPayment = int.parse(model?.grandTotalShipping ?? '0');
     totalPayment = int.parse(model?.grandTotalShipping ?? '0');
+    remainingPayment = totalPayment;
     notifyListeners();
   }
 
   void setSelectedSalesReturn(SalesReturnData? salesReturn) {
     selectedSalesReturn = salesReturn;
-    final num sisaValue = num.tryParse(salesReturn?.sisa ?? '0') ?? 0;
 
-    remainingPayment = remainingPayment - sisaValue;
+    final num salesReturnValue = num.tryParse(salesReturn?.sisa ?? '0') ?? 0;
+
+    remainingPayment = totalPayment - salesReturnValue;
+
+    if (remainingPayment < 0) {
+      remainingPayment = 0;
+    }
 
     notifyListeners();
   }
 
   void setQuickSalesPayloadModel(QuickSalesPayloadModel? model) {
     quickSalesPayloadModel = model;
-    remainingPayment = model?.grandTotal ?? 0;
     totalPayment = model?.grandTotal ?? 0;
+    remainingPayment = totalPayment;
     notifyListeners();
   }
 
@@ -85,13 +91,13 @@ class PaymentProvider extends ChangeNotifier {
           final responseSalesReturn = SalesReturnResponse.fromJson(res.data);
           salesReturnData = responseSalesReturn.data;
         } else if (res.statusCode == 502) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching sales return data: $e'), backgroundColor: Colors.red));
+      AppSnackBar.show(context, message: 'Error fetching sales return data: $e', color: Colors.red);
     }
   }
 
@@ -106,23 +112,23 @@ class PaymentProvider extends ChangeNotifier {
           final responsePaymentMethod = PaymentMethodResponse.fromJson(res.data);
           paymentMethodData = responsePaymentMethod.data;
         } else if (res.statusCode == 502) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         // OFFLINE HANDLING HERE
         paymentMethodData = await daoMethodPayment.getPaymentMethods();
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));
+      AppSnackBar.show(context, message: 'Error fetching payment method data: $e', color: Colors.red);
     }
   }
 
   void clearSelection() {
     selectedPaymentMethod = null;
     selectedSalesReturn = null;
-    remainingPayment = quickSalesPayloadModel?.grandTotal ?? 0;
+    remainingPayment = totalPayment;
     notifyListeners();
   }
 
@@ -138,28 +144,34 @@ class PaymentProvider extends ChangeNotifier {
     );
     log('Confirmed Payment with Payload: ${newPayload?.toJson()}');
     final online = await ConnectionUtils.isConnected();
+    if (selectedPaymentMethod == null) {
+      AppSnackBar.show(context, message: 'Pilih metode pembayaran terlebih dahulu.', color: Colors.red);
+      isLoadingSubmit = false;
+      notifyListeners();
+      return;
+    }
     try {
       if (online) {
         final res = await repository.postQuickSales(payload: newPayload!);
 
         if ((res.statusCode == 201) && res.data != null) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil dilakukan.'), backgroundColor: Colors.green));
+          AppSnackBar.show(context, message: 'Pembayaran berhasil dilakukan.', color: Colors.green);
           Navigator.of(context).pop();
           Navigator.of(context).pop('refresh-quick-sales');
         } else if (res.statusCode == 502) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         // OFFLINE HANDLING HERE
         await daoQuickSales.saveQuickSales(newPayload!);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil disimpan secara lokal.'), backgroundColor: Colors.green));
+        AppSnackBar.show(context, message: 'Pembayaran berhasil disimpan secara lokal.', color: Colors.green);
         Navigator.of(context).pop();
         Navigator.of(context).pop('refresh-quick-sales');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));
+      AppSnackBar.show(context, message: 'Error fetching payment method data: $e', color: Colors.red);
     } finally {
       isLoadingSubmit = false;
       notifyListeners();
@@ -179,25 +191,31 @@ class PaymentProvider extends ChangeNotifier {
       userRecord: userInfo?.username ?? '',
     );
     final online = await ConnectionUtils.isConnected();
+    if (selectedPaymentMethod == null) {
+      AppSnackBar.show(context, message: 'Pilih metode pembayaran terlebih dahulu.', color: Colors.red);
+      isLoadingSubmit = false;
+      notifyListeners();
+      return;
+    }
     try {
       if (online) {
         final res = await repository.postInvoicePaymentJournal(payload: newPayload);
         if ((res.statusCode == 201) && res.data != null) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil dilakukan.'), backgroundColor: Colors.green));
+          AppSnackBar.show(context, message: 'Pembayaran berhasil dilakukan.', color: Colors.green);
           Navigator.of(context).pop('refresh-outstanding-order-payment');
         } else if (res.statusCode == 502) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         // OFFLINE HANDLING HERE
         await daoOutstandingPayment.saveOutstandingPayment(newPayload);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pembayaran berhasil disimpan secara lokal.'), backgroundColor: Colors.green));
+        AppSnackBar.show(context, message: 'Pembayaran berhasil disimpan secara lokal.', color: Colors.green);
         Navigator.of(context).pop('refresh-outstanding-order-payment');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));
+      AppSnackBar.show(context, message: 'Error fetching payment method data: $e', color: Colors.red);
     } finally {
       isLoadingSubmit = false;
       notifyListeners();

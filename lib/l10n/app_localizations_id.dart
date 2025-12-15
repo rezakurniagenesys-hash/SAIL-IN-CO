@@ -359,7 +359,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get order_inventory => 'Inventory';
 
   @override
-  String get order_qty => 'Qty';
+  String get order_qty => 'Kuantitas';
 
   @override
   String get order_price => 'Harga';
@@ -389,10 +389,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get order_currentStock => 'Stok Saat Ini';
 
   @override
-  String get order_qtyDefault => 'Qty Default';
+  String get order_qtyDefault => 'Kuantitas Default';
 
   @override
-  String get order_uomDefault => 'UoM Default';
+  String get order_uomDefault => 'Satuan Default';
 
   @override
   String get order_save => 'Simpan';
@@ -645,4 +645,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get emptyState_dataNotFound => 'Data tidak ditemukan';
+
+  @override
+  String get messages_quantityCannotBeZero => 'Kuantitas tidak dapat diatur ke 0.';
+
+  @override
+  String get messages_duplicateInventory => 'Gagal menyimpan data karena duplikasi inventory';
 }

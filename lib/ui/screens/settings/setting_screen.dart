@@ -9,6 +9,7 @@ import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/development/development_screen.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
+import 'package:sail_in_co/providers/auth/auth_provider.dart';
 import 'package:sail_in_co/services/auth_service.dart';
 import 'package:sail_in_co/services/locale_service.dart';
 import 'package:sail_in_co/ui/screens/login/login_screen.dart';
@@ -112,34 +113,32 @@ class SettingScreen extends StatelessWidget {
 
               Divider(color: AppColors.border),
               // Logout button
-              ListTile(
-                leading: const Icon(Icons.logout, color: AppColors.error),
-                title: Text('Logout', style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.error)),
-                onTap: () {
-                  // Handle logout tap
-                  AppDialog.show(
-                    context: context,
-                    title: 'Logout',
-                    content: Text(
-                      'Are you sure you want to logout? You will need to login again to access the app.',
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.body3Regular,
-                    ),
-                    actionButton: AppButton(
-                      isFullWidth: true,
-                      label: 'Logout',
-                      height: 42,
-                      type: AppButtonType.danger,
-                      onPressed: () async {
-                        await AuthService.clear();
-                        if (Navigator.canPop(context)) {
-                          Navigator.pop(context); // close dialog
-                        }
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
-                      },
-                    ),
-                  );
-                },
+              Consumer<AuthProvider>(
+                builder: (context, authProvider, child) => ListTile(
+                  leading: const Icon(Icons.logout, color: AppColors.error),
+                  title: Text('Logout', style: AppTextStyles.label2SemiBold.copyWith(color: AppColors.error)),
+                  onTap: () {
+                    // Handle logout tap
+                    AppDialog.show(
+                      context: context,
+                      title: 'Logout',
+                      content: Text(
+                        'Are you sure you want to logout? You will need to login again to access the app.',
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.body3Regular,
+                      ),
+                      actionButton: AppButton(
+                        isFullWidth: true,
+                        label: 'Logout',
+                        height: 42,
+                        type: AppButtonType.danger,
+                        onPressed: () async {
+                          authProvider.logout(context);
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

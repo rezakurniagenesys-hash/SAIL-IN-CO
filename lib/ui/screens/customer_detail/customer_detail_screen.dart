@@ -8,10 +8,10 @@ import 'package:sail_in_co/core/utils/currency_format.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
 import 'package:sail_in_co/providers/generals/general_providers.dart';
-import 'package:sail_in_co/providers/order/general_order_provider.dart';
 import 'package:sail_in_co/providers/order/quick_sales_provider.dart';
 import 'package:sail_in_co/providers/order/sales_order_provider.dart';
 import 'package:sail_in_co/providers/return/return_provider.dart';
+import 'package:sail_in_co/providers/sales/sales_provider.dart';
 import 'package:sail_in_co/ui/screens/adjustment/adjustment_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/customer_edit/customer_edit_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/customer_bukti_foto.dart';
@@ -121,12 +121,12 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     infoItem(l.customerDetail_customerCode, provider.customerDetailData?.customer?.noAcc6 ?? '-'),
-                                    infoItem(
-                                      l.customerDetail_paymentType,
-                                      (provider.customerDetailData?.customer?.defaultPayment == null)
-                                          ? '-'
-                                          : provider.customerDetailData?.customer?.defaultPayment.toString() ?? '-',
-                                    ),
+                                    // infoItem(
+                                    //   l.customerDetail_paymentType,
+                                    //   (provider.customerDetailData?.customer?.defaultPayment == null)
+                                    //       ? '-'
+                                    //       : provider.customerDetailData?.customer?.defaultPayment.toString() ?? '-',
+                                    // ),
                                     infoItem(l.customerDetail_salesCode, provider.userInfo?.userId ?? '-'),
                                     infoItem(l.customerDetail_address, provider.customerDetailData?.customer?.address ?? '-'),
                                     infoItem(l.customerDetail_ktp, provider.customerDetailData?.customer?.nik ?? '-'),
@@ -264,6 +264,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                     context.read<GeneralProviders>().getInventory(context);
                                     // Clear general order items
                                     context.read<SalesOrderProvider>().clearSalesOrderItems();
+
+                                    // Switch to Sales tab
+                                    provider.setTab(1); 
+                                    // });
                                   }
                                 });
                               },

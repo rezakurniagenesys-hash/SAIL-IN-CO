@@ -15,6 +15,7 @@ import 'package:sail_in_co/data/models/summary/summary_request.dart';
 import 'package:sail_in_co/data/repositories/home_repository.dart';
 import 'package:sail_in_co/data/repositories/stock_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class HomeProvider extends ChangeNotifier {
   final _repo = HomeRepository();
@@ -76,11 +77,9 @@ class HomeProvider extends ChangeNotifier {
           summaryData = summaryResponse?.data;
           debugPrint("Summary chart: updated from API");
         } else if (res.statusCode == 502 || res.statusCode == 500) {
-          SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         summaryData = await daoCallSheet.getSummary();
@@ -111,11 +110,9 @@ class HomeProvider extends ChangeNotifier {
           stockResponse = StockResponse.fromJson(res.data);
           stockItem = stockResponse?.data?.stock;
         } else if (res.statusCode == 502 || res.statusCode == 500) {
-          SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         stockItem = await daoStock.getStockItems();
@@ -141,11 +138,9 @@ class HomeProvider extends ChangeNotifier {
           final data = res.data;
           remainingBalancePattyCash = data['sisaSaldo'] ?? 0;
         } else if (res.statusCode == 502 || res.statusCode == 500) {
-          SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         final localPattyCash = await daoPattycashDao.getPattyCash();

@@ -3,12 +3,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:sail_in_co/data/dao/sales/outstanding_payment_dao.dart';
 import 'package:sail_in_co/data/repositories/auth_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
 import 'package:sail_in_co/ui/screens/dashboard/dashboard.dart';
+import 'package:sail_in_co/ui/screens/login/login_screen.dart';
 
 class AuthProvider extends ChangeNotifier {
   final _repo = AuthRepository();
+
+  final daoOutstandingPayment = OutstandingPaymentDao();
 
   bool loading = false;
   String? token;
@@ -116,9 +120,19 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     token = null;
     refreshToken = null;
+    clearLocalStorage();
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context); // close dialog
+    }
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+    notifyListeners();
+  }
+
+  clearLocalStorage() async {
+    await daoOutstandingPayment.clearAll();
     await AuthService.clear();
     notifyListeners();
   }

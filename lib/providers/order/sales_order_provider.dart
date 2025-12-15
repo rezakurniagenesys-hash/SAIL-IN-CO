@@ -14,6 +14,7 @@ import 'package:sail_in_co/data/models/salesorder/sales_order_detail.dart';
 import 'package:sail_in_co/data/models/salesorder/sales_order_payload_model.dart';
 import 'package:sail_in_co/data/repositories/sales_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class SalesOrderProvider extends ChangeNotifier {
   final salesRepository = SalesRepository();
@@ -51,7 +52,7 @@ class SalesOrderProvider extends ChangeNotifier {
     int total = 0;
 
     for (var item in salesOrderItems) {
-      final int qty = item.qty2;
+      final int qty = item.qty;
       final int discount = item.discount;
       total += qty * discount;
     }
@@ -79,12 +80,13 @@ class SalesOrderProvider extends ChangeNotifier {
 
     for (var item in salesOrderItems) {
       final int qty = item.qty2;
+      final int qtyDiscount = item.qty;
       final int price = item.price;
       final int discount = item.discount;
       final int multiplier = int.tryParse(item.uom.value) ?? 1;
 
       final int sub = qty * multiplier * price;
-      final int totalItem = sub - (qty * discount);
+      final int totalItem = sub - (qtyDiscount * discount);
 
       total += totalItem;
     }
@@ -113,6 +115,7 @@ class SalesOrderProvider extends ChangeNotifier {
 
   void clearSalesOrderItems() {
     salesOrderItems.clear();
+    notesController.clear();
     notifyListeners();
   }
 
@@ -165,27 +168,31 @@ class SalesOrderProvider extends ChangeNotifier {
 
     log("Sales Order Payload: ${salesOrderPayloadModel.toJson()}");
     final online = await ConnectionUtils.isConnected();
+    if (salesOrderItems.isEmpty) {
+      AppSnackBar.show(context, message: 'Harap tambahkan setidaknya satu data detail sebelum menyimpan.', color: Colors.red);
+      isLoadingSubmit = false;
+      notifyListeners();
+      return;
+    }
 
     try {
       if (online) {
         final res = await salesRepository.postSalesOrder(payload: salesOrderPayloadModel);
         if ((res.statusCode == 201) && res.data != null) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Berhasil mengirim sales order.'), backgroundColor: Colors.green));
+          AppSnackBar.show(context, message: 'Berhasil mengirim sales order.', color: Colors.green);
           Navigator.of(context).pop('refresh-sales-order');
         } else if (res.statusCode == 502) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         await daoSalesOrder.saveSalesOrder(salesOrderPayloadModel);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Berhasil mengirim sales order ke penyimpanan lokal.'), backgroundColor: Colors.green));
+        AppSnackBar.show(context, message: 'Berhasil mengirim sales order ke penyimpanan lokal.', color: Colors.green);
         Navigator.of(context).pop('refresh-sales-order');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));
+      AppSnackBar.show(context, message: 'Error mengirim sales order: $e', color: Colors.red);
     } finally {
       isLoadingSubmit = false;
       notifyListeners();

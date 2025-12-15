@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
+import 'package:sail_in_co/core/utils/date_utils.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
@@ -32,6 +33,10 @@ class _QuickSalesState extends State<QuickSales> {
   void initState() {
     final provider = context.read<QuickSalesProvider>();
     provider.setCustomerDetailData(widget.customerDetailData);
+
+    final generalOrderProvider = context.read<GeneralOrderProvider>();
+    generalOrderProvider.setPriceMode(OrderPriceMode.lockedFromMaster);
+    // generalOrderProvider.setIsPriceEditable(false);
     super.initState();
   }
 
@@ -58,7 +63,7 @@ class _QuickSalesState extends State<QuickSales> {
                       spacing: 12,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        infoItem(l!.order_date, DateTime.now().toString().split(' ').first),
+                        infoItem(l!.order_date, DateUtilsHelper.formatDMY(DateTime.now())),
                         infoItem(l.order_codeCustomer, widget.customerDetailData?.customer?.noAcc6 ?? '-'),
                         infoItem(l.order_address, widget.customerDetailData?.customer?.address ?? '-'),
                       ],
@@ -86,9 +91,11 @@ class _QuickSalesState extends State<QuickSales> {
                   Text(l.order_inventoryDetail, style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
                   AppButton(
                     label: l.order_addProduct,
+                    isLoading: context.watch<GeneralProviders>().isLoadingInventory,
                     icon: Icons.add,
                     onPressed: () async {
                       // reset form
+                      await context.read<GeneralProviders>().getInventory(context);
                       generalOrderProvider.clearSelection();
                       // set old inventory ids
                       generalOrderProvider.setOldInventoryIds(quickSalesProvider.quickSalesItems.map((e) => e.inventory.inventoryId).toList());

@@ -103,7 +103,7 @@ ActivityHistoryFilters _$ActivityHistoryFiltersFromJson(
 ) => ActivityHistoryFilters(
   startDate: json['start_date'] as String,
   endDate: json['end_date'] as String,
-  userId: json['user_id'] as String,
+  userId: json['user_id'],
   search: json['search'] as String,
   type: json['type'] as String,
   salesId: json['sales_id'] as String,

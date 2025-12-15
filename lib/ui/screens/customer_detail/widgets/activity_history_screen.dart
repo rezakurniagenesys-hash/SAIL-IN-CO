@@ -9,7 +9,9 @@ import 'package:sail_in_co/core/utils/debouncer.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/history/activity_history_provider.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/components/item_activity_history.dart';
+import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_date_picker.dart';
+import 'package:sail_in_co/ui/widgets/app_dialog.dart';
 import 'package:sail_in_co/ui/widgets/app_horizontal_menu_tab.dart';
 import 'package:sail_in_co/ui/widgets/app_infinite_list.dart';
 import 'package:sail_in_co/ui/widgets/app_input_field.dart';
@@ -62,10 +64,71 @@ class _ActivityHistoryScreenState extends State<ActivityHistoryScreen> {
                   SizedBox(width: 8),
                   InkWell(
                     onTap: () async {
-                      final date = await showAppDatePicker(context);
-                      if (date != null) {
-                        print("Tanggal dipilih: $date");
-                      }
+                      AppDialog.show(
+                        context: context,
+                        title: 'Filter Date',
+                        content: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AppInputField(
+                                    controller: provider.startDateController,
+                                    hintText: 'Start Date',
+                                    // readOnly: true,
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SvgPicture.asset(
+                                        AssetIcons.icRoundDateRange,
+                                        height: 16,
+                                        colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
+                                      ),
+                                    ),
+                                    onTap: () async {
+                                      final date = await showAppDatePicker(context);
+                                      if (date != null) {
+                                        provider.setStartDate(date);
+                                      }
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: AppInputField(
+                                    hintText: 'End Date',
+                                    controller: provider.endDateController,
+                                    // readOnly: true,
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SvgPicture.asset(
+                                        AssetIcons.icRoundDateRange,
+                                        height: 16,
+                                        colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
+                                      ),
+                                    ),
+                                    onTap: () async {
+                                      final date = await showAppDatePicker(context);
+                                      if (date != null) {
+                                        provider.setEndDate(date);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        actionButton: AppButton(
+                          label: 'Filter',
+                          isFullWidth: true,
+                          type: AppButtonType.primary,
+                          height: 42,
+                          onPressed: () {
+                            provider.filterDate(widget.customerId ?? '');
+                            Navigator.pop(context);
+                          },
+                        ),
+                      );
                     },
                     child: SvgPicture.asset(AssetIcons.icRoundDateRange, height: 28, colorFilter: const ColorFilter.mode(AppColors.sky950, BlendMode.srcIn)),
                   ),

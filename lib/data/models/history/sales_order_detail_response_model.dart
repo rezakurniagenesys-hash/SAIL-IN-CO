@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'sales_order_detail_response_model.g.dart';
@@ -100,6 +102,19 @@ class SalesOrderHeaderModel {
   @JsonKey(name: 'source_source_name')
   final String sourceSourceName;
 
+  @JsonKey(name: 'shipping_id')
+  final dynamic shippingId;
+
+  // company_name
+  @JsonKey(name: 'company_name')
+  final dynamic companyName;
+
+  @JsonKey(name: 'company_address')
+  final dynamic companyAddress;
+
+  @JsonKey(name: 'company_logo')
+  final dynamic companyLogo;
+
   final CustomerModel? customer;
   final SalesModel? sales;
   final WarehouseModel? warehouse;
@@ -139,6 +154,10 @@ class SalesOrderHeaderModel {
     required this.areaAreaName,
     required this.sourceSourceId,
     required this.sourceSourceName,
+    this.shippingId,
+    this.companyName,
+    this.companyAddress,
+    this.companyLogo,
     this.customer,
     this.sales,
     this.warehouse,

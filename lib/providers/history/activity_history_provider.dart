@@ -14,6 +14,8 @@ class ActivityHistoryProvider extends ChangeNotifier {
   final daoActivityHistory = ActivityHistoryTransactionDao();
 
   final TextEditingController searchController = TextEditingController();
+  final TextEditingController startDateController = TextEditingController();
+  final TextEditingController endDateController = TextEditingController();
 
   /// Pagination
   int page = 1;
@@ -33,6 +35,8 @@ class ActivityHistoryProvider extends ChangeNotifier {
   List<ActivityHistoryTransaction> dataActivityHistory = [];
 
   Future<void> getActivityHistory({bool loadMore = false, bool initial = false, required String customerId}) async {
+    endDateController.text = DateUtilsHelper.formatYMD(endDate);
+    startDateController.text = DateUtilsHelper.formatYMD(startDate);
     final userInfo = await AuthService.getUserInfo();
     final online = await ConnectionUtils.isConnected();
 
@@ -59,6 +63,7 @@ class ActivityHistoryProvider extends ChangeNotifier {
         notifyListeners();
       }
       final request = HistoryTransactionPayloadModel(
+        customerId: customerId,
         userId: userInfo?.userId ?? '',
         type: selectedActivityType == ActivityType.sales
             ? 'sales'
@@ -69,9 +74,7 @@ class ActivityHistoryProvider extends ChangeNotifier {
         endDate: DateUtilsHelper.formatYMD(endDate),
         page: page,
         limit: limit,
-        salesId: customerId,
         salesDate: null,
-        inventoryName: searchController.text,
         search: searchController.text,
       );
 
@@ -118,6 +121,29 @@ class ActivityHistoryProvider extends ChangeNotifier {
       isLoading = false;
     }
 
+    notifyListeners();
+  }
+
+  // set start date
+  void setStartDate(DateTime date) {
+    startDate = date;
+    startDateController.text = DateUtilsHelper.formatYMD(date);
+
+    notifyListeners();
+  }
+
+  // set end date
+  void setEndDate(DateTime date) {
+    endDate = date;
+    endDateController.text = DateUtilsHelper.formatYMD(date);
+    notifyListeners();
+  }
+
+  void filterDate(String customerId) {
+    page = 1;
+    dataActivityHistory.clear();
+
+    getActivityHistory(initial: true, customerId: customerId);
     notifyListeners();
   }
 

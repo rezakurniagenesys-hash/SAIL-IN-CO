@@ -131,14 +131,14 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
               /// TAB BAR
               TabBar(
                 controller: tabController,
+                isScrollable: true,
+                tabAlignment: TabAlignment.center,
+                padding: EdgeInsets.zero,
                 labelColor: AppColors.sky700,
                 unselectedLabelColor: AppColors.neutral400,
                 labelStyle: AppTextStyles.label2SemiBold,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(width: 3.0, color: AppColors.sky700),
-                  insets: EdgeInsets.zero,
-                ),
+                indicatorSize: TabBarIndicatorSize.label,
+                indicator: UnderlineTabIndicator(borderSide: BorderSide(width: 3.0, color: AppColors.sky700)),
                 tabs: [
                   Tab(text: l?.finishedTask_all ?? ''),
                   Tab(text: l?.finishedTask_notVisited ?? ''),

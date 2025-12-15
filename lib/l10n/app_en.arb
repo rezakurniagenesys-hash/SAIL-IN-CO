@@ -220,5 +220,7 @@
   "finishedTask_notVisited": "Not Visited",
   "finishedTask_visited": "Visited",
   "emptyState_noData": "No data",
-  "emptyState_dataNotFound": "Data not found"
+  "emptyState_dataNotFound": "Data not found",
+  "messages_quantityCannotBeZero": "Quantity cannot be set to 0.",
+  "messages_duplicateInventory": "Failed to save data due to inventory duplication"
 }

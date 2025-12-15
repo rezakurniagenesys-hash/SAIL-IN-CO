@@ -79,6 +79,7 @@ class OutstandingPaymentDao {
   // =====================================================
   Future<int> clearAll() async {
     final db = await dbHelper.database;
+    print('Clearing all outstanding payments from local database.');
     return await db.delete('outstanding_payments');
   }
 }

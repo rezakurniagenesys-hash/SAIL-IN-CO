@@ -21,6 +21,12 @@ class DateUtilsHelper {
     return DateFormat('yyyy-MM-dd').format(date);
   }
 
+  // Format ke     infoItem(l.order_date, DateUtilsHelper.formatDMY(DateTime.now())),
+  static String formatDMY(DateTime? date) {
+    if (date == null) return '-';
+    return DateFormat('dd-MM-yyyy').format(date);
+  }
+
   /// Format ke YYYY-MM-DD HH:mm:ss (opsional)
   static String formatYMDHMS(DateTime? date) {
     if (date == null) return '-';

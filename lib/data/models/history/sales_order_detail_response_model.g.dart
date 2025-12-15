@@ -55,6 +55,10 @@ SalesOrderHeaderModel _$SalesOrderHeaderModelFromJson(
   areaAreaName: json['area_area_name'] as String,
   sourceSourceId: json['source_source_id'] as String,
   sourceSourceName: json['source_source_name'] as String,
+  shippingId: json['shipping_id'],
+  companyName: json['company_name'],
+  companyAddress: json['company_address'],
+  companyLogo: json['company_logo'],
   customer: json['customer'] == null
       ? null
       : CustomerModel.fromJson(json['customer'] as Map<String, dynamic>),
@@ -108,6 +112,10 @@ Map<String, dynamic> _$SalesOrderHeaderModelToJson(
   'area_area_name': instance.areaAreaName,
   'source_source_id': instance.sourceSourceId,
   'source_source_name': instance.sourceSourceName,
+  'shipping_id': instance.shippingId,
+  'company_name': instance.companyName,
+  'company_address': instance.companyAddress,
+  'company_logo': instance.companyLogo,
   'customer': instance.customer?.toJson(),
   'sales': instance.sales?.toJson(),
   'warehouse': instance.warehouse?.toJson(),

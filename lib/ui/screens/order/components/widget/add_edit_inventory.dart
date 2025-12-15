@@ -132,9 +132,9 @@ class AddEditInventory extends StatelessWidget {
                 type: AppInputType.number,
                 borderSideColor: AppColors.neutral400,
                 controller: generalOrderProvider.priceUIController,
-                readOnly: true,
+                readOnly: generalOrderProvider.priceMode != OrderPriceMode.editable,
                 onChanged: (value) {
-                  // handle search logic here
+                  generalOrderProvider.setPrice(value);
                 },
               ),
               AppInputField(

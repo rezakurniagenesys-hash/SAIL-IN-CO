@@ -9,6 +9,7 @@ import 'package:sail_in_co/data/models/general/general_inventory/general_invento
 import 'package:sail_in_co/data/models/general/general_inventory/general_inventory_response.dart';
 import 'package:sail_in_co/data/repositories/generals_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class GeneralProviders extends ChangeNotifier {
   final repository = GeneralsRepository();
@@ -20,7 +21,7 @@ class GeneralProviders extends ChangeNotifier {
 
   final date = ConstantDate.date;
 
-  Future<void> getInventory(BuildContext context) async {
+  Future<bool> getInventory(BuildContext context) async {
     final userInfo = await AuthService.getUserInfo();
     inventoryData = [];
     isLoadingInventory = true;
@@ -30,25 +31,28 @@ class GeneralProviders extends ChangeNotifier {
 
     try {
       if (online) {
-        final inventoryRequest = GeneralInventoryRequest(page: 1, limit: 100, warehouseId: userInfo?.username, date: DateUtilsHelper.formatYMD(date));
+        final inventoryRequest = GeneralInventoryRequest(page: 1, limit: 100, warehouseId: userInfo?.userId, date: DateUtilsHelper.formatYMD(date));
         final res = await repository.getGeneralInventory(generalInventoryRequest: inventoryRequest);
         if (res.statusCode == 200 && res.data != null) {
           final inventoryResponse = GeneralInventoryResponse.fromJson(res.data);
           inventoryData = inventoryResponse.data.inventoryData;
+          return true;
         } else if (res.statusCode == 502) {
-          SnackBar snackBar = const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
+
+          return false;
         } else {
-          SnackBar snackBar = SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red);
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
+          return false;
         }
       } else {
         inventoryData = await daoInventory.getInventoryItems();
         debugPrint("Inventory loaded from SQLite (offline)");
+        return true;
       }
     } catch (e) {
-      SnackBar snackBar = SnackBar(content: Text('Error fetching inventory data: $e'), backgroundColor: Colors.red);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      AppSnackBar.show(context, message: 'Error fetching inventory data: $e', color: Colors.red);
+      return false;
     } finally {
       isLoadingInventory = false;
       notifyListeners();

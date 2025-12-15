@@ -15,6 +15,7 @@ import 'package:sail_in_co/data/models/salesorder/sales_order_payload_model.dart
 import 'package:sail_in_co/data/models/salesorder/sales_return_payment_payload.dart';
 import 'package:sail_in_co/data/repositories/sales_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class ReturnProvider extends ChangeNotifier {
   final salesRepository = SalesRepository();
@@ -54,7 +55,7 @@ class ReturnProvider extends ChangeNotifier {
     int total = 0;
 
     for (var item in returnOrderItems) {
-      final int qty = item.qty2;
+      final int qty = item.qty;
       final int discount = item.discount;
       total += qty * discount;
     }
@@ -82,12 +83,13 @@ class ReturnProvider extends ChangeNotifier {
 
     for (var item in returnOrderItems) {
       final int qty = item.qty2;
+      final int qtyDiscount = item.qty;
       final int price = item.price;
       final int discount = item.discount;
       final int multiplier = int.tryParse(item.uom.value) ?? 1;
 
       final int sub = qty * multiplier * price;
-      final int totalItem = sub - (qty * discount);
+      final int totalItem = sub - (qtyDiscount * discount);
 
       total += totalItem;
     }
@@ -116,6 +118,7 @@ class ReturnProvider extends ChangeNotifier {
 
   void clearReturnOrderItems() {
     returnOrderItems.clear();
+    notesController.clear();
     notifyListeners();
   }
 
@@ -168,6 +171,12 @@ class ReturnProvider extends ChangeNotifier {
 
     log("Sales Order Payload: ${returnOrderPayloadModel.toJson()}");
     final online = await ConnectionUtils.isConnected();
+    if (returnOrderItems.isEmpty) {
+      AppSnackBar.show(context, message: 'Harap tambahkan setidaknya satu data detail sebelum menyimpan.', color: Colors.red);
+      isLoadingSubmit = false;
+      notifyListeners();
+      return;
+    }
     try {
       if (online) {
         final res = await salesRepository.potstSalesReturn(payload: returnOrderPayloadModel);
@@ -178,9 +187,9 @@ class ReturnProvider extends ChangeNotifier {
           ).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan.'), backgroundColor: Colors.green));
           Navigator.of(context).pop('refresh-return-payment');
         } else if (res.statusCode == 502) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bad gateway.'), backgroundColor: Colors.red));
+           AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.message ?? 'Unknown error'), backgroundColor: Colors.red));
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
         await daoSalesReturn.saveSalesReturn(returnOrderPayloadModel);
@@ -190,7 +199,7 @@ class ReturnProvider extends ChangeNotifier {
         Navigator.of(context).pop('refresh-return-payment');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching payment method data: $e'), backgroundColor: Colors.red));
+      AppSnackBar.show(context, message: 'Error fetching payment method data: $e', color: Colors.red);
     } finally {
       isLoadingSubmit = false;
       notifyListeners();

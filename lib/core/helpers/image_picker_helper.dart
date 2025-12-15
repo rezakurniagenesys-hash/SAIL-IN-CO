@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sail_in_co/core/constants/asset_images.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class ImagePickerHelper {
   static final ImagePicker _picker = ImagePicker();
@@ -136,7 +137,7 @@ class ImagePickerHelper {
 
   static void _showError(BuildContext context, String message) {
     // Anda bisa ganti menjadi SnackBar/Toast sesuai style aplikasi
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    AppSnackBar.show(context, message: message, color: Colors.red);
   }
 
   //convertFileToBase64

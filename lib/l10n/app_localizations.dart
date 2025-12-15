@@ -1366,6 +1366,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Data not found'**
   String get emptyState_dataNotFound;
+
+  /// No description provided for @messages_quantityCannotBeZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity cannot be set to 0.'**
+  String get messages_quantityCannotBeZero;
+
+  /// No description provided for @messages_duplicateInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save data due to inventory duplication'**
+  String get messages_duplicateInventory;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

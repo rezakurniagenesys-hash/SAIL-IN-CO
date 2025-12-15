@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:sail_in_co/data/models/general/general_inventory/general_inventory_response.dart';
 import 'package:sail_in_co/data/models/general/general_uoms/general_uoms_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
+
+enum OrderPriceMode { lockedFromMaster, editable }
 
 class GeneralOrderProvider extends ChangeNotifier {
   final TextEditingController priceController = TextEditingController();
@@ -13,6 +16,8 @@ class GeneralOrderProvider extends ChangeNotifier {
   final TextEditingController uomDefaultController = TextEditingController();
   final TextEditingController discountController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
+
+  OrderPriceMode priceMode = OrderPriceMode.lockedFromMaster;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -37,23 +42,40 @@ class GeneralOrderProvider extends ChangeNotifier {
   // ==============================
   // CALCULATE TOTAL
   // ==============================
+
   void _calculateTotalPrice() {
     final qty = _parseInt(qtyController.text);
-    final price = _parseInt(priceController.text);
+    final pricePCS = _parseInt(priceController.text);
     final multiplier = _parseInt(uomSelected?.value ?? '1');
     final discount = _parseInt(discountController.text);
 
-    priceUIController.text = (multiplier * price).toString();
+    // UI hanya refleksi
+    priceUIController.text = (pricePCS * multiplier).toString();
 
-    // total sebelum diskon → originPrice
-    final subtotal = qty * multiplier * price;
+    final subtotal = qty * multiplier * pricePCS;
+    final discountTotal = discount * qty * multiplier;
 
-    // total setelah diskon → totalPrice
-    final discountTotal = discount * qty; // atau qtyDefault
     totalPrice = (subtotal - discountTotal).clamp(0, 999999999);
-
     notifyListeners();
   }
+
+  // void _calculateTotalPrice() {
+  //   final qty = _parseInt(qtyController.text);
+  //   final price = _parseInt(priceController.text);
+  //   final multiplier = _parseInt(uomSelected?.value ?? '1');
+  //   final discount = _parseInt(discountController.text);
+
+  //   priceUIController.text = (multiplier * price).toString();
+
+  //   // total sebelum diskon → originPrice
+  //   final subtotal = qty * multiplier * price;
+
+  //   // total setelah diskon → totalPrice
+  //   final discountTotal = discount * qty; // atau qtyDefault
+  //   totalPrice = (subtotal - discountTotal).clamp(0, 999999999);
+
+  //   notifyListeners();
+  // }
 
   void _updateQtyDefault() {
     final qty = _parseInt(qtyController.text);
@@ -64,8 +86,38 @@ class GeneralOrderProvider extends ChangeNotifier {
   // ==============================
   // SETTERS
   // ==============================
+  // void setInventorySelected(InventoryItem? item) {
+  //   inventorySelected = item;
+
+  //   formKey.currentState?.reset();
+
+  //   if (item == null) {
+  //     clearSelection();
+  //     return;
+  //   }
+
+  //   qtyController.clear();
+  //   qtyDefaultController.clear();
+  //   discountController.clear();
+  //   totalPrice = 0;
+
+  //   priceController.text = item.price?.toString() ?? "0";
+  //   priceUIController.text = item.price?.toString() ?? "0";
+  //   currentStockController.text = item.currentStock.toString().replaceAll(RegExp(r'\.0$'), '');
+
+  //   final defaultUom = _getDefaultUom(item);
+  //   uomSelected = defaultUom;
+  //   uomSelectedDefauld = defaultUom;
+  //   uomDefaultController.text = defaultUom.uomName;
+
+  //   print('inventorySelected: ${inventorySelected?.inventoryId}, defaultUom: ${uomSelectedDefauld?.uomName}');
+
+  //   _calculateTotalPrice();
+  // }
+
   void setInventorySelected(InventoryItem? item) {
     inventorySelected = item;
+    formKey.currentState?.reset();
 
     if (item == null) {
       clearSelection();
@@ -77,14 +129,34 @@ class GeneralOrderProvider extends ChangeNotifier {
     discountController.clear();
     totalPrice = 0;
 
-    priceController.text = item.price?.toString() ?? "0";
-    priceUIController.text = item.price?.toString() ?? "0";
+    final int masterPrice = _parseInt(item.price?.toString());
+
+    // price per PCS (logic)
+    priceController.text = masterPrice.toString();
+
+    // price UI = PCS × multiplier
+    final multiplier = _parseInt(_getDefaultUom(item).value);
+    priceUIController.text = (masterPrice * multiplier).toString();
+
     currentStockController.text = item.currentStock.toString().replaceAll(RegExp(r'\.0$'), '');
 
     final defaultUom = _getDefaultUom(item);
     uomSelected = defaultUom;
     uomSelectedDefauld = defaultUom;
     uomDefaultController.text = defaultUom.uomName;
+
+    _calculateTotalPrice();
+  }
+
+  void setPriceUI(String value) {
+    final int uiPrice = _parseInt(value);
+    final int multiplier = _parseInt(uomSelected?.value ?? '1');
+
+    if (multiplier <= 0) return;
+
+    // 🔥 KUNCI LOGIC
+    priceUIController.text = uiPrice.toString();
+    priceController.text = (uiPrice / multiplier).floor().toString();
 
     _calculateTotalPrice();
   }
@@ -96,7 +168,14 @@ class GeneralOrderProvider extends ChangeNotifier {
   }
 
   void setUomSelected(UOMItem? item) {
+    priceUIController.text = '';
     uomSelected = item;
+
+    final multiplier = _parseInt(item?.value ?? "1");
+    final pricePCS = _parseInt(priceController.text);
+
+    priceUIController.text = (pricePCS * multiplier).toString();
+
     _updateQtyDefault();
     _calculateTotalPrice();
   }
@@ -114,6 +193,18 @@ class GeneralOrderProvider extends ChangeNotifier {
   void setOldInventoryIds(List<String> ids) {
     oldInventoryIds = ids;
     notifyListeners();
+  }
+
+  void setPriceMode(OrderPriceMode mode) {
+    priceMode = mode;
+    notifyListeners();
+  }
+
+  void setPrice(String value) {
+    if (priceMode == OrderPriceMode.lockedFromMaster) return;
+
+    priceController.text = _parseInt(value).toString();
+    _calculateTotalPrice();
   }
 
   // ==============================
@@ -142,6 +233,9 @@ class GeneralOrderProvider extends ChangeNotifier {
   // ==============================
 
   void submit(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    formKey.currentState?.save();
+    formKey.currentState?.reset();
     if (formKey.currentState?.validate() ?? false) {
       final currentStock = _parseInt(inventorySelected?.currentStock.toString().replaceAll(RegExp(r'\.0$'), ''));
       // stok kosong
@@ -150,15 +244,17 @@ class GeneralOrderProvider extends ChangeNotifier {
         return;
       }
 
-      // cek stok
-      if (_parseInt(qtyDefaultController.text) > currentStock) {
-        AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
-        return;
+      // cek stok hanya berlaku selain return order, pricemode == localkedFromMaster artinya bukan return order
+      if (priceMode == OrderPriceMode.editable) {
+        if (_parseInt(qtyDefaultController.text) > currentStock) {
+          AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
+          return;
+        }
       }
 
       // duplikasi
       if (oldInventoryIds.contains(inventorySelected?.inventoryId)) {
-        AppSnackBar.show(context, message: "Produk sudah ada dalam daftar!", color: Colors.red);
+        AppSnackBar.show(context, message: "${l?.messages_duplicateInventory} ${inventorySelected?.inventoryName}", color: Colors.red);
         return;
       }
 
@@ -213,63 +309,10 @@ class GeneralOrderProvider extends ChangeNotifier {
 
       Navigator.of(context).pop(result);
       return;
+    } else {
+      AppSnackBar.show(context, message: "Form belum lengkap!", color: Colors.red);
     }
-
-    AppSnackBar.show(context, message: "Form belum lengkap!", color: Colors.red);
   }
-
-  // void submit(BuildContext context) {
-  //   print('Qty: ${qtyController.text}, UoM: ${uomSelected?.uomName}, Price: ${priceController.text}, Discount: ${discountController.text}');
-  //   if (formKey.currentState?.validate() ?? false) {
-  //     // stock kosong
-  //     if (_parseInt(inventorySelected?.currentStock.toString()) <= 0) {
-  //       AppSnackBar.show(context, message: "Stok kosong!", color: Colors.red);
-  //       return;
-  //     }
-
-  //     if (_parseInt(qtyDefaultController.text) > _parseInt(inventorySelected?.currentStock.toString())) {
-  //       AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
-  //       return;
-  //     }
-
-  //     if (oldInventoryIds.contains(inventorySelected?.inventoryId)) {
-  //       AppSnackBar.show(context, message: "Produk sudah ada dalam daftar!", color: Colors.red);
-  //       return;
-  //     }
-
-  //     final qty = _parseInt(qtyController.text);
-  //     final price = _parseInt(priceController.text);
-  //     final multiplier = _parseInt(uomSelected?.value ?? "1");
-  //     final discount = _parseInt(discountController.text);
-
-  //     final originPrice = qty * multiplier * price; // sebelum diskon
-  //     final totalAfterDiscount = (originPrice - (discount * qty * multiplier)).clamp(0, 999999999);
-
-  //     final result = GeneralOrderDraftItem(
-  //       inventory: inventorySelected!,
-  //       uom: uomSelected!,
-  //       price: originPrice,
-  //       qty: qty * multiplier,
-  //       qty2: qty,
-  //       defaultUomName: uomDefaultController.text,
-  //       uom_id2: uomSelected!.uomId,
-  //       uom_id: uomSelectedDefauld!.uomId,
-  //       // idDefaultUom
-  //       discount: discount,
-  //       notes: notesController.text,
-  //       user_record: '',
-  //       voidValue: 0,
-  //       sub_total: originPrice,
-  //       grand_total: totalAfterDiscount,
-  //       index: 0,
-  //     );
-
-  //     Navigator.of(context).pop(result);
-  //     return;
-  //   }
-
-  //   AppSnackBar.show(context, message: "Form belum lengkap!", color: Colors.red);
-  // }
 
   // ==============================
   // CLEAR

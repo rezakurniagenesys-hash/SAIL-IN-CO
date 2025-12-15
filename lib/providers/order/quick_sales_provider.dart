@@ -13,6 +13,7 @@ import 'package:sail_in_co/data/models/quicksales/quick_sales_payload_model.dart
 import 'package:sail_in_co/services/auth_service.dart';
 import 'package:sail_in_co/ui/screens/payment/enums/payments_enum.dart';
 import 'package:sail_in_co/ui/screens/payment/payment_screen.dart';
+import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 class QuickSalesProvider extends ChangeNotifier {
   List<GeneralOrderDraftItem> quickSalesItems = [];
@@ -48,7 +49,7 @@ class QuickSalesProvider extends ChangeNotifier {
     int total = 0;
 
     for (var item in quickSalesItems) {
-      final int qty = item.qty2;
+      final int qty = item.qty;
       final int discount = item.discount;
       total += qty * discount;
     }
@@ -76,12 +77,13 @@ class QuickSalesProvider extends ChangeNotifier {
 
     for (var item in quickSalesItems) {
       final int qty = item.qty2;
+      final int qtyDiscount = item.qty;
       final int price = item.price;
       final int discount = item.discount;
       final int multiplier = int.tryParse(item.uom.value) ?? 1;
 
       final int sub = qty * multiplier * price;
-      final int totalItem = sub - (qty * discount);
+      final int totalItem = sub - (qtyDiscount * discount);
 
       total += totalItem;
     }
@@ -110,6 +112,7 @@ class QuickSalesProvider extends ChangeNotifier {
 
   void clearQuickSalesItems() {
     quickSalesItems.clear();
+    notesController.clear();
     notifyListeners();
   }
 
@@ -161,6 +164,12 @@ class QuickSalesProvider extends ChangeNotifier {
         );
       }).toList(),
     );
+
+    if (quickSalesItems.isEmpty) {
+      AppSnackBar.show(context, message: 'Harap tambahkan setidaknya satu data detail sebelum menyimpan.', color: Colors.red);
+      notifyListeners();
+      return;
+    }
 
     log("Quick Sales Payload: ${quickSalesPayloadModel.toJson()}");
     Navigator.push(

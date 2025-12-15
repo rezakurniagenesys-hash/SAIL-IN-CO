@@ -645,4 +645,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emptyState_dataNotFound => 'Data not found';
+
+  @override
+  String get messages_quantityCannotBeZero => 'Quantity cannot be set to 0.';
+
+  @override
+  String get messages_duplicateInventory => 'Failed to save data due to inventory duplication';
 }

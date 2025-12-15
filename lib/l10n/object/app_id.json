@@ -140,7 +140,7 @@
         "subtotal": "Subtotal",
         "grandTotalPayment": "Total Pembayaran",
         "inventory": "Inventory",
-        "qty": "Qty",
+        "qty": "Kuantitas",
         "price": "Harga",
         "uom": "Satuan",
         "notes": "Catatan",
@@ -150,8 +150,8 @@
         "searchInventory": "Cari Inventory",
         "selectInventory": "Pilih Inventory",
         "currentStock" : "Stok Saat Ini",
-        "qtyDefault" : "Qty Default",
-        "uomDefault" : "UoM Default",
+        "qtyDefault" : "Kuantitas Default",
+        "uomDefault" : "Satuan Default",
         "save" : "Simpan",
         "lastUpdated" : "Terakhir Diperbarui",
         "waitingForShipping": "Menunggu Pengiriman"
@@ -256,5 +256,10 @@
     "emptyState": {
         "noData": "Tidak ada data",
         "dataNotFound": "Data tidak ditemukan"
+    },
+
+    "messages": {
+        "quantityCannotBeZero": "Kuantitas tidak dapat diatur ke 0.",
+        "duplicateInventory": "Gagal menyimpan data karena duplikasi inventory"
     }
 }
