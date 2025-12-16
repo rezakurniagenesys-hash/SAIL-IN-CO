@@ -171,6 +171,7 @@ class _FinishedTaskScreenState extends State<FinishedTaskScreen> with SingleTick
             onLoadMore: () => provider.getFinishTask(loadMore: true),
             itemBuilder: (context, index) {
               return ItemCustomer(
+                isAllCustomer: false,
                 customer: provider.customers[index],
                 onTap: () {
                   Navigator.push(

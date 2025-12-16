@@ -134,10 +134,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(l.payment_returnValue, style: AppTextStyles.label3Medium.copyWith(color: AppColors.textPrimary)),
-                        Text(
-                          ' - ${CurrencyFormat.toRupiah(paymentProvider.selectedSalesReturn?.sisa)}',
-                          style: AppTextStyles.label3Medium.copyWith(color: AppColors.textPrimary),
-                        ),
+                        if (paymentProvider.selectedSalesReturn == null) ...[
+                          Text(CurrencyFormat.toRupiah(0), style: AppTextStyles.label3Medium.copyWith(color: AppColors.textPrimary)),
+                        ] else
+                          Text(
+                            ' - ${CurrencyFormat.toRupiah(paymentProvider.selectedSalesReturn?.sisa)}',
+                            style: AppTextStyles.label3Medium.copyWith(color: AppColors.textPrimary),
+                          ),
                       ],
                     ),
                   ),

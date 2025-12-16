@@ -29,10 +29,29 @@ class SalesRepository {
     }
   }
 
+  // Get - List SalesHistory Orders
+  Future<ApiResponse> getSalesHistoryOrder({required SalesOrderRequestModel payload}) async {
+    try {
+      final response = await _api.get("${ApiConstants.baseUrl}${ApiConstants.salesHistory}", query: payload.toQuery());
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
+
   // Get - Detail Outstanding Sales Orders
   Future<ApiResponse> getDetailOutstandingSalesOrders({required String salesOrderId}) async {
     try {
       final response = await _api.get("${ApiConstants.baseUrl}${ApiConstants.salesOrders}/$salesOrderId");
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
+
+  Future<ApiResponse> getQuickSalesOrder({required String quicSalesId}) async {
+    try {
+      final response = await _api.get("${ApiConstants.baseUrl}${ApiConstants.quickSales}/$quicSalesId");
       return response;
     } catch (e) {
       return ApiResponse(data: null, statusCode: 500, message: e.toString());
@@ -53,6 +72,26 @@ class SalesRepository {
   Future<ApiResponse> potstSalesReturn({required SalesReturnPaymentPayload payload}) async {
     try {
       final response = await _api.post("${ApiConstants.baseUrl}${ApiConstants.returnPayments}", data: payload);
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
+
+  //VOID SALES ORDER
+  Future<ApiResponse> voidSalesOrder({required String userId, required String transactionId}) async {
+    try {
+      final response = await _api.delete("${ApiConstants.baseUrl}${ApiConstants.salesOrders}/$transactionId/void", data: {'user_id': userId});
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
+
+  // VOID QUICK SALES
+  Future<ApiResponse> voidQuickSales({required String userId, required String transactionId}) async {
+    try {
+      final response = await _api.delete("${ApiConstants.baseUrl}${ApiConstants.quickSales}/$transactionId/void", data: {'user_id': userId});
       return response;
     } catch (e) {
       return ApiResponse(data: null, statusCode: 500, message: e.toString());

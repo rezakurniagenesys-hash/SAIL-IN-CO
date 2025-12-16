@@ -90,7 +90,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 shrinkWrap: true,
                 itemCount: 10,
                 itemBuilder: (context, index) {
-                  return ItemCustomer(date: '06-0${index + 1}', statusPayment: index % 2 == 0 ? 'Paid' : 'Unpaid', onTap: () {});
+                  return ItemCustomer(isAllCustomer: false, date: '06-0${index + 1}', statusPayment: index % 2 == 0 ? 'Paid' : 'Unpaid', onTap: () {});
                 },
               ),
             ),

@@ -27,7 +27,7 @@ class ApiConstants {
   static const String customerUpdatePhoto = "/sales/api/callsheets/customer/{id}/upload";
 
   //Patty Case
-  static const String pattyCash = "/sales/api/sales/pettyCashSaldo";
+  static const String pattyCash = "/sales/api/sales/petty-cash-saldo";
 
   // Dashboard
   static const String summaryChart = "/sales/api/callsheets/summary";
@@ -43,7 +43,11 @@ class ApiConstants {
   static const String salesOrders = "/stock/api/sales-orders";
   static const String shippings = "/stock/api/shippings";
   static const String returnPayments = "/stock/api/sales-returns";
+  static const String salesHistory = "/stock/api/sales-history";
 
   static const String historyTransactions = "/sales/api/callsheets/transactions";
   static const String invoicePaymentJournal = "/stock/api/invoices/payment-journal";
+
+  // Settlement
+  static const String settlement = "/sales/api/settlement/sales?sales_id={userId}";
 }

@@ -28,8 +28,10 @@ class HomeProvider extends ChangeNotifier {
   UserInfo? userInfo;
   bool isLoading = false;
   bool isLoadingStock = false;
+  bool isLoadingSettlement = false;
 
   num remainingBalancePattyCash = 0;
+  String pathPdf = '';
 
   CallsheetSummaryResponse? summaryResponse;
   SummaryData? summaryData;
@@ -134,9 +136,9 @@ class HomeProvider extends ChangeNotifier {
     try {
       if (online) {
         final res = await _repo.getPattyCash(userId: userInfoService?.userId ?? '');
-        if (res.statusCode == 201 && res.data != null) {
+        if (res.statusCode == 200 && res.data != null) {
           final data = res.data;
-          remainingBalancePattyCash = data['sisaSaldo'] ?? 0;
+          remainingBalancePattyCash = num.parse(data['data']['sisa_saldo'] ?? 0);
         } else if (res.statusCode == 502 || res.statusCode == 500) {
           AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
@@ -152,6 +154,38 @@ class HomeProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error loading patty cash data: $e");
     } finally {
+      notifyListeners();
+    }
+  }
+
+  //getSettlement
+  Future<void> getSettlement(BuildContext context) async {
+    isLoadingSettlement = true;
+    notifyListeners();
+    final userInfoService = await AuthService.getUserInfo();
+
+    final online = await ConnectionUtils.isConnected();
+
+    try {
+      if (online) {
+        final res = await _repo.getSettlement(userId: userInfoService?.userId ?? '');
+        if (res.statusCode == 200 && res.data != null) {
+          final data = res.data;
+          pathPdf = data['data']['pdf'] ?? '';
+          isLoadingSettlement = false;
+          notifyListeners();
+        } else if (res.statusCode == 502 || res.statusCode == 500) {
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
+        } else {
+          AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
+        }
+      } else {
+        // Handle offline scenario if applicable
+      }
+    } catch (e) {
+      debugPrint("Error loading settlement data: $e");
+    } finally {
+      isLoadingSettlement = false;
       notifyListeners();
     }
   }

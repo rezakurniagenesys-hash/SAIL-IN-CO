@@ -266,7 +266,11 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                     context.read<SalesOrderProvider>().clearSalesOrderItems();
 
                                     // Switch to Sales tab
-                                    provider.setTab(1); 
+                                    provider.setTab(1);
+
+                                    final providerSales = context.read<SalesProvider>();
+                                    providerSales.clearData();
+                                    providerSales.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
                                     // });
                                   }
                                 });

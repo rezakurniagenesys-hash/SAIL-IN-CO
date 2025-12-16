@@ -20,47 +20,54 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final List<String> _titles = ['Quick Sales', 'Sales Order'];
-
-  //   List<String> get _titles {
-  //   final l = AppLocalizations.of(context)!;
-  //   return [l.order_quickSales, l.order_salesOrder];
-  // }
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+
+    /// Init TabController ONCE
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
+
+    /// Post frame async calls
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<QuickSalesProvider>();
-      provider.loadUserInfo();
+      context.read<QuickSalesProvider>().loadUserInfo();
       context.read<GeneralProviders>().getInventory(context);
     });
-    _tabController = TabController(length: _titles.length, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging == false) {
-        setState(() {});
-      }
-    });
+  }
+
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) {
+      setState(() {}); // update AppBar title
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
 
+  List<String> _titles(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return [l.order_quickSales, l.order_salesOrder];
+  }
+
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
+    final l = AppLocalizations.of(context)!;
+    final titles = _titles(context);
+
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBarCustom(title: _titles[_tabController.index], onRefresh: () {}),
+      appBar: AppBarCustom(title: titles[_tabController.index], onRefresh: () {}),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14.0),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Column(
           children: [
-            // --- TabBar ---
+            /// TAB BAR
             TabBar(
               controller: _tabController,
               isScrollable: true,
@@ -70,12 +77,13 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
               dividerColor: Colors.transparent,
               labelStyle: AppTextStyles.label2SemiBold,
               tabs: [
-                Tab(text: l!.order_quickSales),
+                Tab(text: l.order_quickSales),
                 Tab(text: l.order_salesOrder),
               ],
             ),
             const SizedBox(height: 12),
-            // --- Tab Content ---
+
+            /// TAB VIEW
             Expanded(
               child: TabBarView(
                 controller: _tabController,

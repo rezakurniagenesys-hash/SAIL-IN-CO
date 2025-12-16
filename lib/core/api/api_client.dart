@@ -66,9 +66,9 @@ class ApiClient {
   }
 
   // --------------------------------------------------------------
-  Future<ApiResponse> delete(String endpoint) async {
+  Future<ApiResponse> delete(String endpoint, {dynamic data}) async {
     try {
-      final res = await _dio.delete(endpoint);
+      final res = await _dio.delete(endpoint, data: data);
       return ApiResponse(statusCode: res.statusCode ?? 0, data: _normalizeResponse(res.data));
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
@@ -78,7 +78,10 @@ class ApiClient {
   // --------------------------------------------------------------
   Future<ApiResponse> uploadImage(String endpoint, File file, {Map<String, dynamic>? fields}) async {
     try {
-      final formData = FormData.fromMap({if (fields != null) ...fields, 'image': await MultipartFile.fromFile(file.path, filename: file.uri.pathSegments.last)});
+      final formData = FormData.fromMap({
+        if (fields != null) ...fields,
+        'image': await MultipartFile.fromFile(file.path, filename: file.uri.pathSegments.last),
+      });
 
       final res = await _dio.post(endpoint, data: formData);
 

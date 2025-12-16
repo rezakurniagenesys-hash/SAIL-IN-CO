@@ -155,77 +155,104 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
             isLoadMore: provider.isLoadMore,
             onLoadMore: () => provider.getOutstandingSalesOrders(loadMore: true, customerId: widget.customerId),
             itemBuilder: (context, index) {
-              return ItemOutstandingOrder(
-                item: provider.dataSalesOrder[index],
-                onView: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ViewOutstandingOrderScreen(salesOrderId: provider.dataSalesOrder[index].salesOrderId)),
-                  );
-                },
-                onShipping: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ViewOutstandingOrderScreen(salesOrderId: provider.dataSalesOrder[index].salesOrderId, isShippingOrder: true),
-                    ),
-                  ).then((value) {
-                    if (value == 'refresh-shipping-order') {
-                      provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
-                    }
-                  });
-                },
-                onPayment: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentScreen(paymentType: PaymentType.outstandingOrderPayment, salesOrderModel: provider.dataSalesOrder[index]),
-                    ),
-                  ).then((value) {
-                    if (value == 'refresh-outstanding-order-payment') {
-                      provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
-                    }
-                  });
-                },
-                onPrint: () {
-                  AppDialog.show(
-                    context: context,
-                    title: 'Print Invoice',
-                    content: Column(
-                      children: [
-                        Text('Print', style: AppTextStyles.label2SemiBold),
-                        Container(margin: const EdgeInsets.symmetric(vertical: 12), height: 1, color: AppColors.sky600),
-                        SvgPicture.asset(AssetIcons.printIcon, width: 50, height: 50),
-                        Row(
-                          children: [
-                            Text('Device', style: AppTextStyles.body4Medium.copyWith(color: AppColors.textPrimary)),
-                            Spacer(),
-                            Text('Status', style: AppTextStyles.body4Medium.copyWith(color: AppColors.emerald600)),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        AppDropdownField(label: 'Printer Name', value: '', items: ['Printer 1', 'Printer 2'], onChanged: (value) {}),
-                        SizedBox(height: 16),
-                        AppButton(isDisabled: true, height: 44, label: 'Refresh', onPressed: () {}, isFullWidth: true, type: AppButtonType.primary),
-                        SizedBox(height: 16),
-                        AppButton(height: 44, label: 'Print', onPressed: () {}, isFullWidth: true, type: AppButtonType.primary),
-                        SizedBox(height: 16),
-                        AppButton(
-                          height: 44,
-                          label: 'Download as PDF',
-                          onPressed: () {
-                            // Future<void> openReceiptPdf(ReceiptData data) async {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ReceiptPdfViewPage()));
-                            // }
-                          },
-                          isFullWidth: true,
-                          type: AppButtonType.primary,
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
+              if (provider.dataSalesOrder[index].isPaid != 1) {
+                return ItemOutstandingOrder(
+                  item: provider.dataSalesOrder[index],
+                  onView: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ViewOutstandingOrderScreen(salesOrderId: provider.dataSalesOrder[index].salesOrderId)),
+                    );
+                  },
+                  onShipping: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewOutstandingOrderScreen(salesOrderId: provider.dataSalesOrder[index].salesOrderId, isShippingOrder: true),
+                      ),
+                    ).then((value) {
+                      if (value == 'refresh-shipping-order') {
+                        provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
+                      }
+                    });
+                  },
+                  onPayment: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentScreen(paymentType: PaymentType.outstandingOrderPayment, salesOrderModel: provider.dataSalesOrder[index]),
+                      ),
+                    ).then((value) {
+                      if (value == 'refresh-outstanding-order-payment') {
+                        provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
+                      }
+                    });
+                  },
+                  onPrint: () {
+                    AppDialog.show(
+                      context: context,
+                      title: 'Print Invoice',
+                      content: Column(
+                        children: [
+                          Text('Print', style: AppTextStyles.label2SemiBold),
+                          Container(margin: const EdgeInsets.symmetric(vertical: 12), height: 1, color: AppColors.sky600),
+                          SvgPicture.asset(AssetIcons.printIcon, width: 50, height: 50),
+                          Row(
+                            children: [
+                              Text('Device', style: AppTextStyles.body4Medium.copyWith(color: AppColors.textPrimary)),
+                              Spacer(),
+                              Text('Status', style: AppTextStyles.body4Medium.copyWith(color: AppColors.emerald600)),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                          AppDropdownField(label: 'Printer Name', value: '', items: [], onChanged: (value) {}),
+                          SizedBox(height: 16),
+                          AppButton(isDisabled: true, height: 44, label: 'Refresh', onPressed: () {}, isFullWidth: true, type: AppButtonType.primary),
+                          SizedBox(height: 16),
+                          AppButton(height: 44, label: 'Print', onPressed: () {}, isFullWidth: true, type: AppButtonType.primary),
+                          SizedBox(height: 16),
+                          AppButton(
+                            height: 44,
+                            label: 'Download as PDF',
+                            onPressed: () {
+                              // Future<void> openReceiptPdf(ReceiptData data) async {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const ReceiptPdfViewPage()));
+                              // }
+                            },
+                            isFullWidth: true,
+                            type: AppButtonType.primary,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  onDelete: () {
+                    AppDialog.show(
+                      context: context,
+                      title: 'Hapus Order',
+                      content: Text('Apakah Anda yakin ingin menghapus order ini?', textAlign: TextAlign.center, style: AppTextStyles.body3Regular),
+                      actionButton: AppButton(
+                        isFullWidth: true,
+                        label: 'Ya, Hapus',
+                        height: 42,
+                        isLoading: provider.isLoadingSalesOrderVoid,
+                        type: AppButtonType.danger,
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await provider.voidSalesOrder(
+                            context: context,
+                            salesOrderId: provider.dataSalesOrder[index].salesOrderId,
+                            customerId: widget.customerId,
+                          );
+                          provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
+                        },
+                      ),
+                    );
+                  },
+                );
+              } else {
+                return SizedBox.shrink();
+              }
             },
           ),
         );

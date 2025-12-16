@@ -118,6 +118,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
             itemBuilder: (context, index) {
               final data = provider.customers[index];
               return ItemCustomer(
+                isAllCustomer: true,
                 customer: provider.customers[index],
                 onTap: () async {
                   Navigator.push(

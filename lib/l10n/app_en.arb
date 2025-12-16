@@ -92,6 +92,7 @@
   "customerDetail_notDelivered": "Not Delivered",
   "customerDetail_delivered": "Delivered",
   "customerDetail_waitingPayment": "Waiting for Payment",
+  "customerDetail_waitingForShipment": "Waiting for Shipment",
   "customerDetail_outstandingOrderDetail": "Outstanding Order Detail",
   "customerDetail_shippingID": "Shipping ID",
   "customerDetail_salesorderID": "Salesorder ID",

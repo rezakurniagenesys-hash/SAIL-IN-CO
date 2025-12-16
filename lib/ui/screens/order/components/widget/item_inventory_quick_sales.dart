@@ -54,7 +54,7 @@ class ItemInventoryQuickSales extends StatelessWidget {
                   l!.order_discount,
                   style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.normal),
                 ),
-                Text(CurrencyFormat.toRupiah(item.discount * item.qty), style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
+                Text(CurrencyFormat.toRupiah(item.discount * item.qty2), style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
               ],
             ),
           if (isDescriptionVisible)

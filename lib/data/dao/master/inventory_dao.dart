@@ -52,6 +52,46 @@ class InventoryItemDao {
     }
   }
 
+  /// Update current_stock by inventory_id
+  Future<int> updateCurrentStock({required String inventoryId, required String currentStock}) async {
+    final db = await dbHelper.database;
+
+    return await db.update("inventory_items", {"current_stock": currentStock}, where: "inventory_id = ?", whereArgs: [inventoryId]);
+  }
+
+  Future<int> reduceCurrentStock({required String inventoryId, required int qty}) async {
+    final db = await dbHelper.database;
+
+    return await db.transaction((txn) async {
+      final result = await txn.query("inventory_items", columns: ["current_stock"], where: "inventory_id = ?", whereArgs: [inventoryId], limit: 1);
+
+      if (result.isEmpty) {
+        throw Exception("Inventory not found");
+      }
+
+      final rawStock = result.first["current_stock"];
+
+      int currentStock;
+      if (rawStock is int) {
+        currentStock = rawStock;
+      } else if (rawStock is double) {
+        currentStock = rawStock.toInt();
+      } else if (rawStock is String) {
+        currentStock = double.tryParse(rawStock)?.toInt() ?? 0;
+      } else {
+        currentStock = 0;
+      }
+
+      final newStock = currentStock - qty;
+
+      if (newStock < 0) {
+        throw Exception("Stock not enough");
+      }
+
+      return await txn.update("inventory_items", {"current_stock": newStock}, where: "inventory_id = ?", whereArgs: [inventoryId]);
+    });
+  }
+
   /// Get all inventory items from SQLite
   Future<List<InventoryItem>> getInventoryItems() async {
     final db = await dbHelper.database;

@@ -7,12 +7,13 @@ import 'package:sail_in_co/data/models/history/sales_order_response_model.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 
 class ItemOutstandingOrder extends StatelessWidget {
-  const ItemOutstandingOrder({super.key, this.item, this.onView, this.onPayment, this.onShipping, this.onPrint});
+  const ItemOutstandingOrder({super.key, this.item, this.onView, this.onPayment, this.onShipping, this.onPrint, this.onDelete});
   final SalesOrderModel? item;
   final VoidCallback? onView;
   final VoidCallback? onPayment;
   final VoidCallback? onShipping;
   final VoidCallback? onPrint;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +23,7 @@ class ItemOutstandingOrder extends StatelessWidget {
       children: [
         Container(
           margin: EdgeInsets.only(right: 8),
-          child: Text(
-            formatDate(DateTime.parse(item?.salesOrderDate ?? DateTime.now().toIso8601String()))
-            , style: AppTextStyles.body2Medium),
+          child: Text(formatDate(DateTime.parse(item?.salesOrderDate ?? DateTime.now().toIso8601String())), style: AppTextStyles.body2Medium),
         ),
         Expanded(
           child: Column(
@@ -51,22 +50,26 @@ class ItemOutstandingOrder extends StatelessWidget {
                   ),
                 ],
               ),
-              if (item?.isShipped == 0)
-                Text(l?.customerDetail_waitingPayment ?? '', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+              if (item?.isShipped == 0) Text(l?.order_waitingForShipping ?? '', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
               if (item?.isShipped == 1)
                 Text("${l?.customerDetail_shipping ?? ''} | ${item?.shippingId}", style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
-              SizedBox(height: 8),
+              SizedBox(height: 4),
               Row(
                 spacing: 6,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   buildButton(AssetIcons.carbonViewFilled, onView ?? () {}, true),
                   buildButton(AssetIcons.materialSymbolsLocalShippingRounded, (item?.isShipped == 1 ? null : onShipping) ?? () {}, item?.isShipped == 0),
-                  buildButton(AssetIcons.fluentPayment20Filled, (item?.isPaid == 1 ? null : onPayment) ?? () {}, item?.isPaid == 0),
+                  buildButton(
+                    AssetIcons.fluentPayment20Filled,
+                    (item?.isShipped == 0 ? null : (item?.isPaid == 1 ? null : onPayment)) ?? () {},
+                    item?.isShipped == 1 && item?.isPaid == 0,
+                  ),
                   buildButton(AssetIcons.materialSymbolsPrintRounded, onPrint ?? () {}, true),
-                  // buildButton(AssetIcons.materialSymbolsDelete, onDelete ?? () {}, true),
+                  buildButton(AssetIcons.materialSymbolsDelete, onDelete ?? () {}, true, isDelete: true),
                 ],
               ),
+              SizedBox(height: 12),
             ],
           ),
         ),
@@ -74,7 +77,7 @@ class ItemOutstandingOrder extends StatelessWidget {
     );
   }
 
-  Widget buildButton(String icon, VoidCallback onTap, bool isActive) {
+  Widget buildButton(String icon, VoidCallback onTap, bool isActive, {bool isDelete = false, bool isDeleteLoading = false}) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -83,9 +86,9 @@ class ItemOutstandingOrder extends StatelessWidget {
         padding: EdgeInsets.all(2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: isActive ? AppColors.sky700 : AppColors.grey),
+          border: Border.all(color: isActive ? (isDelete ? AppColors.error : AppColors.sky700) : AppColors.grey),
         ),
-        child: SvgPicture.asset(icon, color: isActive ? AppColors.sky700 : AppColors.grey, width: 20, height: 20),
+        child: SvgPicture.asset(icon, color: isActive ? (isDelete ? AppColors.error : AppColors.sky700) : AppColors.grey, width: 20, height: 20),
       ),
     );
   }

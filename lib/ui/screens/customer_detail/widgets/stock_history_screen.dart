@@ -13,19 +13,19 @@ class StockHistoryScreen extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       child: Column(
         children: [
-          Column(
-            spacing: 18,
-            children: List.generate(
-              20,
-              (i) => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Rokok $i', style: AppTextStyles.body2Medium),
-                  Text('25 Box', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
-                ],
-              ),
-            ),
-          ),
+          // Column(
+          //   spacing: 18,
+          //   children: List.generate(
+          //     20,
+          //     (i) => Row(
+          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //       children: [
+          //         Text('Rokok $i', style: AppTextStyles.body2Medium),
+          //         Text('25 Box', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

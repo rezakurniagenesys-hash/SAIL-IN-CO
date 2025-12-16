@@ -32,4 +32,5 @@ class AssetIcons {
   static const String boxSolid = '$pathSvg/box-solid.svg';
   static const String walletSolid = '$pathSvg/wallet-solid.svg';
   static const String printIcon = '$pathSvg/print-icon.svg';
+  static const String shippingIcon = '$pathSvg/shipping.svg';
 }

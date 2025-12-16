@@ -5,10 +5,11 @@ import 'package:sail_in_co/data/models/customer/customer_item.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 
 class ItemCustomer extends StatelessWidget {
-  const ItemCustomer({super.key, this.date = '', this.statusPayment = '', this.customer, required this.onTap});
+  const ItemCustomer({super.key, this.date = '', this.statusPayment = '', this.customer, required this.onTap, required this.isAllCustomer});
   final CustomerItem? customer;
   final String date;
   final String statusPayment;
+  final bool isAllCustomer;
   final VoidCallback onTap;
 
   @override
@@ -48,24 +49,45 @@ class ItemCustomer extends StatelessWidget {
                           style: AppTextStyles.body2Medium.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Row(
-                        children: [
-                          Container(
-                            height: 5,
-                            width: 5,
-                            decoration: BoxDecoration(color: (customer?.statusVisit == 2) ? AppColors.success : AppColors.error, shape: BoxShape.circle),
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            customer?.statusVisit == 1
-                                ? l!.customer_failedNotVisit
-                                : customer?.statusVisit == 2
-                                ? l!.customer_visit
-                                : l!.customer_notVisit,
-                            style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
+                      if (isAllCustomer == true && customer?.hasVisit == 1) ...[
+                        Row(
+                          children: [
+                            Container(
+                              height: 5,
+                              width: 5,
+                              decoration: BoxDecoration(color: (customer?.statusVisit == 2) ? AppColors.success : AppColors.error, shape: BoxShape.circle),
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              customer?.statusVisit == 1
+                                  ? l!.customer_failedNotVisit
+                                  : customer?.statusVisit == 2
+                                  ? l!.customer_visit
+                                  : l!.customer_notVisit,
+                              style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ] else if (isAllCustomer == false) ...[
+                        Row(
+                          children: [
+                            Container(
+                              height: 5,
+                              width: 5,
+                              decoration: BoxDecoration(color: (customer?.statusVisit == 2) ? AppColors.success : AppColors.error, shape: BoxShape.circle),
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              customer?.statusVisit == 1
+                                  ? l!.customer_failedNotVisit
+                                  : customer?.statusVisit == 2
+                                  ? l!.customer_visit
+                                  : l!.customer_notVisit,
+                              style: AppTextStyles.body4Reguler.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                   // Text(customer?.address ?? '-', style: AppTextStyles.body3Regular.copyWith(color: AppColors.textSecondary)),

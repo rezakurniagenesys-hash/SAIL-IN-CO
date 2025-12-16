@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/utils/connection_utils.dart';
+import 'package:sail_in_co/data/dao/master/inventory_dao.dart';
 import 'package:sail_in_co/data/dao/master/method_payment_dao.dart';
 import 'package:sail_in_co/data/dao/sales/outstanding_payment_dao.dart';
 import 'package:sail_in_co/data/dao/sales/quick_sales_dao.dart';
@@ -25,6 +26,7 @@ class PaymentProvider extends ChangeNotifier {
   final daoQuickSales = QuickSalesDao();
   final daoMethodPayment = MethodPaymentDao();
   final daoOutstandingPayment = OutstandingPaymentDao();
+  final daoInventory = InventoryItemDao();
 
   bool isLoading = false;
   bool isLoadingSubmit = false;
@@ -155,6 +157,9 @@ class PaymentProvider extends ChangeNotifier {
         final res = await repository.postQuickSales(payload: newPayload!);
 
         if ((res.statusCode == 201) && res.data != null) {
+          for (var item in newPayload.details) {
+            await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+          }
           AppSnackBar.show(context, message: 'Pembayaran berhasil dilakukan.', color: Colors.green);
           Navigator.of(context).pop();
           Navigator.of(context).pop('refresh-quick-sales');
@@ -164,7 +169,11 @@ class PaymentProvider extends ChangeNotifier {
           AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
+        print("OFFLINE PAYMENT PROCESSING");
         // OFFLINE HANDLING HERE
+        for (var item in newPayload?.details ?? []) {
+          await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+        }
         await daoQuickSales.saveQuickSales(newPayload!);
         AppSnackBar.show(context, message: 'Pembayaran berhasil disimpan secara lokal.', color: Colors.green);
         Navigator.of(context).pop();

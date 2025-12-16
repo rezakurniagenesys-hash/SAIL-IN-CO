@@ -53,7 +53,8 @@ class GeneralOrderProvider extends ChangeNotifier {
     priceUIController.text = (pricePCS * multiplier).toString();
 
     final subtotal = qty * multiplier * pricePCS;
-    final discountTotal = discount * qty * multiplier;
+    final discountTotal = discount * qty;
+    // * multiplier;
 
     totalPrice = (subtotal - discountTotal).clamp(0, 999999999);
     notifyListeners();
@@ -243,9 +244,9 @@ class GeneralOrderProvider extends ChangeNotifier {
         AppSnackBar.show(context, message: "Stok kosong!", color: Colors.red);
         return;
       }
-
+      print('priceMode: $priceMode');
       // cek stok hanya berlaku selain return order, pricemode == localkedFromMaster artinya bukan return order
-      if (priceMode == OrderPriceMode.editable) {
+      if (priceMode == OrderPriceMode.lockedFromMaster) {
         if (_parseInt(qtyDefaultController.text) > currentStock) {
           AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
           return;

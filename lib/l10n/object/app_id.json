@@ -105,6 +105,7 @@
         "notDelivered": "Belum Dikirim",
         "delivered": "Dikirim",
         "waitingPayment": "Menunggu Pembayaran",
+        "waitingForShipment": "Menunggu Pengiriman",
         "outstandingOrderDetail": "Detail Pesanan Belum Selesai",
         "shippingID": "ID Pengiriman",
         "salesorderID" : "ID Pesanan Penjualan",
@@ -114,7 +115,7 @@
     },
     "order": {
         "quickSales": "Penjualan Cepat",
-        "salesOrder": "Sales Order",
+        "salesOrder": "Pesanan Penjualan",
         "visit" : "Dikunjungi",
         "notVisit" : "Belum Dikunjungi",
         "date" : "Tanggal",

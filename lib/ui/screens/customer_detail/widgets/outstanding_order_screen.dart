@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
+import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/widgets/sales/outstanding_order_page.dart';
+import 'package:sail_in_co/ui/screens/customer_detail/widgets/sales/sales_page.dart';
 
 class OutstandingOrderScreen extends StatelessWidget {
   const OutstandingOrderScreen({super.key, required this.scrollController, required this.customerId});
@@ -10,6 +12,7 @@ class OutstandingOrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     // 0 = Outstanding Orders, 1 = Sales
     final ValueNotifier<int> tabIndex = ValueNotifier<int>(0);
 
@@ -36,7 +39,7 @@ class OutstandingOrderScreen extends StatelessWidget {
                             )
                           : null,
                       child: Text(
-                        'Outstanding Orders',
+                        l.customerDetail_outstandingOrder,
                         style: AppTextStyles.label2SemiBold.copyWith(color: index == 0 ? AppColors.sky700 : AppColors.neutral400),
                       ),
                     ),
@@ -52,7 +55,10 @@ class OutstandingOrderScreen extends StatelessWidget {
                               border: Border(bottom: BorderSide(color: AppColors.sky700, width: 2)),
                             )
                           : null,
-                      child: Text('Sales', style: AppTextStyles.label2SemiBold.copyWith(color: index == 1 ? AppColors.sky700 : AppColors.neutral400)),
+                      child: Text(
+                        l.customerDetail_sales,
+                        style: AppTextStyles.label2SemiBold.copyWith(color: index == 1 ? AppColors.sky700 : AppColors.neutral400),
+                      ),
                     ),
                   ),
                 ],
@@ -62,10 +68,7 @@ class OutstandingOrderScreen extends StatelessWidget {
 
               // TAB CONTENT
               if (index == 0) OutstandingOrderPage(customerId: customerId),
-              if (index == 1)
-                SizedBox(
-                  child: Text('Sales Page Coming Soon...', style: AppTextStyles.heading2Bold.copyWith(color: AppColors.textSecondary)),
-                ),
+              if (index == 1) SalesPage(customerId: customerId),
             ],
           ),
         );

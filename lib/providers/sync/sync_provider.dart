@@ -313,7 +313,7 @@ class SyncProvider extends ChangeNotifier {
       final res = await repoHome.getPattyCash(userId: userInfo?.userId ?? '');
       if (res.statusCode == 201 && res.data != null) {
         final data = res.data;
-        await daoPattycashDao.savePattyCash(data['sisaSaldo'] ?? 0);
+        await daoPattycashDao.savePattyCash(num.parse(data['data']['sisa_saldo'] ?? 0));
       }
     }
   }

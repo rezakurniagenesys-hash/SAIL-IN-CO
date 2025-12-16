@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/constants/constant_date.dart';
 import 'package:sail_in_co/core/utils/connection_utils.dart';
 import 'package:sail_in_co/core/utils/date_utils.dart';
+import 'package:sail_in_co/data/dao/master/inventory_dao.dart';
 import 'package:sail_in_co/data/dao/sales/sales_order_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
@@ -24,6 +25,7 @@ class SalesOrderProvider extends ChangeNotifier {
   CustomerDetailData? customerDetailData;
 
   final daoSalesOrder = SalesOrderDao();
+  final daoInventory = InventoryItemDao();
 
   bool isLoadingSubmit = false;
 
@@ -52,7 +54,7 @@ class SalesOrderProvider extends ChangeNotifier {
     int total = 0;
 
     for (var item in salesOrderItems) {
-      final int qty = item.qty;
+      final int qty = item.qty2;
       final int discount = item.discount;
       total += qty * discount;
     }
@@ -80,13 +82,12 @@ class SalesOrderProvider extends ChangeNotifier {
 
     for (var item in salesOrderItems) {
       final int qty = item.qty2;
-      final int qtyDiscount = item.qty;
       final int price = item.price;
       final int discount = item.discount;
       final int multiplier = int.tryParse(item.uom.value) ?? 1;
 
       final int sub = qty * multiplier * price;
-      final int totalItem = sub - (qtyDiscount * discount);
+      final int totalItem = sub - (qty * discount);
 
       total += totalItem;
     }
@@ -151,13 +152,15 @@ class SalesOrderProvider extends ChangeNotifier {
           inventoryId: e.inventory.inventoryId,
           uomId: e.uom_id,
           qty: e.qty,
-          price: e.price,
+          price: e.price - ((e.discount / (int.parse(e.uom.value)))),
           voidValue: 0,
           uomId2: e.uom_id2,
           qty2: e.qty2,
           price2: e.price,
           vatValue: 0,
-          discValue: (e.discount * e.qty2),
+          discValue: (e.discount / (int.parse(e.uom.value))),
+          // discValue: (e.discount * e.qty2),
+          // discValue: (e.discount * e.qty),
           subTotal: e.sub_total,
           grandTotal: e.grand_total,
           notes: e.notes,
@@ -179,6 +182,9 @@ class SalesOrderProvider extends ChangeNotifier {
       if (online) {
         final res = await salesRepository.postSalesOrder(payload: salesOrderPayloadModel);
         if ((res.statusCode == 201) && res.data != null) {
+          for (var item in salesOrderPayloadModel.details) {
+            await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+          }
           AppSnackBar.show(context, message: 'Berhasil mengirim sales order.', color: Colors.green);
           Navigator.of(context).pop('refresh-sales-order');
         } else if (res.statusCode == 502) {
@@ -187,6 +193,9 @@ class SalesOrderProvider extends ChangeNotifier {
           AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
+        for (var item in salesOrderPayloadModel.details) {
+          await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+        }
         await daoSalesOrder.saveSalesOrder(salesOrderPayloadModel);
         AppSnackBar.show(context, message: 'Berhasil mengirim sales order ke penyimpanan lokal.', color: Colors.green);
         Navigator.of(context).pop('refresh-sales-order');

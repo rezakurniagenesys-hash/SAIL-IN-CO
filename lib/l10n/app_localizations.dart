@@ -593,6 +593,12 @@ abstract class AppLocalizations {
   /// **'Waiting for Payment'**
   String get customerDetail_waitingPayment;
 
+  /// No description provided for @customerDetail_waitingForShipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Shipment'**
+  String get customerDetail_waitingForShipment;
+
   /// No description provided for @customerDetail_outstandingOrderDetail.
   ///
   /// In en, this message translates to:

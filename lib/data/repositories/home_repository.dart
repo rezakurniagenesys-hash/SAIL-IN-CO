@@ -20,7 +20,17 @@ class HomeRepository {
   // Patty Cash
   Future<ApiResponse> getPattyCash({required String userId}) async {
     try {
-      final response = await _api.post("${ApiConstants.baseUrl}${ApiConstants.pattyCash}", data: {'userID': userId});
+      final response = await _api.post("${ApiConstants.baseUrl}${ApiConstants.pattyCash}", data: {'user_id': userId});
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
+
+  // Get - Settlement
+  Future<ApiResponse> getSettlement({required String userId}) async {
+    try {
+      final response = await _api.get("${ApiConstants.baseUrl}${ApiConstants.settlement.replaceFirst('{userId}', userId)}");
       return response;
     } catch (e) {
       return ApiResponse(data: null, statusCode: 500, message: e.toString());

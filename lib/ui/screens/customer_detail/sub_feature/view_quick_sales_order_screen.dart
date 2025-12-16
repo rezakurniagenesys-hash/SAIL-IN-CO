@@ -15,22 +15,22 @@ import 'package:sail_in_co/ui/widgets/app_bar_custom.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_dialog.dart';
 
-class ViewOutstandingOrderScreen extends StatefulWidget {
-  const ViewOutstandingOrderScreen({super.key, this.salesOrderId, this.isShippingOrder = false});
+class ViewQuickSalesOrderScreen extends StatefulWidget {
+  const ViewQuickSalesOrderScreen({super.key, this.salesOrderId, this.isShippingOrder = false});
   final String? salesOrderId;
   final bool isShippingOrder;
 
   @override
-  State<ViewOutstandingOrderScreen> createState() => _ViewOutstandingOrderScreenState();
+  State<ViewQuickSalesOrderScreen> createState() => _ViewQuickSalesOrderScreenState();
 }
 
-class _ViewOutstandingOrderScreenState extends State<ViewOutstandingOrderScreen> {
+class _ViewQuickSalesOrderScreenState extends State<ViewQuickSalesOrderScreen> {
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       final provider = context.read<SalesProvider>();
-      provider.getDetailOutstandingSalesOrders(salesOrderId: widget.salesOrderId ?? '', context: context);
+      provider.getQuickSalesOrder(quicSalesId: widget.salesOrderId ?? '', context: context);
     });
   }
 
@@ -59,7 +59,7 @@ class _ViewOutstandingOrderScreenState extends State<ViewOutstandingOrderScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        provider.salesOrderHeader?.customerNmAcc6 ?? '-',
+                        provider.quickSalesDetail?.customerNmAcc6 ?? '-',
                         style: AppTextStyles.heading4Medium.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w700),
                       ),
                     ],
@@ -73,10 +73,10 @@ class _ViewOutstandingOrderScreenState extends State<ViewOutstandingOrderScreen>
                           spacing: 12,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            infoItem(l!.order_date, DateUtilsHelper.formatDMY(DateTime.parse(provider.salesOrderHeader?.salesOrderDate ?? ''))),
-                            if (widget.isShippingOrder == false) infoItem(l.customerDetail_salesOrderId, provider.salesOrderHeader?.salesOrderId ?? ''),
-                            infoItem(l.order_codeCustomer, provider.salesOrderHeader?.customerId ?? '-'),
-                            infoItem(l.order_address, provider.salesOrderHeader?.customerAddress ?? ''),
+                            infoItem(l!.order_date, DateUtilsHelper.formatDMY(DateTime.parse(provider.quickSalesDetail?.quickSalesDate ?? ''))),
+                            if (widget.isShippingOrder == false) infoItem(l.customerDetail_salesOrderId, provider.quickSalesDetail?.quickSalesId ?? ''),
+                            infoItem(l.order_codeCustomer, provider.quickSalesDetail?.customerId ?? '-'),
+                            infoItem(l.order_address, provider.quickSalesDetail?.destinationAddress ?? ''),
                           ],
                         ),
                       ),
@@ -85,10 +85,10 @@ class _ViewOutstandingOrderScreenState extends State<ViewOutstandingOrderScreen>
                           spacing: 12,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            infoItem(l.order_codeSales, provider.salesOrderHeader?.salesId ?? ''),
-                            if (widget.isShippingOrder == false) infoItem(l.customerDetail_shippingID, provider.salesOrderHeader?.shippingId ?? '-'),
-                            infoItem(l.order_area, provider.salesOrderHeader?.areaAreaName ?? ''),
-                            infoItem(l.order_remark, provider.salesOrderHeader?.notes ?? '-'),
+                            infoItem(l.order_codeSales, provider.quickSalesDetail?.quickSalesId ?? ''),
+                            if (widget.isShippingOrder == false) infoItem(l.customerDetail_shippingID, provider.quickSalesDetail?.quickSalesId ?? '-'),
+                            infoItem(l.order_area, provider.quickSalesDetail?.areaAreaName ?? ''),
+                            infoItem(l.order_remark, provider.quickSalesDetail?.notes ?? '-'),
                           ],
                         ),
                       ),
@@ -97,11 +97,11 @@ class _ViewOutstandingOrderScreenState extends State<ViewOutstandingOrderScreen>
                   const SizedBox(height: 24),
                   Text(l.order_inventoryDetail, style: AppTextStyles.body2Medium.copyWith(color: AppColors.textPrimary)),
                   const SizedBox(height: 24),
-                  if (provider.salesOrderHeader?.details != null && provider.salesOrderHeader!.details.isNotEmpty)
+                  if (provider.quickSalesDetail?.details != null && provider.quickSalesDetail!.details.isNotEmpty)
                     Column(
                       spacing: 12,
                       children:
-                          provider.salesOrderHeader?.details.map((item) {
+                          provider.quickSalesDetail?.details.map((item) {
                             return Container(
                               decoration: BoxDecoration(
                                 border: Border.all(color: AppColors.neutral200),
@@ -160,9 +160,9 @@ class _ViewOutstandingOrderScreenState extends State<ViewOutstandingOrderScreen>
                   const SizedBox(height: 12 * 3),
                   SummaryRow(
                     data: {
-                      l.order_subtotal: CurrencyFormat.toRupiah(provider.subTotal()),
-                      l.order_discount: CurrencyFormat.toRupiah(provider.totalDiscount()),
-                      l.order_grandTotalPayment: CurrencyFormat.toRupiah(provider.grandTotal()),
+                      l.order_subtotal: CurrencyFormat.toRupiah(provider.subTotalQuickSales()),
+                      l.order_discount: CurrencyFormat.toRupiah(provider.totalDiscountQuickSales()),
+                      l.order_grandTotalPayment: CurrencyFormat.toRupiah(provider.grandTotalQuickSales()),
                     },
                   ),
                   const SizedBox(height: 24),

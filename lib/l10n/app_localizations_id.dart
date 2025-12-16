@@ -260,6 +260,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get customerDetail_waitingPayment => 'Menunggu Pembayaran';
 
   @override
+  String get customerDetail_waitingForShipment => 'Menunggu Pengiriman';
+
+  @override
   String get customerDetail_outstandingOrderDetail => 'Detail Pesanan Belum Selesai';
 
   @override
@@ -281,7 +284,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get order_quickSales => 'Penjualan Cepat';
 
   @override
-  String get order_salesOrder => 'Sales Order';
+  String get order_salesOrder => 'Pesanan Penjualan';
 
   @override
   String get order_visit => 'Dikunjungi';

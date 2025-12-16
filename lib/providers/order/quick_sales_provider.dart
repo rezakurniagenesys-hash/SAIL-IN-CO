@@ -49,7 +49,7 @@ class QuickSalesProvider extends ChangeNotifier {
     int total = 0;
 
     for (var item in quickSalesItems) {
-      final int qty = item.qty;
+      final int qty = item.qty2;
       final int discount = item.discount;
       total += qty * discount;
     }
@@ -77,13 +77,12 @@ class QuickSalesProvider extends ChangeNotifier {
 
     for (var item in quickSalesItems) {
       final int qty = item.qty2;
-      final int qtyDiscount = item.qty;
       final int price = item.price;
       final int discount = item.discount;
       final int multiplier = int.tryParse(item.uom.value) ?? 1;
 
       final int sub = qty * multiplier * price;
-      final int totalItem = sub - (qtyDiscount * discount);
+      final int totalItem = sub - (qty * discount);
 
       total += totalItem;
     }
@@ -150,7 +149,7 @@ class QuickSalesProvider extends ChangeNotifier {
           inventoryId: e.inventory.inventoryId,
           uomId: e.uom_id,
           qty: e.qty,
-          price: e.price,
+          price: e.price - ((e.discount / (int.parse(e.uom.value)))),
           isVoid: 0,
           uomId2: e.uom_id2,
           qty2: e.qty2,
@@ -160,7 +159,9 @@ class QuickSalesProvider extends ChangeNotifier {
           userRecord: userInfo?.username ?? '',
           price2: e.price,
           vatValue: 0,
-          discValue: (e.discount * e.qty2),
+          discValue: (e.discount / (int.parse(e.uom.value))),
+          // discValue: (e.discount * e.qty2),
+          // discValue: (e.discount * e.qty),
         );
       }).toList(),
     );

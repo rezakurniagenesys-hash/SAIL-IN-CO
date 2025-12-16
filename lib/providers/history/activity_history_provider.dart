@@ -35,8 +35,8 @@ class ActivityHistoryProvider extends ChangeNotifier {
   List<ActivityHistoryTransaction> dataActivityHistory = [];
 
   Future<void> getActivityHistory({bool loadMore = false, bool initial = false, required String customerId}) async {
-    endDateController.text = DateUtilsHelper.formatYMD(endDate);
-    startDateController.text = DateUtilsHelper.formatYMD(startDate);
+    endDateController.text = DateUtilsHelper.formatDMY(endDate);
+    startDateController.text = DateUtilsHelper.formatDMY(startDate);
     final userInfo = await AuthService.getUserInfo();
     final online = await ConnectionUtils.isConnected();
 
@@ -127,7 +127,7 @@ class ActivityHistoryProvider extends ChangeNotifier {
   // set start date
   void setStartDate(DateTime date) {
     startDate = date;
-    startDateController.text = DateUtilsHelper.formatYMD(date);
+    startDateController.text = DateUtilsHelper.formatDMY(date);
 
     notifyListeners();
   }
@@ -135,7 +135,7 @@ class ActivityHistoryProvider extends ChangeNotifier {
   // set end date
   void setEndDate(DateTime date) {
     endDate = date;
-    endDateController.text = DateUtilsHelper.formatYMD(date);
+    endDateController.text = DateUtilsHelper.formatDMY(date);
     notifyListeners();
   }
 

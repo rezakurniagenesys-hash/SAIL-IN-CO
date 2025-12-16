@@ -34,7 +34,7 @@ class _ReturnScreenState extends State<ReturnScreen> {
     provider.setCustomerDetailData(widget.customerDetailData);
 
     final generalOrderProvider = context.read<GeneralOrderProvider>();
-    generalOrderProvider.setPriceMode(OrderPriceMode.lockedFromMaster);
+    generalOrderProvider.setPriceMode(OrderPriceMode.editable);
   }
 
   @override

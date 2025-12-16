@@ -36,6 +36,7 @@ class GeneralProviders extends ChangeNotifier {
         if (res.statusCode == 200 && res.data != null) {
           final inventoryResponse = GeneralInventoryResponse.fromJson(res.data);
           inventoryData = inventoryResponse.data.inventoryData;
+          await daoInventory.saveInventoryItems(inventoryData);
           return true;
         } else if (res.statusCode == 502) {
           AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);

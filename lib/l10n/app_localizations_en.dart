@@ -260,6 +260,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerDetail_waitingPayment => 'Waiting for Payment';
 
   @override
+  String get customerDetail_waitingForShipment => 'Waiting for Shipment';
+
+  @override
   String get customerDetail_outstandingOrderDetail => 'Outstanding Order Detail';
 
   @override

@@ -71,7 +71,7 @@ class AddEditInventory extends StatelessWidget {
                         }
                         final qty = int.tryParse(value);
                         if (qty == null || qty <= 0) {
-                          return 'Please enter a valid quantity';
+                          return l?.messages_quantityCannotBeZero ?? '';
                         }
                         return null;
                       },

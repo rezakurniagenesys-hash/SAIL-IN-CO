@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/constants/constant_date.dart';
 import 'package:sail_in_co/core/utils/connection_utils.dart';
 import 'package:sail_in_co/core/utils/date_utils.dart';
+import 'package:sail_in_co/data/dao/master/inventory_dao.dart';
 import 'package:sail_in_co/data/dao/sales/sales_return_dao.dart';
 import 'package:sail_in_co/data/models/auth/auth_response_model.dart';
 import 'package:sail_in_co/data/models/customer/customer_detail_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
 import 'package:sail_in_co/data/models/salesorder/sales_order_detail.dart';
-import 'package:sail_in_co/data/models/salesorder/sales_order_payload_model.dart';
 import 'package:sail_in_co/data/models/salesorder/sales_return_payment_payload.dart';
 import 'package:sail_in_co/data/repositories/sales_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
@@ -20,6 +20,7 @@ import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 class ReturnProvider extends ChangeNotifier {
   final salesRepository = SalesRepository();
   final daoSalesReturn = SalesReturnDao();
+  final daoInventory = InventoryItemDao();
 
   List<GeneralOrderDraftItem> returnOrderItems = [];
   TextEditingController notesController = TextEditingController();
@@ -55,7 +56,7 @@ class ReturnProvider extends ChangeNotifier {
     int total = 0;
 
     for (var item in returnOrderItems) {
-      final int qty = item.qty;
+      final int qty = item.qty2;
       final int discount = item.discount;
       total += qty * discount;
     }
@@ -83,13 +84,12 @@ class ReturnProvider extends ChangeNotifier {
 
     for (var item in returnOrderItems) {
       final int qty = item.qty2;
-      final int qtyDiscount = item.qty;
       final int price = item.price;
       final int discount = item.discount;
       final int multiplier = int.tryParse(item.uom.value) ?? 1;
 
       final int sub = qty * multiplier * price;
-      final int totalItem = sub - (qtyDiscount * discount);
+      final int totalItem = sub - (qty * discount);
 
       total += totalItem;
     }
@@ -154,13 +154,15 @@ class ReturnProvider extends ChangeNotifier {
           inventoryId: e.inventory.inventoryId,
           uomId: e.uom_id,
           qty: e.qty,
-          price: e.price,
+          price: e.price - ((e.discount / (int.parse(e.uom.value)))),
           voidValue: 0,
           uomId2: e.uom_id2,
           qty2: e.qty2,
           price2: e.price,
           vatValue: 0,
-          discValue: (e.discount * e.qty2),
+          discValue: (e.discount / (int.parse(e.uom.value))),
+          // discValue: (e.discount * e.qty2),
+          // discValue: (e.discount * e.qty),
           subTotal: e.sub_total,
           grandTotal: e.grand_total,
           notes: e.notes,
@@ -182,12 +184,15 @@ class ReturnProvider extends ChangeNotifier {
         final res = await salesRepository.potstSalesReturn(payload: returnOrderPayloadModel);
 
         if ((res.statusCode == 201) && res.data != null) {
+          for (var item in returnOrderPayloadModel.details) {
+            await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+          }
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan.'), backgroundColor: Colors.green));
           Navigator.of(context).pop('refresh-return-payment');
         } else if (res.statusCode == 502) {
-           AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
+          AppSnackBar.show(context, message: 'Bad gateway.', color: Colors.red);
         } else {
           AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }

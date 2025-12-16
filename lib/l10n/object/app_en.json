@@ -104,6 +104,7 @@
         "notDelivered": "Not Delivered",
         "delivered": "Delivered",
         "waitingPayment": "Waiting for Payment",
+        "waitingForShipment": "Waiting for Shipment",
         "outstandingOrderDetail": "Outstanding Order Detail",
         "shippingID": "Shipping ID",
         "salesorderID" : "Salesorder ID",

@@ -4,6 +4,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/data/dao/sales/outstanding_payment_dao.dart';
+import 'package:sail_in_co/data/dao/sales/quick_sales_dao.dart';
+import 'package:sail_in_co/data/dao/sales/sales_order_dao.dart';
+import 'package:sail_in_co/data/dao/sales/sales_return_dao.dart';
+import 'package:sail_in_co/data/dao/sales/shipping_sales_order_dao.dart';
 import 'package:sail_in_co/data/repositories/auth_repository.dart';
 import 'package:sail_in_co/services/auth_service.dart';
 import 'package:sail_in_co/ui/screens/dashboard/dashboard.dart';
@@ -13,6 +17,10 @@ class AuthProvider extends ChangeNotifier {
   final _repo = AuthRepository();
 
   final daoOutstandingPayment = OutstandingPaymentDao();
+  final daoQuickSales = QuickSalesDao();
+  final daoSalesOrder = SalesOrderDao();
+  final daoSalesReturn = SalesReturnDao();
+  final daoShippingSalesOrder = ShippingSalesOrderDao();
 
   bool loading = false;
   String? token;
@@ -133,6 +141,10 @@ class AuthProvider extends ChangeNotifier {
 
   clearLocalStorage() async {
     await daoOutstandingPayment.clearAll();
+    await daoQuickSales.clearAll();
+    await daoSalesOrder.clearAll();
+    await daoSalesReturn.clearAll();
+    await daoShippingSalesOrder.clearAll();
     await AuthService.clear();
     notifyListeners();
   }
