@@ -1,9 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:sail_in_co/core/constants/asset_icons.dart';
+import 'package:sail_in_co/core/constants/asset_images.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
@@ -179,8 +178,15 @@ class _ViewOutstandingOrderScreenState extends State<ViewOutstandingOrderScreen>
                               title: l.customerDetail_shipping,
                               content: Column(
                                 children: [
-                                  SvgPicture.asset(AssetIcons.ggPin, width: 24, height: 24, color: Colors.white),
-                                  SvgPicture.asset(AssetIcons.shippingIcon, height: 100, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: Image.asset(AssetImages.shipping, height: 50, width: 50, fit: BoxFit.contain),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
                                   Center(
                                     child: Text(
                                       'pastikan semua item yang akan dikirim sudah sesuai dengan pesanan  customer',

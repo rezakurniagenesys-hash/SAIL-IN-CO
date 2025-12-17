@@ -103,7 +103,9 @@ class SalesOrderHeaderModel {
   @JsonKey(name: 'shipping_id')
   final dynamic shippingId;
 
-  // company_name
+  @JsonKey(name: 'customer_group_name')
+  final dynamic customerGroupName;
+
   @JsonKey(name: 'company_name')
   final dynamic companyName;
 
@@ -154,6 +156,7 @@ class SalesOrderHeaderModel {
     required this.sourceSourceName,
     this.shippingId,
     this.companyName,
+    this.customerGroupName,
     this.companyAddress,
     this.companyLogo,
     this.customer,

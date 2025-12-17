@@ -11,7 +11,8 @@ import 'package:sail_in_co/providers/sales/sales_provider.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/components/item_history_sales.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/sub_feature/view_outstanding_order_screen.dart';
 import 'package:sail_in_co/ui/screens/customer_detail/sub_feature/view_quick_sales_order_screen.dart';
-import 'package:sail_in_co/ui/screens/receipt/receipt_pdf_view.dart';
+import 'package:sail_in_co/ui/screens/receipt/receipt_pdf_quick_sales_view.dart';
+import 'package:sail_in_co/ui/screens/receipt/receipt_pdf_sales_order_view.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_date_picker.dart';
 import 'package:sail_in_co/ui/widgets/app_dialog.dart';
@@ -195,9 +196,17 @@ class _SalesPageState extends State<SalesPage> {
                           height: 44,
                           label: 'Download as PDF',
                           onPressed: () {
-                            // Future<void> openReceiptPdf(ReceiptData data) async {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ReceiptPdfViewPage()));
-                            // }
+                            if (transactionType == "quick_sales") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => ReceiptPdfQuickSalesView(quicSalesId: provider.dataHistorySalesOrder[index].transactionId)),
+                              );
+                            } else if (transactionType == "sales_order") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => ReceiptPdfSalesOrderView(salesOrderId: provider.dataHistorySalesOrder[index].transactionId)),
+                              );
+                            }
                           },
                           isFullWidth: true,
                           type: AppButtonType.primary,
@@ -209,31 +218,52 @@ class _SalesPageState extends State<SalesPage> {
                 onDelete: () {
                   AppDialog.show(
                     context: context,
-                    title: 'Hapus Order',
-                    content: Text('Apakah Anda yakin ingin menghapus order ini?', textAlign: TextAlign.center, style: AppTextStyles.body3Regular),
-                    actionButton: AppButton(
-                      isFullWidth: true,
-                      label: 'Ya, Hapus',
-                      height: 42,
-                      isLoading: provider.isLoadingSalesOrderVoid,
-                      type: AppButtonType.danger,
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        if (transactionType == "quick_sales") {
-                          await provider.voidQuickSales(
-                            context: context,
-                            quickSalesId: provider.dataHistorySalesOrder[index].transactionId,
-                            customerId: widget.customerId,
-                          );
-                          provider.getHistorySales(initial: true, customerId: widget.customerId);
-                        } else if (transactionType == "sales_order") {
-                          await provider.voidSalesOrder(
-                            context: context,
-                            salesOrderId: provider.dataHistorySalesOrder[index].transactionId,
-                            customerId: widget.customerId,
-                          );
-                        }
-                      },
+                    title: 'Batalkan Order',
+                    content: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: Text('Apakah anda yakin ingin membatalkan order ini?', textAlign: TextAlign.center, style: AppTextStyles.body3Regular),
+                    ),
+                    actionButton: Row(
+                      children: [
+                        Expanded(
+                          child: AppButton(
+                            isFullWidth: true,
+                            label: 'Tidak',
+                            height: 42,
+                            type: AppButtonType.neutral400,
+                            onPressed: () async {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: AppButton(
+                            isFullWidth: true,
+                            label: 'Batalkan',
+                            height: 42,
+                            isLoading: provider.isLoadingSalesOrderVoid,
+                            type: AppButtonType.danger,
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              if (transactionType == "quick_sales") {
+                                await provider.voidQuickSales(
+                                  context: context,
+                                  quickSalesId: provider.dataHistorySalesOrder[index].transactionId,
+                                  customerId: widget.customerId,
+                                );
+                                provider.getHistorySales(initial: true, customerId: widget.customerId);
+                              } else if (transactionType == "sales_order") {
+                                await provider.voidSalesOrder(
+                                  context: context,
+                                  salesOrderId: provider.dataHistorySalesOrder[index].transactionId,
+                                  customerId: widget.customerId,
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },

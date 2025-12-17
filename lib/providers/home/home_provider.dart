@@ -39,6 +39,8 @@ class HomeProvider extends ChangeNotifier {
   StockResponse? stockResponse;
   List<StockItem>? stockItem;
 
+  String lastUpdate = '';
+
   final date = ConstantDate.date;
 
   void init(BuildContext context) {
@@ -46,6 +48,7 @@ class HomeProvider extends ChangeNotifier {
     getSummaryChart(context);
     getStock(context);
     getPattyCash(context);
+    getLastUpdate();
   }
 
   Future<void> loadUserInfo() async {
@@ -56,6 +59,12 @@ class HomeProvider extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  Future<void> getLastUpdate() async {
+    final date = await daoCallSheet.getLastUpdate() ?? '';
+    lastUpdate = DateUtilsHelper.formatDMYHMS(DateTime.tryParse(date) ?? DateTime.now());
+    notifyListeners();
   }
 
   Future<void> getSummaryChart(BuildContext context) async {

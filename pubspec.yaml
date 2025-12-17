@@ -55,6 +55,7 @@ flutter:
   assets:
     - assets/svg/
     - assets/png/
+    - assets/fonts/lucidatypewriterregular.ttf
 
 flutter_gen_l10n:
   enabled: true

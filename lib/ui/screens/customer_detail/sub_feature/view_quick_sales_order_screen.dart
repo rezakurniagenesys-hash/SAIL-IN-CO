@@ -1,9 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:sail_in_co/core/constants/asset_icons.dart';
+import 'package:sail_in_co/core/constants/asset_images.dart';
 import 'package:sail_in_co/core/theme/app_color.dart';
 import 'package:sail_in_co/core/theme/app_text_styles.dart';
 import 'package:sail_in_co/core/utils/currency_format.dart';
@@ -114,11 +113,8 @@ class _ViewQuickSalesOrderScreenState extends State<ViewQuickSalesOrderScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(item.inventory?.inventoryName ?? '', style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
-                                        Text(
-                                          '${item.qty2} ${item.uom2?.uomId ?? ''}',
-                                          style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary),
-                                        ),
+                                        Text(item.inventory.inventoryName, style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
+                                        Text('${item.qty2} ${item.uom2.uomId}', style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary)),
                                       ],
                                     ),
                                     const SizedBox(height: 8),
@@ -136,7 +132,7 @@ class _ViewQuickSalesOrderScreenState extends State<ViewQuickSalesOrderScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 8),
-                                    if (int.parse(item.discValue ?? '0') > 0)
+                                    if (int.parse(item.discValue) > 0)
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
@@ -145,7 +141,7 @@ class _ViewQuickSalesOrderScreenState extends State<ViewQuickSalesOrderScreen> {
                                             style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.normal),
                                           ),
                                           Text(
-                                            CurrencyFormat.toRupiah((int.parse(item.discValue ?? '0') * int.parse(item.qty2))),
+                                            CurrencyFormat.toRupiah((int.parse(item.discValue) * int.parse(item.qty2))),
                                             style: AppTextStyles.caption1SemiBold.copyWith(color: AppColors.textPrimary),
                                           ),
                                         ],
@@ -172,15 +168,23 @@ class _ViewQuickSalesOrderScreenState extends State<ViewQuickSalesOrderScreen> {
                       children: [
                         AppButton(
                           label: l.customerDetail_shipping,
-                          onPressed: () async {
+                          onPressed: () {
                             // await provider.postShippingForSalesOrder(context: context, salesOrderId: widget.salesOrderId ?? '');
                             AppDialog.show(
                               context: context,
                               title: l.customerDetail_shipping,
                               content: Column(
+                                // mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  SvgPicture.asset(AssetIcons.ggPin, width: 24, height: 24, color: Colors.white),
-                                  SvgPicture.asset(AssetIcons.shippingIcon, height: 100, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 100,
+                                      width: 100,
+                                      child: Image.asset(AssetImages.shipping, height: 100, width: 100, fit: BoxFit.contain),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
                                   Center(
                                     child: Text(
                                       'pastikan semua item yang akan dikirim sudah sesuai dengan pesanan  customer',

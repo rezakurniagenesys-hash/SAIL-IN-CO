@@ -179,7 +179,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get customerDetail_photoEvidence => 'Bukti Foto';
 
   @override
-  String get customerDetail_order => 'Order';
+  String get customerDetail_order => 'Pesanan';
 
   @override
   String get customerDetail_adjustment => 'Penyesuaian';

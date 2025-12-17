@@ -182,9 +182,9 @@ class SalesOrderProvider extends ChangeNotifier {
       if (online) {
         final res = await salesRepository.postSalesOrder(payload: salesOrderPayloadModel);
         if ((res.statusCode == 201) && res.data != null) {
-          for (var item in salesOrderPayloadModel.details) {
-            await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
-          }
+          // for (var item in salesOrderPayloadModel.details) {
+          //   await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+          // }
           AppSnackBar.show(context, message: 'Berhasil mengirim sales order.', color: Colors.green);
           Navigator.of(context).pop('refresh-sales-order');
         } else if (res.statusCode == 502) {
@@ -193,9 +193,9 @@ class SalesOrderProvider extends ChangeNotifier {
           AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
-        for (var item in salesOrderPayloadModel.details) {
-          await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
-        }
+        // for (var item in salesOrderPayloadModel.details) {
+        //   await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+        // }
         await daoSalesOrder.saveSalesOrder(salesOrderPayloadModel);
         AppSnackBar.show(context, message: 'Berhasil mengirim sales order ke penyimpanan lokal.', color: Colors.green);
         Navigator.of(context).pop('refresh-sales-order');

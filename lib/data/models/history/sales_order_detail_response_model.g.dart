@@ -57,6 +57,7 @@ SalesOrderHeaderModel _$SalesOrderHeaderModelFromJson(
   sourceSourceName: json['source_source_name'] as String,
   shippingId: json['shipping_id'],
   companyName: json['company_name'],
+  customerGroupName: json['customer_group_name'],
   companyAddress: json['company_address'],
   companyLogo: json['company_logo'],
   customer: json['customer'] == null
@@ -113,6 +114,7 @@ Map<String, dynamic> _$SalesOrderHeaderModelToJson(
   'source_source_id': instance.sourceSourceId,
   'source_source_name': instance.sourceSourceName,
   'shipping_id': instance.shippingId,
+  'customer_group_name': instance.customerGroupName,
   'company_name': instance.companyName,
   'company_address': instance.companyAddress,
   'company_logo': instance.companyLogo,

@@ -33,6 +33,16 @@ class DateUtilsHelper {
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
   }
 
+  static String formatYMDHM(DateTime? date) {
+    if (date == null) return '-';
+    return DateFormat('yyyy-MM-dd HH:mm').format(date);
+  }
+
+  static String formatDMYHMS(DateTime? date) {
+    if (date == null) return '-';
+    return DateFormat('dd-MM-yyyy HH:mm:ss').format(date);
+  }
+
   /// Parse string ke DateTime dengan pattern tertentu
   static DateTime? parseDate(String? dateString, {String pattern = 'dd-MM-yyyy'}) {
     if (dateString == null || dateString.isEmpty) return null;

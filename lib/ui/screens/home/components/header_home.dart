@@ -49,7 +49,7 @@ class HeaderHome extends StatelessWidget {
                             ),
                             Text(homeProvider.userInfo?.email ?? '-', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.white)),
                             SizedBox(height: 4),
-                            Text('${l!.home_lastUpdate} : 03-11-2025', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.white)),
+                            Text('${l!.home_lastUpdate} : ${homeProvider.lastUpdate}', style: AppTextStyles.body4Reguler.copyWith(color: AppColors.white)),
                           ],
                         ),
                       ),

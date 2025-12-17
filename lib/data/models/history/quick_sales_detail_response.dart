@@ -228,6 +228,18 @@ class QuickSales {
   @JsonKey(name: 'source_source_name')
   final String sourceSourceName;
 
+  @JsonKey(name: 'customer_group_name')
+  final dynamic customerGroupName;
+
+  @JsonKey(name: 'company_name')
+  final dynamic companyName;
+
+  @JsonKey(name: 'company_address')
+  final dynamic companyAddress;
+
+  @JsonKey(name: 'company_logo')
+  final dynamic companyLogo;
+
   final dynamic customer;
   final dynamic sales;
   final dynamic warehouse;
@@ -311,6 +323,10 @@ class QuickSales {
     required this.areaAreaName,
     required this.sourceSourceId,
     required this.sourceSourceName,
+    required this.customerGroupName,
+    required this.companyName,
+    required this.companyAddress,
+    required this.companyLogo,
     required this.customer,
     required this.sales,
     required this.warehouse,

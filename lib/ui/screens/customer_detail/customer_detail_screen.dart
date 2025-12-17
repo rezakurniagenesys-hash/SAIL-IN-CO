@@ -8,6 +8,7 @@ import 'package:sail_in_co/core/utils/currency_format.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
 import 'package:sail_in_co/providers/customer/customer_detail_provider.dart';
 import 'package:sail_in_co/providers/generals/general_providers.dart';
+import 'package:sail_in_co/providers/history/activity_history_provider.dart';
 import 'package:sail_in_co/providers/order/quick_sales_provider.dart';
 import 'package:sail_in_co/providers/order/sales_order_provider.dart';
 import 'package:sail_in_co/providers/return/return_provider.dart';
@@ -257,6 +258,12 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                     context.read<GeneralProviders>().getInventory(context);
                                     // Clear quick sales items
                                     context.read<QuickSalesProvider>().clearQuickSalesItems();
+
+                                    //Refresh Activity History Tab
+                                    final providerActivity = context.read<ActivityHistoryProvider>();
+                                    providerActivity.clearData();
+                                    providerActivity.setSelectedActivityType(ActivityType.all, widget.customerId);
+                                    
                                   } else if (value != null && value == 'refresh-sales-order') {
                                     // Refresh detail after order/payment
                                     provider.getDetailCustomer(widget.customerId, widget.scheduleId, context);

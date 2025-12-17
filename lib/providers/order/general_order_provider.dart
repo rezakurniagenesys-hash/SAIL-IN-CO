@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/data/models/general/general_inventory/general_inventory_response.dart';
 import 'package:sail_in_co/data/models/general/general_uoms/general_uoms_response.dart';
@@ -177,6 +179,8 @@ class GeneralOrderProvider extends ChangeNotifier {
 
     priceUIController.text = (pricePCS * multiplier).toString();
 
+    if (priceMode == OrderPriceMode.editable) {}
+
     _updateQtyDefault();
     _calculateTotalPrice();
   }
@@ -238,27 +242,6 @@ class GeneralOrderProvider extends ChangeNotifier {
     formKey.currentState?.save();
     formKey.currentState?.reset();
     if (formKey.currentState?.validate() ?? false) {
-      final currentStock = _parseInt(inventorySelected?.currentStock.toString().replaceAll(RegExp(r'\.0$'), ''));
-      // stok kosong
-      if (currentStock <= 0) {
-        AppSnackBar.show(context, message: "Stok kosong!", color: Colors.red);
-        return;
-      }
-      print('priceMode: $priceMode');
-      // cek stok hanya berlaku selain return order, pricemode == localkedFromMaster artinya bukan return order
-      if (priceMode == OrderPriceMode.lockedFromMaster) {
-        if (_parseInt(qtyDefaultController.text) > currentStock) {
-          AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
-          return;
-        }
-      }
-
-      // duplikasi
-      if (oldInventoryIds.contains(inventorySelected?.inventoryId)) {
-        AppSnackBar.show(context, message: "${l?.messages_duplicateInventory} ${inventorySelected?.inventoryName}", color: Colors.red);
-        return;
-      }
-
       // ==============================
       // HITUNG QTY
       // ==============================
@@ -272,14 +255,39 @@ class GeneralOrderProvider extends ChangeNotifier {
       final int smallUnitPrice = _parseInt(priceController.text); // harga per PCS
 
       // subtotal sebelum diskon
-      final int subTotal = qtyDefault * smallUnitPrice;
 
       // diskon per PCS
       final int discount = _parseInt(discountController.text);
-      final int discountTotal = discount * qtyDefault;
+      final int discountTotal = discount * qtyInput;
 
+      final int subTotal = ((qtyDefault * smallUnitPrice) - discountTotal).clamp(0, 999999999);
       // total akhir
-      final int grandTotal = (subTotal - discountTotal).clamp(0, 999999999);
+      final int grandTotal = ((qtyDefault * smallUnitPrice) - discountTotal).clamp(0, 999999999);
+
+      final currentStock = _parseInt(inventorySelected?.currentStock.toString().replaceAll(RegExp(r'\.0$'), ''));
+      // stok kosong
+      if (currentStock <= 0) {
+        AppSnackBar.show(context, message: "Stok kosong!", color: Colors.red);
+        return;
+      }
+      // cek stok hanya berlaku selain return order, pricemode == localkedFromMaster artinya bukan return order
+      if (priceMode == OrderPriceMode.lockedFromMaster) {
+        if (_parseInt(qtyDefaultController.text) > currentStock) {
+          AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
+          return;
+        }
+      }
+
+      if (discount > _parseInt(priceUIController.text)) {
+        AppSnackBar.show(context, message: "Diskon tidak boleh lebih besar dari harga!", color: Colors.red);
+        return;
+      }
+
+      // duplikasi
+      if (oldInventoryIds.contains(inventorySelected?.inventoryId)) {
+        AppSnackBar.show(context, message: "${l?.messages_duplicateInventory} ${inventorySelected?.inventoryName}", color: Colors.red);
+        return;
+      }
 
       // ==============================
       // SIMPAN KE MODEL
@@ -307,7 +315,7 @@ class GeneralOrderProvider extends ChangeNotifier {
 
         index: 0,
       );
-
+      log('GeneralOrderDraftItem result: ${result.toJson()}');
       Navigator.of(context).pop(result);
       return;
     } else {

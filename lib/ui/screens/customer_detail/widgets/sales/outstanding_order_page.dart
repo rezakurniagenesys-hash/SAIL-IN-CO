@@ -13,7 +13,7 @@ import 'package:sail_in_co/ui/screens/customer_detail/components/item_outstandin
 import 'package:sail_in_co/ui/screens/customer_detail/sub_feature/view_outstanding_order_screen.dart';
 import 'package:sail_in_co/ui/screens/payment/enums/payments_enum.dart';
 import 'package:sail_in_co/ui/screens/payment/payment_screen.dart';
-import 'package:sail_in_co/ui/screens/receipt/receipt_pdf_view.dart';
+import 'package:sail_in_co/ui/screens/receipt/receipt_pdf_sales_order_view.dart';
 import 'package:sail_in_co/ui/widgets/app_button.dart';
 import 'package:sail_in_co/ui/widgets/app_date_picker.dart';
 import 'package:sail_in_co/ui/widgets/app_dialog.dart';
@@ -191,7 +191,7 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
                   onPrint: () {
                     AppDialog.show(
                       context: context,
-                      title: 'Print Invoice',
+                      title: 'Print Order',
                       content: Column(
                         children: [
                           Text('Print', style: AppTextStyles.label2SemiBold),
@@ -199,13 +199,13 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
                           SvgPicture.asset(AssetIcons.printIcon, width: 50, height: 50),
                           Row(
                             children: [
-                              Text('Device', style: AppTextStyles.body4Medium.copyWith(color: AppColors.textPrimary)),
+                              Text('Perangkat', style: AppTextStyles.body4Medium.copyWith(color: AppColors.textPrimary)),
                               Spacer(),
                               Text('Status', style: AppTextStyles.body4Medium.copyWith(color: AppColors.emerald600)),
                             ],
                           ),
                           SizedBox(height: 12),
-                          AppDropdownField(label: 'Printer Name', value: '', items: [], onChanged: (value) {}),
+                          AppDropdownField(label: 'Pilih Perangkat', value: '', items: [], onChanged: (value) {}),
                           SizedBox(height: 16),
                           AppButton(isDisabled: true, height: 44, label: 'Refresh', onPressed: () {}, isFullWidth: true, type: AppButtonType.primary),
                           SizedBox(height: 16),
@@ -213,11 +213,12 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
                           SizedBox(height: 16),
                           AppButton(
                             height: 44,
-                            label: 'Download as PDF',
+                            label: 'Download PDF',
                             onPressed: () {
-                              // Future<void> openReceiptPdf(ReceiptData data) async {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const ReceiptPdfViewPage()));
-                              // }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => ReceiptPdfSalesOrderView(salesOrderId: provider.dataSalesOrder[index].salesOrderId)),
+                              );
                             },
                             isFullWidth: true,
                             type: AppButtonType.primary,
@@ -229,23 +230,44 @@ class _OutstandingOrderPageState extends State<OutstandingOrderPage> {
                   onDelete: () {
                     AppDialog.show(
                       context: context,
-                      title: 'Hapus Order',
-                      content: Text('Apakah Anda yakin ingin menghapus order ini?', textAlign: TextAlign.center, style: AppTextStyles.body3Regular),
-                      actionButton: AppButton(
-                        isFullWidth: true,
-                        label: 'Ya, Hapus',
-                        height: 42,
-                        isLoading: provider.isLoadingSalesOrderVoid,
-                        type: AppButtonType.danger,
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          await provider.voidSalesOrder(
-                            context: context,
-                            salesOrderId: provider.dataSalesOrder[index].salesOrderId,
-                            customerId: widget.customerId,
-                          );
-                          provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
-                        },
+                      title: 'Batalkan Order',
+                      content: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20.0),
+                        child: Text('Apakah anda yakin ingin membatalkan order ini?', textAlign: TextAlign.center, style: AppTextStyles.body3Regular),
+                      ),
+                      actionButton: Row(
+                        children: [
+                          Expanded(
+                            child: AppButton(
+                              isFullWidth: true,
+                              label: 'Tidak',
+                              height: 42,
+                              type: AppButtonType.neutral400,
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: AppButton(
+                              isFullWidth: true,
+                              label: 'Ya',
+                              height: 42,
+                              isLoading: provider.isLoadingSalesOrderVoid,
+                              type: AppButtonType.danger,
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                await provider.voidSalesOrder(
+                                  context: context,
+                                  salesOrderId: provider.dataSalesOrder[index].salesOrderId,
+                                  customerId: widget.customerId,
+                                );
+                                provider.getOutstandingSalesOrders(initial: true, customerId: widget.customerId);
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },

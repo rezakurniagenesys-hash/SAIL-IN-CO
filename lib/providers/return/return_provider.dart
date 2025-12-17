@@ -184,9 +184,9 @@ class ReturnProvider extends ChangeNotifier {
         final res = await salesRepository.potstSalesReturn(payload: returnOrderPayloadModel);
 
         if ((res.statusCode == 201) && res.data != null) {
-          for (var item in returnOrderPayloadModel.details) {
-            await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
-          }
+          // for (var item in returnOrderPayloadModel.details) {
+          //   await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+          // }
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan.'), backgroundColor: Colors.green));
