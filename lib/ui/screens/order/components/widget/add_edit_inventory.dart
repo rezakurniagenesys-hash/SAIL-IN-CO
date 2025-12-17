@@ -35,6 +35,7 @@ class AddEditInventory extends StatelessWidget {
                   return null;
                 },
                 onChanged: (value) {
+                  context.read<GeneralProviders>().getLockStock(context);
                   generalOrderProvider.setInventorySelected(value);
                 },
                 display: (InventoryItem item) => item.inventoryName,

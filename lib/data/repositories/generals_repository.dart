@@ -16,14 +16,13 @@ class GeneralsRepository {
     }
   }
 
-  // Get General UOMs
-  // Future<ApiResponse> getGeneralUOMs({required int inventoryId}) async {
-  //   try {
-  //     final url = ApiConstants.generalUOMs.replaceFirst("{id}", inventoryId.toString());
-  //     final response = await _api.get("${ApiConstants.baseUrl}$url");
-  //     return response;
-  //   } catch (e) {
-  //     return ApiResponse(data: null, statusCode: 500, message: e.toString());
-  //   }
-  // }
+  // Get Lock Stock
+  Future<ApiResponse> getLockStock() async {
+    try {
+      final response = await _api.get("${ApiConstants.baseUrl}${ApiConstants.lockStock}");
+      return response;
+    } catch (e) {
+      return ApiResponse(data: null, statusCode: 500, message: e.toString());
+    }
+  }
 }

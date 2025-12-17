@@ -10,6 +10,7 @@ import 'package:sail_in_co/providers/connection_provider.dart';
 import 'package:sail_in_co/providers/generals/general_providers.dart';
 import 'package:sail_in_co/providers/home/home_provider.dart';
 import 'package:sail_in_co/providers/sync/sync_provider.dart';
+import 'package:sail_in_co/services/lockstock_service.dart';
 import 'package:sail_in_co/ui/screens/development/developer_offline_page.dart';
 import 'package:sail_in_co/ui/screens/finished_task/finished_task_screen.dart';
 import 'package:sail_in_co/ui/screens/home/components/header_home.dart';
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       /// Load first data
       context.read<HomeProvider>().init(context);
       context.read<GeneralProviders>().getInventory(context);
+      context.read<GeneralProviders>().getLockStock(context);
 
       final syncProvider = context.read<SyncProvider>();
       syncProvider.init(
@@ -122,8 +124,15 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.white,
       // button pojok kanan
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const DeveloperOfflinePage()));
+        onPressed: () async {
+          // Navigator.push(context, MaterialPageRoute(builder: (_) => const DeveloperOfflinePage()));
+
+          final isUnlockSO = await LockStockService.getBool(LockStockKey.bukaKunciStockSO.value);
+
+          final isStockLocked = await LockStockService.getBool(LockStockKey.kunciStock.value);
+
+          print('isUnlockSO: $isUnlockSO');
+          print('isStockLocked: $isStockLocked');
         },
         backgroundColor: AppColors.warning,
         child: const Icon(Icons.developer_mode),
@@ -176,6 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onRefresh: () async {
                     homeProvider.init(context);
                     context.read<GeneralProviders>().getInventory(context);
+                    context.read<GeneralProviders>().getLockStock(context);
                     final syncProvider = context.read<SyncProvider>();
                     syncProvider.init(
                       onShowLoading: () => showLoading(),

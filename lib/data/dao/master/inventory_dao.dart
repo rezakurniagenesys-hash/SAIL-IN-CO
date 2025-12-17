@@ -92,6 +92,35 @@ class InventoryItemDao {
     });
   }
 
+  Future<int> increaseCurrentStock({required String inventoryId, required int qty}) async {
+    final db = await dbHelper.database;
+
+    return await db.transaction((txn) async {
+      final result = await txn.query("inventory_items", columns: ["current_stock"], where: "inventory_id = ?", whereArgs: [inventoryId], limit: 1);
+
+      if (result.isEmpty) {
+        throw Exception("Inventory not found");
+      }
+
+      final rawStock = result.first["current_stock"];
+
+      int currentStock;
+      if (rawStock is int) {
+        currentStock = rawStock;
+      } else if (rawStock is double) {
+        currentStock = rawStock.toInt();
+      } else if (rawStock is String) {
+        currentStock = double.tryParse(rawStock)?.toInt() ?? 0;
+      } else {
+        currentStock = 0;
+      }
+
+      final int newStock = currentStock + qty;
+
+      return await txn.update("inventory_items", {"current_stock": newStock}, where: "inventory_id = ?", whereArgs: [inventoryId]);
+    });
+  }
+
   /// Get all inventory items from SQLite
   Future<List<InventoryItem>> getInventoryItems() async {
     final db = await dbHelper.database;

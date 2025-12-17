@@ -34,6 +34,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<QuickSalesProvider>().loadUserInfo();
       context.read<GeneralProviders>().getInventory(context);
+      context.read<GeneralProviders>().getLockStock(context);
     });
   }
 

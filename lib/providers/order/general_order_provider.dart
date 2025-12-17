@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -5,9 +7,12 @@ import 'package:sail_in_co/data/models/general/general_inventory/general_invento
 import 'package:sail_in_co/data/models/general/general_uoms/general_uoms_response.dart';
 import 'package:sail_in_co/data/models/general/order/general_order_draft_item.dart';
 import 'package:sail_in_co/l10n/app_localizations.dart';
+import 'package:sail_in_co/services/lockstock_service.dart';
 import 'package:sail_in_co/ui/widgets/app_snackbar.dart';
 
 enum OrderPriceMode { lockedFromMaster, editable }
+
+enum OrderType { salesOrder, returnOrder, quickSales }
 
 class GeneralOrderProvider extends ChangeNotifier {
   final TextEditingController priceController = TextEditingController();
@@ -30,6 +35,9 @@ class GeneralOrderProvider extends ChangeNotifier {
   UOMItem? uomSelectedDefauld;
 
   int totalPrice = 0;
+  bool isEditingPriceUI = false;
+
+  OrderType orderType = OrderType.quickSales;
 
   int _parseInt(String? value) => int.tryParse(value ?? '') ?? 0;
 
@@ -151,19 +159,6 @@ class GeneralOrderProvider extends ChangeNotifier {
     _calculateTotalPrice();
   }
 
-  void setPriceUI(String value) {
-    final int uiPrice = _parseInt(value);
-    final int multiplier = _parseInt(uomSelected?.value ?? '1');
-
-    if (multiplier <= 0) return;
-
-    // 🔥 KUNCI LOGIC
-    priceUIController.text = uiPrice.toString();
-    priceController.text = (uiPrice / multiplier).floor().toString();
-
-    _calculateTotalPrice();
-  }
-
   void setQty(String value) {
     qtyController.text = _parseInt(value).toString();
     _updateQtyDefault();
@@ -179,7 +174,9 @@ class GeneralOrderProvider extends ChangeNotifier {
 
     priceUIController.text = (pricePCS * multiplier).toString();
 
-    if (priceMode == OrderPriceMode.editable) {}
+    if (priceMode == OrderPriceMode.editable) {
+      discountController.text = '';
+    }
 
     _updateQtyDefault();
     _calculateTotalPrice();
@@ -212,13 +209,17 @@ class GeneralOrderProvider extends ChangeNotifier {
     _calculateTotalPrice();
   }
 
+  void setType(OrderType type) {
+    orderType = type;
+    notifyListeners();
+  }
+
   // ==============================
   // INIT EDIT
   // ==============================
   void initEdit(GeneralOrderDraftItem item) {
     inventorySelected = item.inventory;
     uomSelected = item.uom;
-
     priceController.text = item.price.toString();
     qtyController.text = item.qty2.toString();
     uomSelectedDefauld = _getDefaultUom(item.inventory);
@@ -237,8 +238,10 @@ class GeneralOrderProvider extends ChangeNotifier {
   // SUBMIT
   // ==============================
 
-  void submit(BuildContext context) {
+  void submit(BuildContext context) async {
     final l = AppLocalizations.of(context);
+    final isStockLocked = await LockStockService.getBool(LockStockKey.kunciStock.value);
+    final isUnlockSO = await LockStockService.getBool(LockStockKey.bukaKunciStockSO.value);
     formKey.currentState?.save();
     formKey.currentState?.reset();
     if (formKey.currentState?.validate() ?? false) {
@@ -271,10 +274,19 @@ class GeneralOrderProvider extends ChangeNotifier {
         return;
       }
       // cek stok hanya berlaku selain return order, pricemode == localkedFromMaster artinya bukan return order
-      if (priceMode == OrderPriceMode.lockedFromMaster) {
-        if (_parseInt(qtyDefaultController.text) > currentStock) {
-          AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
-          return;
+      if (orderType == OrderType.quickSales) {
+        if (isStockLocked == true) {
+          if (_parseInt(qtyDefaultController.text) > currentStock) {
+            AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
+            return;
+          }
+        }
+      } else if (orderType == OrderType.salesOrder) {
+        if (isStockLocked == true && isUnlockSO == false) {
+          if (_parseInt(qtyDefaultController.text) > currentStock) {
+            AppSnackBar.show(context, message: "Stok tidak mencukupi!", color: Colors.red);
+            return;
+          }
         }
       }
 

@@ -137,7 +137,8 @@ class ReturnProvider extends ChangeNotifier {
       currencyId: 'IDR',
       rate: 1, // Hardcoded Quick Sales
       subTotal: subTotal(),
-      discount: totalDiscount(),
+      // discount: totalDiscount(),
+      discount: 0,
       total: grandTotal(),
       grandTotal: grandTotal(),
       notes: notesController.text,
@@ -184,9 +185,9 @@ class ReturnProvider extends ChangeNotifier {
         final res = await salesRepository.potstSalesReturn(payload: returnOrderPayloadModel);
 
         if ((res.statusCode == 201) && res.data != null) {
-          // for (var item in returnOrderPayloadModel.details) {
-          //   await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
-          // }
+          for (var item in returnOrderPayloadModel.details) {
+            await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+          }
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Berhasil pengembalian pembayaran penjualan.'), backgroundColor: Colors.green));
@@ -197,6 +198,9 @@ class ReturnProvider extends ChangeNotifier {
           AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
+        for (var item in returnOrderPayloadModel.details) {
+          await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+        }
         await daoSalesReturn.saveSalesReturn(returnOrderPayloadModel);
         ScaffoldMessenger.of(
           context,

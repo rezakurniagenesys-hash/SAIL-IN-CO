@@ -50,4 +50,7 @@ class ApiConstants {
 
   // Settlement
   static const String settlement = "/sales/api/settlement/sales?sales_id={userId}";
+
+  // Lock Stock
+  static const String lockStock = "/stock/api/default-setting/lock-stock";
 }

@@ -135,7 +135,8 @@ class SalesOrderProvider extends ChangeNotifier {
       currencyId: 'IDR',
       rate: 1, // Hardcoded Quick Sales
       subTotal: subTotal(),
-      discount: totalDiscount(),
+      // discount: totalDiscount(),
+      discount: 0,
       total: grandTotal(),
       grandTotal: grandTotal(),
       notes: notesController.text,

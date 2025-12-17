@@ -35,6 +35,7 @@ class _SalesOrderState extends State<SalesOrder> {
 
     final generalOrderProvider = context.read<GeneralOrderProvider>();
     generalOrderProvider.setPriceMode(OrderPriceMode.lockedFromMaster);
+    generalOrderProvider.setType(OrderType.salesOrder);
     super.initState();
   }
 

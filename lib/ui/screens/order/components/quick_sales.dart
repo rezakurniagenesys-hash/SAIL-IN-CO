@@ -36,6 +36,7 @@ class _QuickSalesState extends State<QuickSales> {
 
     final generalOrderProvider = context.read<GeneralOrderProvider>();
     generalOrderProvider.setPriceMode(OrderPriceMode.lockedFromMaster);
+    generalOrderProvider.setType(OrderType.quickSales);
     // generalOrderProvider.setIsPriceEditable(false);
     super.initState();
   }

@@ -145,6 +145,7 @@ class PaymentProvider extends ChangeNotifier {
       sourceId: 'SOU.001',
     );
     log('Confirmed Payment with Payload: ${newPayload?.toJson()}');
+    return;
     final online = await ConnectionUtils.isConnected();
     if (selectedPaymentMethod == null) {
       AppSnackBar.show(context, message: 'Pilih metode pembayaran terlebih dahulu.', color: Colors.red);

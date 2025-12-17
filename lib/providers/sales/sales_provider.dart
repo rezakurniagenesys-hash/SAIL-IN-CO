@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:sail_in_co/core/utils/connection_utils.dart';
 import 'package:sail_in_co/core/utils/date_utils.dart';
+import 'package:sail_in_co/data/dao/master/inventory_dao.dart';
 import 'package:sail_in_co/data/dao/sales/outstanding_sales_order_dao.dart';
 import 'package:sail_in_co/data/dao/sales/shipping_sales_order_dao.dart';
 import 'package:sail_in_co/data/models/history/quick_sales_detail_response.dart';
@@ -20,6 +21,7 @@ class SalesProvider extends ChangeNotifier {
   final repository = SalesRepository();
   final daoShippingSalesOrder = ShippingSalesOrderDao();
   final daoOutstandingSalesOrder = OutstandingSalesOrderDao();
+  final daoInventory = InventoryItemDao();
 
   final TextEditingController searchController = TextEditingController();
   final TextEditingController startDateController = TextEditingController();
@@ -393,12 +395,18 @@ class SalesProvider extends ChangeNotifier {
       if (online) {
         final res = await repository.postShippingForSalesOrder(payload: payload);
         if (res.statusCode == 201 && res.data != null) {
+          for (var item in salesOrderHeader?.details ?? []) {
+            await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+          }
           AppSnackBar.show(context, message: 'Berhasil mengirim shipping sales order.', color: Colors.green);
           Navigator.of(context).pop('refresh-shipping-order');
         } else {
           AppSnackBar.show(context, message: res.message ?? 'Unknown error', color: Colors.red);
         }
       } else {
+        for (var item in salesOrderHeader?.details ?? []) {
+          await daoInventory.reduceCurrentStock(inventoryId: item.inventoryId, qty: int.parse(item.qty2.toString()));
+        }
         await daoShippingSalesOrder.saveShipping(payload);
         AppSnackBar.show(context, message: 'Shipping sales order disimpan secara offline.', color: Colors.green);
         Navigator.of(context).pop('refresh-shipping-order');
